@@ -1,10 +1,38 @@
-@import "tailwindcss/base";
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap&weight=500");
 
-@import "tailwindcss/components";
+:root {
+  --orange: #cc6633;
+  --green: #a4cc33;
+  --white: hsl(0, 0%, 100%);
+  --grey100: hsl(0, 0%, 100%);
+  --grey97: hsl(0, 0%, 97%);
+  --grey92: hsl(0, 0%, 92%);
+  --grey85: hsl(0, 0%, 85%);
+  --grey76: hsl(0, 0%, 76%);
+  --grey65: hsl(0, 0%, 65%);
+  --grey52: hsl(0, 0%, 52%);
+  --grey37: hsl(0, 0%, 37%);
+  --black: hsl(0, 0%, 20%);
+}
 
-@import "tailwindcss/utilities";
+html {
+  font-size: 10px;
+  height: 100%;
+}
 
 body {
+  height: 100%;
+  font-family: "Roboto", serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  cursor: pointer;
 }
