@@ -62,7 +62,10 @@ async function createServer(isProd = process.env.NODE_ENV === "production") {
         __dirname,
         "./dist/server/entry-server.mjs"
       );
-      const devBuildPath = path.join(__dirname, "./src/server/entry-server.tsx");
+      const devBuildPath = path.join(
+        __dirname,
+        "./src/server/entry-server.tsx"
+      );
       const { render } = await vite.ssrLoadModule(
         isProd ? productionBuildPath : devBuildPath
       );
@@ -70,7 +73,7 @@ async function createServer(isProd = process.env.NODE_ENV === "production") {
       // 4,5 render the app HTML. This assumes entry-server.js's exported `render`
       //    function calls appropriate framework SSR APIs,
       //    e.g. ReactDOMServer.renderToString()
-      const html = await render(template, url);
+      const html = await render(req, res, template);
 
       // 6. Send the rendered HTML back.
       res.status(200).set({ "Content-Type": "text/html" }).end(html);

@@ -1,6 +1,6 @@
-import type { Request } from "express";
+import type { Request as ExpressResponse } from "express";
 
-export function createFetchRequest(req: Request) {
+export function createFetchRequest(req: ExpressResponse) {
   const origin = `${req.protocol}://${req.get("host")}`;
   // Note: This had to take originalUrl into account for presumably vite's proxying
   const url = new URL(req.originalUrl || req.url, origin);

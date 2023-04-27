@@ -1,9 +1,9 @@
 import React from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { App } from "./App";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { createStore } from "./store";
 import { Provider as ReduxProvider } from "react-redux";
+import { getRoutes } from "./routes";
 
 const container = document.getElementById("app");
 
@@ -12,12 +12,12 @@ const store = createStore(
 );
 delete window.__PRELOADED_STATE__; // Allow the passed state to be garbage-collected
 
+const router = createBrowserRouter(getRoutes(store));
+
 const FullApp = () => (
   <React.StrictMode>
     <ReduxProvider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </ReduxProvider>
   </React.StrictMode>
 );
