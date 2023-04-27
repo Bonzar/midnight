@@ -21,5 +21,19 @@ module.exports = {
     "@typescript-eslint/no-use-before-define": ["error"],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
+    "prefer-const": [
+      "error",
+      {
+        destructuring: "all",
+      },
+    ],
+    "@typescript-eslint/no-restricted-imports": [
+      "warn",
+      {
+        "name": "react-redux",
+        "importNames": ["useSelector", "useDispatch"],
+        "message": "Use typed hooks `useAppDispatch` and `useAppSelector` instead."
+      }
+    ],
   },
 };

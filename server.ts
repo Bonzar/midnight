@@ -58,22 +58,19 @@ async function createServer(isProd = process.env.NODE_ENV === "production") {
       // 3. Load the server entry. vite.ssrLoadModule automatically transforms
       //    your ESM source code to be usable in Node.js! There is no bundling
       //    required, and provides efficient invalidation similar to HMR.
-      let productionBuildPath = path.join(
+      const productionBuildPath = path.join(
         __dirname,
         "./dist/server/entry-server.mjs"
       );
-      let devBuildPath = path.join(__dirname, "./src/client/entry-server.tsx");
+      const devBuildPath = path.join(__dirname, "./src/server/entry-server.tsx");
       const { render } = await vite.ssrLoadModule(
         isProd ? productionBuildPath : devBuildPath
       );
 
-      // 4. render the app HTML. This assumes entry-server.js's exported `render`
+      // 4,5 render the app HTML. This assumes entry-server.js's exported `render`
       //    function calls appropriate framework SSR APIs,
       //    e.g. ReactDOMServer.renderToString()
-      const appHtml = await render(url);
-
-      // 5. Inject the app-rendered HTML into the template.
-      const html = template.replace(`<!--app-html-->`, appHtml);
+      const html = await render(template, url);
 
       // 6. Send the rendered HTML back.
       res.status(200).set({ "Content-Type": "text/html" }).end(html);
