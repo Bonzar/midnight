@@ -19,5 +19,6 @@ export default defineConfig({
     minify: false,
   },
   root: "",
+  // @ts-ignore
   test,
 });
