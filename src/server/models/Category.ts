@@ -58,11 +58,7 @@ export class Category extends Model<
     });
 
     if (duplicateNameNull) {
-      throw new Error(
-        `Duplicate entry '${name}-${
-          value ?? null
-        }' for key 'Name_ParentCategoryId`
-      );
+      throw new Error(`Главная категория с названием '${name}' уже существует`);
     }
   })
   @Column

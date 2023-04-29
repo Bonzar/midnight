@@ -18,6 +18,7 @@ import { Address } from "./Address";
 import { exhaustiveModelCheck } from "./helpers";
 import { Basket } from "./Basket";
 import { Order } from "./Order";
+import { Wishlist } from "./Wishlist";
 
 interface IUserAttributes {
   id: number;
@@ -87,6 +88,9 @@ export class User extends Model<IUserAttributes, IUserCreationAttributes> {
 
   @HasOne(() => Basket)
   basket?: Basket;
+
+  @HasOne(() => Wishlist)
+  wishlist?: Wishlist;
 }
 
 exhaustiveModelCheck<IUserAttributes, User>();

@@ -23,6 +23,8 @@ import { OrderProduct } from "./OrderProduct";
 import { Order } from "./Order";
 import { BasketProduct } from "./BasketProduct";
 import { Basket } from "./Basket";
+import { Wishlist } from "./Wishlist";
+import { WishlistProduct } from "./WishlistProduct";
 
 interface IProductAttributes {
   id: number;
@@ -34,7 +36,7 @@ interface IProductAttributes {
   categoryId: number;
 }
 
-interface IProductCreationAttributes
+export interface IProductCreationAttributes
   extends Optional<
     IProductAttributes,
     "id" | "description" | "discount" | "stock"
@@ -51,8 +53,8 @@ export class Product extends Model<
   id!: number;
 
   @AllowNull(false)
+  @Unique("Name_CategoryId")
   @NotEmpty
-  @Unique
   @Column
   name!: string;
 
@@ -79,6 +81,7 @@ export class Product extends Model<
   stock!: number;
 
   @AllowNull(false)
+  @Unique("Name_CategoryId")
   @ForeignKey(() => Category)
   @Column
   categoryId!: number;
@@ -97,6 +100,9 @@ export class Product extends Model<
 
   @BelongsToMany(() => Basket, () => BasketProduct)
   baskets!: Array<Basket & { BasketProduct: BasketProduct }>;
+
+  @BelongsToMany(() => Wishlist, () => WishlistProduct)
+  wishlist!: Array<Basket & { WishlistProduct: WishlistProduct }>;
 }
 
 exhaustiveModelCheck<IProductAttributes, Product>();
