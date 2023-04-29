@@ -6,6 +6,7 @@ import {
   Column,
   ForeignKey,
   HasMany,
+  Is,
   Model,
   NotEmpty,
   PrimaryKey,
@@ -43,6 +44,27 @@ export class Category extends Model<
   @AllowNull(true)
   @ForeignKey(() => Category)
   @Unique("Name_ParentCategoryId")
+  @Is(async function noDuplicatesNull(value?: number | null) {
+    // skip duplicate check if parentCategoryId not null
+    if (value) return;
+
+    // @ts-ignore - Can't infer `this` type
+    const currentInstance: Category = this;
+
+    const name = currentInstance.getDataValue("name");
+
+    const duplicateNameNull = await Category.findOne({
+      where: { name, parentCategoryId: null },
+    });
+
+    if (duplicateNameNull) {
+      throw new Error(
+        `Duplicate entry '${name}-${
+          value ?? null
+        }' for key 'Name_ParentCategoryId`
+      );
+    }
+  })
   @Column
   parentCategoryId!: number;
 
