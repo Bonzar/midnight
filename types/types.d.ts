@@ -1,4 +1,15 @@
-// eslint-disable-next-line no-unused-vars
-interface Window {
-  __PRELOADED_STATE__?: import("../src/client/store").RootState;
+import type { RootState } from "../src/client/store";
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      DB_NAME: string;
+      DB_USERNAME: string;
+      DB_PASSWORD: string;
+      DB_HOST: string;
+    }
+  }
+  interface Window {
+    __PRELOADED_STATE__?: RootState;
+  }
 }

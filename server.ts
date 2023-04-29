@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import type { Request, Response, NextFunction } from "express";
 import fs from "fs/promises";
 import path from "path";
@@ -5,6 +8,8 @@ import express from "express";
 import compression from "compression";
 import serveStatic from "serve-static";
 import { createServer as createViteServer } from "vite";
+import { sequelize } from "./src/server/database";
+
 const isTest = process.env.NODE_ENV === "test" || !!process.env.VITE_TEST_BUILD;
 
 import { getApi } from "./src/server/routes/api";
@@ -12,6 +17,9 @@ import { getApi } from "./src/server/routes/api";
 const resolve = (p: string) => path.resolve(__dirname, p);
 
 async function createServer(isProd = process.env.NODE_ENV === "production") {
+  await sequelize.authenticate();
+  await sequelize.sync();
+
   const app = express();
   // Create Vite server in middleware mode and configure the app type as
   // 'custom', disabling Vite's own HTML serving logic so parent server
@@ -90,4 +98,4 @@ async function createServer(isProd = process.env.NODE_ENV === "production") {
   });
 }
 
-createServer();
+createServer().finally(() => sequelize.close());
