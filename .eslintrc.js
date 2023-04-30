@@ -27,6 +27,7 @@ module.exports = {
         destructuring: "all",
       },
     ],
+    "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/no-restricted-imports": [
       "warn",
       {

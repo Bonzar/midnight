@@ -10,7 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { Optional } from "sequelize";
+import type { Optional } from "sequelize";
 import { User } from "./User";
 import { exhaustiveModelCheck } from "./helpers";
 

@@ -1,27 +1,37 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import { fulfillDb } from "./src/server/fulfillDb";
+import { queriesToDb } from "./src/server/queriesToDb";
+
 import type { Request, Response, NextFunction } from "express";
 import fs from "fs/promises";
 import path from "path";
 import express from "express";
+import fileUpload from "express-fileupload";
 import compression from "compression";
 import serveStatic from "serve-static";
+import { router } from "./src/server/routes";
 import { createServer as createViteServer } from "vite";
 import { sequelize } from "./src/server/database";
 import { errorHandlingMiddleware } from "./src/server/middleware/errorHandlingMiddleware";
 
 const isTest = process.env.NODE_ENV === "test" || !!process.env.VITE_TEST_BUILD;
 
-import { getApi } from "./src/server/routes/api";
-
 const resolve = (p: string) => path.resolve(__dirname, p);
 
 async function createServer(isProd = process.env.NODE_ENV === "production") {
+  //todo enable db connection
   await sequelize.authenticate();
   await sequelize.sync();
 
+  // await fulfillDb();
+  // await queriesToDb();
+
   const app = express();
+  app.use(express.json());
+  app.use(fileUpload({}));
+
   // Create Vite server in middleware mode and configure the app type as
   // 'custom', disabling Vite's own HTML serving logic so parent server
   // can take control
@@ -47,7 +57,7 @@ async function createServer(isProd = process.env.NODE_ENV === "production") {
     );
   }
 
-  app.use("/api", getApi);
+  app.use("/api", router);
 
   app.use("*", async (req: Request, res: Response, next: NextFunction) => {
     const url = req.originalUrl;

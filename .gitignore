@@ -37,6 +37,7 @@ Thumbs.db
 # Ignore built ts files
 dist/**/*
 
+# Yarn
 .yarn/*
 !.yarn/cache
 !.yarn/patches
@@ -44,3 +45,8 @@ dist/**/*
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# DB
+/src/server/fulfillDb.ts
+/src/server/queriesToDb.ts
+/static/productImages/*

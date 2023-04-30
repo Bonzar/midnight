@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
@@ -26,7 +26,7 @@ import { Basket } from "./Basket";
 import { Wishlist } from "./Wishlist";
 import { WishlistProduct } from "./WishlistProduct";
 
-interface IProductAttributes {
+export interface IProductAttributes {
   id: number;
   name: string;
   description: string | null;

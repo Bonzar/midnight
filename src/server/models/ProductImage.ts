@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
@@ -15,15 +15,16 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import { Product } from "./Product";
 
-interface IProductImageAttributes {
+export interface IProductImageAttributes {
   id: number;
   url: string;
   sort: number;
+  description: string | null;
   productId: number;
 }
 
-interface IProductImageCreationAttributes
-  extends Optional<IProductImageAttributes, "id"> {}
+export interface IProductImageCreationAttributes
+  extends Optional<IProductImageAttributes, "id" | "description"> {}
 
 @Table
 export class ProductImage extends Model<
@@ -46,6 +47,11 @@ export class ProductImage extends Model<
   @Unique("Sort_ProductId")
   @Column
   sort!: number;
+
+  @AllowNull(true)
+  @NotEmpty
+  @Column
+  description!: string;
 
   @AllowNull(false)
   @ForeignKey(() => Product)

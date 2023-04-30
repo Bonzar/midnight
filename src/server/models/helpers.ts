@@ -1,4 +1,4 @@
-import { Attributes } from "sequelize";
+import type { Attributes } from "sequelize";
 
 export function exhaustiveModelCheck<
   ModelAttributes extends Attributes<any>,

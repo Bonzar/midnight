@@ -1,4 +1,4 @@
-import { AppStore } from "../store";
+import type { AppStore } from "../store";
 import React from "react";
 import { createRoutesFromElements, Route } from "react-router-dom";
 import { App } from "../App";
