@@ -9,6 +9,7 @@ import compression from "compression";
 import serveStatic from "serve-static";
 import { createServer as createViteServer } from "vite";
 import { sequelize } from "./src/server/database";
+import { errorHandlingMiddleware } from "./src/server/middleware/errorHandlingMiddleware";
 
 const isTest = process.env.NODE_ENV === "test" || !!process.env.VITE_TEST_BUILD;
 
@@ -87,15 +88,23 @@ async function createServer(isProd = process.env.NODE_ENV === "production") {
       res.status(200).set({ "Content-Type": "text/html" }).end(html);
     } catch (e: any) {
       !isProd && vite.ssrFixStacktrace(e);
-      // If an error is caught, let Vite fix the stack trace so it maps back to
+      // If an error is caught, let Vite fix the stack trace, so it maps back to
       // your actual source code.
       next(e);
     }
   });
-  const port = process.env.PORT || 7456;
-  app.listen(Number(port), "0.0.0.0", () => {
-    console.log(`App is listening on http://localhost:${port}`);
+
+  // Error handler => Last middleware
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    errorHandlingMiddleware(err, req, res, next);
   });
+
+  const port = process.env.PORT || 7456;
+  app
+    .listen(Number(port), "0.0.0.0", () => {
+      console.log(`App is listening on http://localhost:${port}`);
+    })
+    .on("close", sequelize.close);
 }
 
-createServer().finally(() => sequelize.close());
+createServer().catch(console.error);
