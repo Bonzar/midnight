@@ -8,6 +8,9 @@ const productRouter = Router();
  */
 
 productRouter.post("/image", productImageController.create);
+productRouter.patch("/image/:id", productImageController.update);
+productRouter.patch("/image", productImageController.updateMany);
+productRouter.delete("/image/:id", productImageController.delete);
 
 /**
  * Product its self

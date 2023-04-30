@@ -19,12 +19,12 @@ export interface IProductImageAttributes {
   id: number;
   url: string;
   sort: number;
-  description: string | null;
-  productId: number;
+  description: string;
+  productId: number | null;
 }
 
 export interface IProductImageCreationAttributes
-  extends Optional<IProductImageAttributes, "id" | "description"> {}
+  extends Optional<IProductImageAttributes, "id"> {}
 
 @Table
 export class ProductImage extends Model<
@@ -48,12 +48,12 @@ export class ProductImage extends Model<
   @Column
   sort!: number;
 
-  @AllowNull(true)
+  @AllowNull(false)
   @NotEmpty
   @Column
   description!: string;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @ForeignKey(() => Product)
   @Unique("Sort_ProductId")
   @Column
