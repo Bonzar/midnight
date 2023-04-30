@@ -11,18 +11,19 @@ export class ApiError extends Error {
 
   private static getErrorMessage(error: unknown) {
     if (process.env.NODE_ENV !== "production") {
-      console.error(error);
+      console.error(error ?? "Ошибка не предоставлена");
     }
 
     // DB Errors
     const dbError = processDbError(error);
     if (dbError) return dbError;
 
-    // Basic Error - should be last
+    // Basic Error - should be penultimate
     if (error instanceof Error) {
       return error.message;
     }
 
+    // Not Error at all
     return error;
   }
 
