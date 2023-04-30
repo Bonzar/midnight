@@ -13,4 +13,6 @@ router.use("/order", orderRouter); // order + shipmentType
 router.use("/coupon", couponRouter);
 router.use("/product", productRouter);
 
+router.use("/*", (req, res) => res.status(404).end());
+
 export { router };

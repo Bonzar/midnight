@@ -14,14 +14,14 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import { Product } from "./Product";
 
-interface IProductMetaAttributes {
+export interface IProductMetaAttributes {
   id: number;
   title: string;
   description: string;
   productId: number;
 }
 
-interface IProductMetaCreationAttributes
+export interface IProductMetaCreationAttributes
   extends Optional<IProductMetaAttributes, "id"> {}
 
 @Table

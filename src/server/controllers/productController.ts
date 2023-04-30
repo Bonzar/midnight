@@ -15,35 +15,32 @@ import {
 } from "../../helpers/constants";
 
 class ProductController {
-  create: RequestHandler<void, Product, IProductCreationAttributes> = async (
+  create: RequestHandler<void, Product, IProductCreationAttributes, void> =
+    async (req, res, next) => {
+      try {
+        const newProduct = await Product.create(req.body);
+
+        return res.json(newProduct);
+      } catch (error) {
+        next(ApiError.badRequest("Ошибка создания продукта", error));
+      }
+    };
+
+  get: RequestHandler<{ id: string }, Product, void, void> = async (
     req,
     res,
     next
   ) => {
-    try {
-      const newProduct = await Product.create({
-        name: req.body.name,
-        price: req.body.price,
-        stock: req.body.stock,
-        description: req.body.description,
-        discount: req.body.discount,
-        categoryId: req.body.categoryId,
-      });
-
-      return res.json(newProduct);
-    } catch (error) {
-      next(ApiError.badRequest("Ошибка создания продукта", error));
-    }
-  };
-
-  get: RequestHandler<{ id: string }, Product> = async (req, res, next) => {
     try {
       const productId = parseInt(req.params.id);
 
       const product = await Product.findOne({
         where: { id: productId },
         include: [ProductImage, ProductMeta],
-        order: [[{ model: ProductImage, as: "productImages" }, "sort", "ASC"]],
+        order: [
+          [{ model: ProductImage, as: "productImages" }, "sort", "ASC"],
+          [{ model: ProductMeta, as: "productMetas" }, "title", "ASC"],
+        ],
       });
       if (!product) {
         return next(
@@ -95,7 +92,8 @@ class ProductController {
   update: RequestHandler<
     { id: string },
     Product,
-    Partial<IProductCreationAttributes>
+    Partial<IProductCreationAttributes>,
+    void
   > = async (req, res, next) => {
     try {
       const productId = parseInt(req.params.id);
@@ -107,14 +105,7 @@ class ProductController {
         );
       }
 
-      const updatedProduct = await product.update({
-        name: req.body.name,
-        price: req.body.price,
-        stock: req.body.stock,
-        description: req.body.description,
-        discount: req.body.discount,
-        categoryId: req.body.categoryId,
-      });
+      const updatedProduct = await product.update(req.body);
 
       return res.json(updatedProduct);
     } catch (error) {
@@ -122,7 +113,11 @@ class ProductController {
     }
   };
 
-  delete: RequestHandler<{ id: string }, Product> = async (req, res, next) => {
+  delete: RequestHandler<{ id: string }, void, void, void> = async (
+    req,
+    res,
+    next
+  ) => {
     try {
       const productId = parseInt(req.params.id);
 
@@ -135,7 +130,7 @@ class ProductController {
 
       await product.destroy();
 
-      res.status(200);
+      res.status(200).end();
     } catch (error) {
       next(ApiError.badRequest("Ошибка удаления продукта", error));
     }
