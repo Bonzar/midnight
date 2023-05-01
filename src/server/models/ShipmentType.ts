@@ -12,11 +12,11 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
-import { Order } from "./Order";
+import { Shipment } from "./Shipment";
 
 interface ShipmentTypeAttributes {
   id: number;
-  name: string;
+  code: string;
   price: number;
 }
 
@@ -36,16 +36,18 @@ export class ShipmentType extends Model<
   @AllowNull(false)
   @NotEmpty
   @Unique
-  @Column
-  name!: string;
+  @Column({
+    set: (value: ShipmentTypeAttributes["code"]) => value.toUpperCase(),
+  })
+  code!: string;
 
   @AllowNull(false)
   @Min(0)
   @Column
   price!: number;
 
-  @HasMany(() => Order)
-  orders!: Order[];
+  @HasMany(() => Shipment)
+  shipments!: Shipment[];
 }
 
 exhaustiveModelCheck<ShipmentTypeAttributes, ShipmentType>();

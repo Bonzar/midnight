@@ -7,27 +7,31 @@ import {
   Column,
   Default,
   ForeignKey,
+  Min,
   Model,
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
 import { User } from "./User";
-import { ShipmentType } from "./ShipmentType";
 import { OrderProduct } from "./OrderProduct";
 import { Product } from "./Product";
 import { Coupon } from "./Coupon";
 import { OrderCoupon } from "./OrderCoupon";
+import { Shipment } from "./Shipment";
 
 interface IOrderAttributes {
   id: number;
   isPaid: boolean;
+  status: "NEW" | "COLLECT" | "SHIP" | "COMPLETE";
+  note: string | null;
+  shipDate: Date | null;
+  total: number;
   userId: number;
-  shipmentTypeId: number;
 }
 
 interface IOrderCreationAttributes
-  extends Optional<IOrderAttributes, "id" | "isPaid"> {}
+  extends Optional<IOrderAttributes, "id" | "isPaid" | "status"> {}
 
 @Table
 export class Order extends Model<IOrderAttributes, IOrderCreationAttributes> {
@@ -42,6 +46,24 @@ export class Order extends Model<IOrderAttributes, IOrderCreationAttributes> {
   isPaid!: boolean;
 
   @AllowNull(false)
+  @Default("NEW")
+  @Column
+  status!: "NEW" | "COLLECT" | "SHIP" | "COMPLETE";
+
+  @AllowNull(true)
+  @Column
+  note!: string;
+
+  @AllowNull(true)
+  @Column
+  shipDate!: Date;
+
+  @AllowNull(false)
+  @Min(0)
+  @Column
+  total!: number;
+
+  @AllowNull(false)
   @ForeignKey(() => User)
   @Column
   userId!: number;
@@ -50,12 +72,12 @@ export class Order extends Model<IOrderAttributes, IOrderCreationAttributes> {
   user!: User;
 
   @AllowNull(false)
-  @ForeignKey(() => ShipmentType)
+  @ForeignKey(() => Shipment)
   @Column
-  shipmentTypeId!: number;
+  shipmentId!: number;
 
-  @BelongsTo(() => ShipmentType)
-  shipmentType!: ShipmentType;
+  @BelongsTo(() => Shipment)
+  shipment!: Shipment;
 
   @BelongsToMany(() => Product, () => OrderProduct)
   products!: Array<Product & { OrderProduct: OrderProduct }>;
