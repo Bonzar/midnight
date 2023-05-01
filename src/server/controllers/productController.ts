@@ -1,30 +1,41 @@
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
-import type {
-  IProductAttributes,
-  IProductCreationAttributes,
-} from "../models/Product";
-import { Product } from "../models/Product";
-import type { WhereOptions } from "sequelize";
+import type { Product } from "../models/Product";
 import { parseInt } from "../../helpers/parseInt";
-import { ProductMeta } from "../models/ProductMeta";
-import { ProductImage } from "../models/ProductImage";
-import {
-  DEFAULT_ITEMS_LIMIT,
-  DEFAULT_ITEMS_PAGE,
-} from "../../helpers/constants";
+import type {
+  CreateProductData,
+  UpdateProductData,
+} from "../services/productService";
+import { productService } from "../services/productService";
+import type { AllAsString } from "../../../types/types";
+
+type CreateProductBody = CreateProductData;
+
+type UpdateProductBody = UpdateProductData;
+
+type GetAllProductResponse = { rows: Product[]; count: number };
+type GetAllProductQuery = {
+  categoryId?: number;
+  limit?: number;
+  page?: number;
+};
 
 class ProductController {
-  create: RequestHandler<void, Product, IProductCreationAttributes, void> =
-    async (req, res, next) => {
-      try {
-        const newProduct = await Product.create(req.body);
+  create: RequestHandler<void, Product, CreateProductBody, void> = async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const newProduct = await productService.create(req.body);
 
-        return res.json(newProduct);
-      } catch (error) {
-        next(ApiError.badRequest("Ошибка создания продукта", error));
-      }
-    };
+      return res.json(newProduct);
+    } catch (error) {
+      next(
+        ApiError.badRequest("При создании продукта произошла ошибка", error)
+      );
+    }
+  };
 
   get: RequestHandler<{ id: string }, Product, void, void> = async (
     req,
@@ -34,84 +45,65 @@ class ProductController {
     try {
       const productId = parseInt(req.params.id);
 
-      const product = await Product.findOne({
-        where: { id: productId },
-        include: [ProductImage, ProductMeta],
-        order: [
-          [{ model: ProductImage, as: "productImages" }, "sort", "ASC"],
-          [{ model: ProductMeta, as: "productMetas" }, "title", "ASC"],
-        ],
-      });
-      if (!product) {
-        return next(
-          ApiError.badRequest(`Продукт с id - ${productId} не найден`)
-        );
-      }
+      const product = await productService.get(productId);
 
       return res.json(product);
     } catch (error) {
-      next(ApiError.badRequest("Ошибка получения продукта", error));
+      next(
+        ApiError.badRequest("При получении продукта произошла ошибка", error)
+      );
     }
   };
 
   getAll: RequestHandler<
     void,
-    { rows: Product[]; count: number },
+    GetAllProductResponse,
     void,
-    { categoryId?: string; limit?: string; page?: string }
+    AllAsString<GetAllProductQuery>
   > = async (req, res, next) => {
     try {
-      const where: WhereOptions<IProductAttributes> = {};
-      if (req.query.categoryId) {
-        where.categoryId = req.query.categoryId;
+      let limit;
+      if (req.query.limit) {
+        limit = parseInt(req.query.limit);
       }
 
-      const limit = req.query.limit
-        ? parseInt(req.query.limit)
-        : DEFAULT_ITEMS_LIMIT;
+      let page;
+      if (req.query.page) {
+        page = parseInt(req.query.page);
+      }
 
-      const page = req.query.page
-        ? parseInt(req.query.page)
-        : DEFAULT_ITEMS_PAGE;
+      let categoryId;
+      if (req.query.categoryId) {
+        categoryId = parseInt(req.query.categoryId);
+      }
 
-      const offset = limit * page - limit;
-
-      const products = await Product.findAndCountAll({
-        where,
-        limit,
-        offset,
-        include: [{ model: ProductImage, limit: 1, order: [["sort", "ASC"]] }],
-      });
+      const products = await productService.getAll(categoryId, limit, page);
 
       return res.json(products);
     } catch (error) {
-      next(ApiError.badRequest("Ошибка получения всех продуктов", error));
+      next(
+        ApiError.badRequest(
+          "При получении всех продуктов произошла ошибка",
+          error
+        )
+      );
     }
   };
 
-  update: RequestHandler<
-    { id: string },
-    Product,
-    Partial<IProductCreationAttributes>,
-    void
-  > = async (req, res, next) => {
-    try {
-      const productId = parseInt(req.params.id);
+  update: RequestHandler<{ id: string }, Product, UpdateProductBody, void> =
+    async (req, res, next) => {
+      try {
+        const productId = parseInt(req.params.id);
 
-      const product = await Product.findOne({ where: { id: productId } });
-      if (!product) {
-        return next(
-          ApiError.badRequest(`Продукт с id - ${productId} не найден`)
+        const updatedProduct = await productService.update(productId, req.body);
+
+        return res.json(updatedProduct);
+      } catch (error) {
+        next(
+          ApiError.badRequest("При обновлении продукта произошла ошибка", error)
         );
       }
-
-      const updatedProduct = await product.update(req.body);
-
-      return res.json(updatedProduct);
-    } catch (error) {
-      next(ApiError.badRequest("Ошибка обновления продукта", error));
-    }
-  };
+    };
 
   delete: RequestHandler<{ id: string }, void, void, void> = async (
     req,
@@ -121,18 +113,13 @@ class ProductController {
     try {
       const productId = parseInt(req.params.id);
 
-      const product = await Product.findOne({ where: { id: productId } });
-      if (!product) {
-        return next(
-          ApiError.badRequest(`Продукт с id - ${productId} не найден`)
-        );
-      }
-
-      await product.destroy();
+      await productService.delete(productId);
 
       res.status(200).end();
     } catch (error) {
-      next(ApiError.badRequest("Ошибка удаления продукта", error));
+      next(
+        ApiError.badRequest("При удалении продукта произошла ошибка", error)
+      );
     }
   };
 }

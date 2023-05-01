@@ -13,3 +13,7 @@ declare global {
     __PRELOADED_STATE__?: RootState;
   }
 }
+
+export type AllAsString<T> = {
+  [N in keyof T]: string;
+};

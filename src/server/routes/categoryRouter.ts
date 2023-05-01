@@ -4,7 +4,7 @@ const categoryRouter = Router();
 
 categoryRouter.post("/", categoryController.create);
 
-categoryRouter.get("/", categoryController.get);
+categoryRouter.get("/", categoryController.getAll);
 
 categoryRouter.patch("/:id", categoryController.update);
 

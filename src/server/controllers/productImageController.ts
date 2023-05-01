@@ -1,66 +1,48 @@
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
-import type { IProductImageCreationAttributes } from "../models/ProductImage";
-import { ProductImage } from "../models/ProductImage";
+import type { ProductImage } from "../models/ProductImage";
 import { parseInt } from "../../helpers/parseInt";
-import { v4 as uuidV4 } from "uuid";
-import path from "path";
-import fs from "fs/promises";
-import { sequelize } from "../database";
-
-const PATH_TO_PRODUCT_IMAGES =
-  path.resolve(__dirname, "../../../static/productImages") + "/";
-
-type AsFormData<T> = {
-  [N in keyof T]: string;
-};
+import type {
+  UpdateProductImageData,
+  UpdateManyProductImageData,
+} from "../services/productImageService";
+import { productImageService } from "../services/productImageService";
+import type { AllAsString } from "../../../types/types";
 
 // Form data as string
+// todo add `images` field  in type
 interface CreateProductImageBody {
-  productId?: number; // number
-  sort?: number; // number
-  description: string[]; //JSON.stringify string[]
+  productId?: number;
+  sort?: number;
+  description: string[];
 }
 
-type UpdateProductImageBody = Omit<
-  Partial<IProductImageCreationAttributes>,
-  "id"
->;
-
-type UpdateManyProductImageBody = (Partial<IProductImageCreationAttributes> & {
-  id: number;
-})[];
+type UpdateProductImageBody = UpdateProductImageData;
+type UpdateManyProductImageBody = UpdateManyProductImageData;
 
 class ProductImageController {
   create: RequestHandler<
     void,
-    ProductImage | ProductImage[],
-    AsFormData<CreateProductImageBody>,
+    ProductImage[],
+    AllAsString<CreateProductImageBody>,
     void
   > = async (req, res, next) => {
     try {
+      const imageFiles = req.files?.images;
+      if (!imageFiles) {
+        return next(ApiError.badRequest("Изображение не было получено"));
+      }
+
+      const imagesArray =
+        imageFiles instanceof Array ? imageFiles : [imageFiles];
+
       const productId = req.body.productId
         ? parseInt(req.body.productId)
-        : null;
-      const reqSortIndex = req.body.sort ? parseInt(req.body.sort) : null;
+        : undefined;
 
-      let sortIndex = 0;
-      if (reqSortIndex) {
-        sortIndex = reqSortIndex;
-      }
-      // Set sortIndex as max + 1 sort field of specific Product
-      // or 0 if product hasn't images
-      if (!reqSortIndex && productId) {
-        const maxProductSortIndex = await ProductImage.max<
-          ProductImage["sort"] | null,
-          ProductImage
-        >("sort", {
-          where: { productId },
-        });
-
-        sortIndex =
-          typeof maxProductSortIndex === "number" ? maxProductSortIndex + 1 : 0;
-      }
+      const startSortIndex = req.body.sort
+        ? parseInt(req.body.sort)
+        : undefined;
 
       // Parsing reqDescription field to string[]
       let reqDescription: string[] = [];
@@ -94,98 +76,33 @@ class ProductImageController {
         );
       }
 
-      const files = req.files;
-      const img = files?.url;
-      if (!img) {
-        return next(ApiError.badRequest("Изображение не было получено"));
-      }
-
-      /**
-       * @description Make ProductImage object for saving in DB
-       */
-      const getImageModelObjectToSave = (sort: number, description: string) => {
-        const imgFilename = uuidV4() + ".jpg";
-        return {
-          productId,
-          url: imgFilename,
-          description,
-          sort,
-        };
-      };
-
-      const imagesLength = img instanceof Array ? img.length : 1;
-      const descriptionsLength = reqDescription.length;
-      if (imagesLength !== descriptionsLength) {
+      // Arrays length check
+      if (imagesArray.length !== reqDescription.length) {
         return next(
           ApiError.badRequest(
-            `Количество изображений (${imagesLength}) не соответствует количеству преданных описаний (${descriptionsLength})`
+            `Количество изображений (${imagesArray.length}) не соответствует количеству преданных описаний (${reqDescription.length})`
           )
         );
       }
 
-      /*
-       Process img as Array of images
-      */
-      if (img instanceof Array) {
-        const imageModelObjects = img.map((imgElement, index) => {
-          // increase sort index if productId was provided
-          const currentSortIndex = productId ? sortIndex + index : sortIndex;
+      const imagesData = imagesArray.map((image, index) => ({
+        file: image,
+        description: reqDescription[index],
+      }));
 
-          return getImageModelObjectToSave(
-            currentSortIndex,
-            reqDescription[index]
-          );
-        });
-
-        const newProductImages = await sequelize.transaction(
-          async (transaction) => {
-            // Saving to DB
-            const newProductImages = await ProductImage.bulkCreate(
-              imageModelObjects,
-              { transaction }
-            );
-
-            // If success save in DB -> move to static folder
-            img.forEach((imgElement, index) =>
-              imgElement.mv(
-                PATH_TO_PRODUCT_IMAGES + imageModelObjects[index].url
-              )
-            );
-
-            return newProductImages;
-          }
-        );
-
-        return res.json(newProductImages);
-      }
-
-      /*
-       Now img is just a one Image
-      */
-
-      const imageModelObjects = getImageModelObjectToSave(
-        sortIndex,
-        reqDescription[0]
+      const newProductImages = await productImageService.create(
+        imagesData,
+        productId,
+        startSortIndex
       );
 
-      // Saving to DB
-      const newProductImage = await sequelize.transaction(
-        async (transaction) => {
-          const newProductImage = await ProductImage.create(imageModelObjects, {
-            transaction,
-          });
-
-          // If success save in DB -> move image to static folder
-          await img.mv(PATH_TO_PRODUCT_IMAGES + imageModelObjects.url);
-
-          return newProductImage;
-        }
-      );
-
-      return res.json(newProductImage);
+      return res.json(newProductImages);
     } catch (error) {
       next(
-        ApiError.badRequest("Ошибка сохранения изображения продукта", error)
+        ApiError.badRequest(
+          "При сохранении изображения произошла ошибка",
+          error
+        )
       );
     }
   };
@@ -198,25 +115,20 @@ class ProductImageController {
   > = async (req, res, next) => {
     try {
       const productImageId = parseInt(req.params.id);
-      // prevent updating id and url
-      const { url, ...updatingData } = req.body;
 
-      const productImage = await ProductImage.findOne({
-        where: { id: productImageId },
-      });
-      if (!productImage) {
-        return next(
-          ApiError.badRequest(`Изображение с id - ${productImageId} не найдено`)
-        );
-      }
-
-      const updatedProductImage = await productImage.update({
-        ...updatingData,
-      });
+      const updatedProductImage = await productImageService.update(
+        productImageId,
+        req.body
+      );
 
       return res.json(updatedProductImage);
     } catch (error) {
-      next(ApiError.badRequest("Ошибка обновления изображения", error));
+      next(
+        ApiError.badRequest(
+          "При обновлении изображения произошла ошибка",
+          error
+        )
+      );
     }
   };
 
@@ -227,69 +139,16 @@ class ProductImageController {
     void
   > = async (req, res, next) => {
     try {
-      const updateImagesData = req.body;
+      const updatedImages = await productImageService.updateMany(req.body);
 
-      if (!updateImagesData.map((imgObject) => imgObject.id).every(Boolean)) {
-        next(
-          ApiError.badRequest("Не предоставлен id изображения для обновления")
-        );
-      }
-
-      const result = await sequelize.transaction(async (transaction) => {
-        const productImages = await ProductImage.findAll({
-          where: {
-            id: updateImagesData.map((updateImage) => updateImage.id),
-          },
-          transaction,
-        });
-
-        // save productIds for restore it later
-        const savedImageProductIds: {
-          [id: number]: { productId: number };
-        } = {};
-        for (const productImage of productImages) {
-          savedImageProductIds[productImage.id] = {
-            productId: productImage.productId,
-          };
-        }
-
-        // unlink all given images from products
-        const resetPromises: Promise<ProductImage>[] = [];
-        for (const productImage of productImages) {
-          resetPromises.push(
-            productImage.update({ productId: null }, { transaction })
-          );
-        }
-        await Promise.all(resetPromises);
-
-        const updatePromises = updateImagesData.map(async (updateImage) => {
-          // prevent updating id and url
-          const { id, url, ...updatingData } = updateImage;
-
-          const productImage = productImages.find(
-            (productImage) => productImage.id === updateImage.id
-          );
-
-          if (!productImage) {
-            throw new Error(`Изображение с id - ${updateImage.id} не найдено`);
-          }
-
-          const prevImageProductId =
-            savedImageProductIds[productImage.id].productId;
-
-          return await productImage.update(
-            // return back productId or override it from new data
-            { productId: prevImageProductId, ...updatingData },
-            { transaction }
-          );
-        });
-
-        return Promise.all(updatePromises);
-      });
-
-      return res.json(result);
+      return res.json(updatedImages);
     } catch (error) {
-      next(ApiError.badRequest("Ошибка обновления изображения", error));
+      next(
+        ApiError.badRequest(
+          "Во время обновления изображений произошла ошибка",
+          error
+        )
+      );
     }
   };
 
@@ -301,24 +160,13 @@ class ProductImageController {
     try {
       const productImageId = parseInt(req.params.id);
 
-      await sequelize.transaction(async (transaction) => {
-        const productImage = await ProductImage.findOne({
-          where: { id: productImageId },
-          transaction,
-        });
-
-        if (!productImage) {
-          throw new Error(`Изображение с id - ${productImageId} не найдено`);
-        }
-
-        await productImage.destroy({ transaction });
-
-        await fs.unlink(PATH_TO_PRODUCT_IMAGES + productImage.url);
-      });
+      await productImageService.delete(productImageId);
 
       res.status(200).end();
     } catch (error) {
-      next(ApiError.badRequest("Ошибка удаления изображения продукта", error));
+      next(
+        ApiError.badRequest("При удалении изображения произошла ошибка", error)
+      );
     }
   };
 }

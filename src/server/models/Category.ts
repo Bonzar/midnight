@@ -16,13 +16,13 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import { Product } from "./Product";
 
-interface ICategoryAttributes {
+export interface ICategoryAttributes {
   id: number;
   name: string;
   parentCategoryId: number | null;
 }
 
-interface ICategoryCreationAttributes
+export interface ICategoryCreationAttributes
   extends Optional<ICategoryAttributes, "id" | "parentCategoryId"> {}
 
 @Table

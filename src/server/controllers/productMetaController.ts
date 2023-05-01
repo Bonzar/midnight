@@ -1,80 +1,69 @@
-import { ProductMeta } from "../models/ProductMeta";
-import type { IProductMetaCreationAttributes } from "../models/ProductMeta";
+import type { ProductMeta } from "../models/ProductMeta";
 import type { RequestHandler } from "express";
+import type {
+  UpdateProductMetaData,
+  CreateProductMetaData,
+} from "../services/productMetaService";
 import { ApiError } from "../error/ApiError";
+import { productMetaService } from "../services/productMetaService";
+import { parseInt } from "../../helpers/parseInt";
 
-type CreateProductMetaBody = IProductMetaCreationAttributes;
-type UpdateProductMetaBody = Omit<
-  Partial<IProductMetaCreationAttributes>,
-  "id"
->;
+export type CreateProductMetaBody = CreateProductMetaData;
+export type UpdateProductMetaBody = UpdateProductMetaData;
 
 class ProductMetaController {
   create: RequestHandler<void, ProductMeta, CreateProductMetaBody, void> =
     async (req, res, next) => {
       try {
-        const newProductMeta = await ProductMeta.create(req.body);
+        const productMeta = await productMetaService.create(req.body);
 
-        res.status(200).json(newProductMeta);
+        res.status(200).json(productMeta);
       } catch (error) {
         next(
-          ApiError.badRequest("Ошибка создания характеристики товара", error)
+          ApiError.badRequest("При создании товара произошла ошибка", error)
         );
       }
     };
 
   update: RequestHandler<
-    { id: number },
+    { id: string },
     ProductMeta,
     UpdateProductMetaBody,
     void
   > = async (req, res, next) => {
     try {
-      const productMeta = await ProductMeta.findOne({
-        where: { id: req.params.id },
-      });
-
-      if (!productMeta) {
-        return next(
-          ApiError.badRequest(
-            `Характеристика товара с id - ${req.params.id} не найдена`
-          )
-        );
-      }
-
-      const updatedProductMeta = await productMeta.update(req.body);
+      const updatedProductMeta = await productMetaService.update(
+        parseInt(req.params.id),
+        req.body
+      );
 
       res.status(200).json(updatedProductMeta);
     } catch (error) {
       next(
-        ApiError.badRequest("Ошибка обновления характеристики товара", error)
+        ApiError.badRequest(
+          "При обновлении характеристики товара произошла ошибка",
+          error
+        )
       );
     }
   };
 
-  delete: RequestHandler<{ id: number }, void, void, void> = async (
+  delete: RequestHandler<{ id: string }, void, void, void> = async (
     req,
     res,
     next
   ) => {
     try {
-      const productMeta = await ProductMeta.findOne({
-        where: { id: req.params.id },
-      });
-
-      if (!productMeta) {
-        return next(
-          ApiError.badRequest(
-            `Характеристика товара с id - ${req.params.id} не найдена`
-          )
-        );
-      }
-
-      await productMeta.destroy();
+      await productMetaService.delete(parseInt(req.params.id));
 
       res.status(200).end();
     } catch (error) {
-      next(ApiError.badRequest("Ошибка удаления характеристики товара", error));
+      next(
+        ApiError.badRequest(
+          "При удаления характеристики товара произошла ошибка",
+          error
+        )
+      );
     }
   };
 }
