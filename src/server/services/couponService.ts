@@ -1,5 +1,6 @@
 import type { CouponCreationAttributes } from "../models/Coupon";
 import { Coupon } from "../models/Coupon";
+import { OrderCoupon } from "../models/OrderCoupon";
 
 export type CreateCouponData = Omit<CouponCreationAttributes, "id">;
 export type UpdateCouponData = Omit<Partial<CouponCreationAttributes>, "id">;
@@ -31,6 +32,29 @@ class CouponService {
     }
 
     return await coupon.destroy();
+  }
+
+  async checkValid(id: number) {
+    const coupon = await Coupon.findOne({ where: { id } });
+
+    if (!coupon) {
+      throw new Error(`Промокод с id - ${id} не найден`);
+    }
+
+    if (coupon.expiresTime && coupon.expiresTime > Date.now()) {
+      throw new Error(`У этого промокода истек срок действия`);
+    }
+
+    if (coupon.expiresCount) {
+      const suppressCount = await OrderCoupon.count({
+        where: { couponId: id },
+      });
+      if (suppressCount > coupon.expiresCount) {
+        throw new Error(
+          `Этот промокод уже был применен максимальное количество раз`
+        );
+      }
+    }
   }
 }
 
