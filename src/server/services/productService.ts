@@ -35,6 +35,7 @@ class ProductService {
         [{ model: ProductMeta, as: "productMetas" }, "title", "ASC"],
       ],
     });
+
     if (!product) {
       throw new Error(`Продукт с id - ${id} не найден`);
     }

@@ -20,7 +20,7 @@ import { Coupon } from "./Coupon";
 import { OrderCoupon } from "./OrderCoupon";
 import { Shipment } from "./Shipment";
 
-interface OrderAttributes {
+export interface OrderAttributes {
   id: Order["id"];
   isPaid: Order["isPaid"];
   status: Order["status"];
