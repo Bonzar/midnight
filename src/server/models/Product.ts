@@ -25,11 +25,12 @@ import { BasketProduct } from "./BasketProduct";
 import { Basket } from "./Basket";
 import { Wishlist } from "./Wishlist";
 import { WishlistProduct } from "./WishlistProduct";
+import { DataTypes } from "sequelize";
 
 export interface ProductAttributes {
   id: Product["id"];
   name: Product["name"];
-  description: Product["description"] | null;
+  description: Product["description"];
   price: Product["price"];
   discount: Product["discount"];
   stock: Product["stock"];
@@ -59,8 +60,8 @@ export class Product extends Model<
 
   @AllowNull(true)
   @NotEmpty
-  @Column
-  description!: string;
+  @Column(DataTypes.STRING)
+  description!: string | null;
 
   @AllowNull(false)
   @Min(0)

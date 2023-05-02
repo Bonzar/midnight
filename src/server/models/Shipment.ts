@@ -14,10 +14,11 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import { Order } from "./Order";
 import { ShipmentType } from "./ShipmentType";
+import { DataTypes } from "sequelize";
 
 interface ShipmentAttributes {
   id: Shipment["id"];
-  address: Shipment["address"] | null;
+  address: Shipment["address"];
   shipmentTypeId: Shipment["shipmentTypeId"];
 }
 
@@ -35,8 +36,8 @@ export class Shipment extends Model<
 
   @AllowNull(true)
   @NotEmpty
-  @Column
-  address!: string;
+  @Column(DataTypes.STRING)
+  address!: string | null;
 
   @HasOne(() => Order)
   order?: Order;

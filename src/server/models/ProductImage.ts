@@ -14,13 +14,14 @@ import {
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
 import { Product } from "./Product";
+import { DataTypes } from "sequelize";
 
 interface ProductImageAttributes {
   id: ProductImage["id"];
   url: ProductImage["url"];
   sort: ProductImage["sort"];
   description: ProductImage["description"];
-  productId: ProductImage["productId"] | null;
+  productId: ProductImage["productId"];
 }
 
 export type ProductImageCreationAttributes = Optional<
@@ -58,8 +59,8 @@ export class ProductImage extends Model<
   @AllowNull(true)
   @ForeignKey(() => Product)
   @Unique("Sort_ProductId")
-  @Column
-  productId!: number;
+  @Column(DataTypes.INTEGER)
+  productId!: number | null;
 
   @BelongsTo(() => Product)
   product!: Product;

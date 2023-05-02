@@ -15,14 +15,15 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import { OrderCoupon } from "./OrderCoupon";
 import { Order } from "./Order";
+import { DataTypes } from "sequelize";
 
 interface CouponAttributes {
   id: Coupon["id"];
   key: Coupon["key"];
   value: Coupon["value"];
   type: Coupon["type"];
-  expiresTime: Coupon["expiresTime"] | null;
-  expiresCount: Coupon["expiresCount"] | null;
+  expiresTime: Coupon["expiresTime"];
+  expiresCount: Coupon["expiresCount"];
 }
 
 export type CouponCreationAttributes = Optional<
@@ -63,13 +64,13 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
       }
     }
   )
-  @Column
-  expiresTime!: number;
+  @Column(DataTypes.INTEGER)
+  expiresTime!: number | null;
 
   @AllowNull(true)
   @Min(1)
-  @Column
-  expiresCount!: number;
+  @Column(DataTypes.INTEGER)
+  expiresCount!: number | null;
 
   @BelongsToMany(() => Order, () => OrderCoupon)
   orders!: Array<Order & { OrderCoupon: OrderCoupon }>;

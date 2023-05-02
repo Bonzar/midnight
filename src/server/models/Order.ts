@@ -19,13 +19,14 @@ import { Product } from "./Product";
 import { Coupon } from "./Coupon";
 import { OrderCoupon } from "./OrderCoupon";
 import { Shipment } from "./Shipment";
+import { DataTypes } from "sequelize";
 
 export interface OrderAttributes {
   id: Order["id"];
   isPaid: Order["isPaid"];
   status: Order["status"];
-  note: Order["note"] | null;
-  shipDate: Order["shipDate"] | null;
+  note: Order["note"];
+  shipDate: Order["shipDate"];
   total: Order["total"];
   userId: Order["userId"];
 }
@@ -53,12 +54,12 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
   status!: "NEW" | "COLLECT" | "SHIP" | "COMPLETE";
 
   @AllowNull(true)
-  @Column
-  note!: string;
+  @Column(DataTypes.STRING)
+  note!: string | null;
 
   @AllowNull(true)
-  @Column
-  shipDate!: Date;
+  @Column(DataTypes.DATE)
+  shipDate!: Date | null;
 
   @AllowNull(false)
   @Min(0)

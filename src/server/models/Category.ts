@@ -15,11 +15,12 @@ import {
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
 import { Product } from "./Product";
+import { DataTypes } from "sequelize";
 
 interface CategoryAttributes {
   id: Category["id"];
   name: Category["name"];
-  parentCategoryId: Category["parentCategoryId"] | null;
+  parentCategoryId: Category["parentCategoryId"];
 }
 
 export type CategoryCreationAttributes = Optional<
@@ -65,8 +66,8 @@ export class Category extends Model<
       throw new Error(`Главная категория с названием '${name}' уже существует`);
     }
   })
-  @Column
-  parentCategoryId!: number;
+  @Column(DataTypes.INTEGER)
+  parentCategoryId!: number | null;
 
   @BelongsTo(() => Category)
   parentCategory!: Category;

@@ -19,12 +19,13 @@ import { exhaustiveModelCheck } from "./helpers";
 import { Basket } from "./Basket";
 import { Order } from "./Order";
 import { Wishlist } from "./Wishlist";
+import { DataTypes } from "sequelize";
 
 interface UserAttributes {
   id: User["id"];
   firstName: User["firstName"];
-  lastName: User["lastName"] | null;
-  middleName: User["middleName"] | null;
+  lastName: User["lastName"];
+  middleName: User["middleName"];
   email: User["email"];
   password: User["password"];
   isVerified: User["isVerified"];
@@ -50,13 +51,13 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @AllowNull(true)
   @NotEmpty
-  @Column
-  lastName!: string;
+  @Column(DataTypes.STRING)
+  lastName!: string | null;
 
   @AllowNull(true)
   @NotEmpty
-  @Column
-  middleName!: string;
+  @Column(DataTypes.STRING)
+  middleName!: string | null;
 
   @Unique
   @AllowNull(false)

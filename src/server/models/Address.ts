@@ -13,6 +13,7 @@ import {
 import type { Optional } from "sequelize";
 import { User } from "./User";
 import { exhaustiveModelCheck } from "./helpers";
+import { DataTypes } from "sequelize";
 
 interface AddressAttributes {
   id: Address["id"];
@@ -20,7 +21,7 @@ interface AddressAttributes {
   city: Address["city"];
   street: Address["street"];
   house: Address["house"];
-  flat: Address["flat"] | null;
+  flat: Address["flat"];
   userId: Address["userId"];
 }
 
@@ -61,8 +62,8 @@ export class Address extends Model<
 
   @AllowNull(true)
   @Min(0)
-  @Column
-  flat!: number;
+  @Column(DataTypes.INTEGER)
+  flat!: number | null;
 
   @AllowNull(false)
   @ForeignKey(() => User)
