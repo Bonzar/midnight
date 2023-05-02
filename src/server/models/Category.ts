@@ -16,19 +16,21 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import { Product } from "./Product";
 
-export interface ICategoryAttributes {
-  id: number;
-  name: string;
-  parentCategoryId: number | null;
+interface CategoryAttributes {
+  id: Category["id"];
+  name: Category["name"];
+  parentCategoryId: Category["parentCategoryId"] | null;
 }
 
-export interface ICategoryCreationAttributes
-  extends Optional<ICategoryAttributes, "id" | "parentCategoryId"> {}
+export type CategoryCreationAttributes = Optional<
+  CategoryAttributes,
+  "id" | "parentCategoryId"
+>;
 
 @Table
 export class Category extends Model<
-  ICategoryAttributes,
-  ICategoryCreationAttributes
+  CategoryAttributes,
+  CategoryCreationAttributes
 > {
   @PrimaryKey
   @AutoIncrement
@@ -44,7 +46,9 @@ export class Category extends Model<
   @AllowNull(true)
   @ForeignKey(() => Category)
   @Unique("Name_ParentCategoryId")
-  @Is(async function noDuplicatesNull(value?: number | null) {
+  @Is(async function noDuplicatesNull(
+    value?: CategoryAttributes["parentCategoryId"]
+  ) {
     // skip duplicate check if parentCategoryId not null
     if (value) return;
 
@@ -74,4 +78,4 @@ export class Category extends Model<
   products!: Product[];
 }
 
-exhaustiveModelCheck<ICategoryAttributes, Category>();
+exhaustiveModelCheck<CategoryAttributes, Category>();

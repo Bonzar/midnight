@@ -14,13 +14,15 @@ import { Order } from "./Order";
 import { Coupon } from "./Coupon";
 
 interface OrderCouponAttributes {
-  id: number;
-  orderId: number;
-  couponId: number;
+  id: OrderCoupon["id"];
+  orderId: OrderCoupon["orderId"];
+  couponId: OrderCoupon["couponId"];
 }
 
-interface OrderCouponCreationAttributes
-  extends Optional<OrderCouponAttributes, "id"> {}
+export type OrderCouponCreationAttributes = Optional<
+  OrderCouponAttributes,
+  "id"
+>;
 
 @Table
 export class OrderCoupon extends Model<

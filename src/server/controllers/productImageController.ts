@@ -11,14 +11,14 @@ import type { AllAsString } from "../../../types/types";
 
 // Form data as string
 // todo add `images` field  in type
-interface CreateProductImageBody {
+export interface CreateProductImageBody {
   productId?: number;
   sort?: number;
   description: string[];
 }
 
-type UpdateProductImageBody = UpdateProductImageData;
-type UpdateManyProductImageBody = UpdateManyProductImageData;
+export type UpdateProductImageBody = UpdateProductImageData;
+export type UpdateManyProductImageBody = UpdateManyProductImageData;
 
 class ProductImageController {
   create: RequestHandler<

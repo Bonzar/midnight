@@ -1,10 +1,10 @@
-import type { IProductMetaCreationAttributes } from "../models/ProductMeta";
+import type { ProductMetaCreationAttributes } from "../models/ProductMeta";
 import { ProductMeta } from "../models/ProductMeta";
 
-export type CreateProductMetaData = Omit<IProductMetaCreationAttributes, "id">;
+export type CreateProductMetaData = Omit<ProductMetaCreationAttributes, "id">;
 
 export type UpdateProductMetaData = Omit<
-  Partial<IProductMetaCreationAttributes>,
+  Partial<ProductMetaCreationAttributes>,
   "id"
 >;
 

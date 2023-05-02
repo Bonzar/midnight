@@ -13,13 +13,15 @@ import { Wishlist } from "./Wishlist";
 import { Product } from "./Product";
 
 interface WishlistProductAttributes {
-  id: number;
-  wishlistId: number;
-  productId: number;
+  id: WishlistProduct["id"];
+  wishlistId: WishlistProduct["wishlistId"];
+  productId: WishlistProduct["productId"];
 }
 
-interface WishlistProductCreationAttributes
-  extends Optional<WishlistProductAttributes, "id"> {}
+export type WishlistProductCreationAttributes = Optional<
+  WishlistProductAttributes,
+  "id"
+>;
 
 @Table
 export class WishlistProduct extends Model<

@@ -15,21 +15,23 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import { Product } from "./Product";
 
-export interface IProductImageAttributes {
-  id: number;
-  url: string;
-  sort: number;
-  description: string;
-  productId: number | null;
+interface ProductImageAttributes {
+  id: ProductImage["id"];
+  url: ProductImage["url"];
+  sort: ProductImage["sort"];
+  description: ProductImage["description"];
+  productId: ProductImage["productId"] | null;
 }
 
-export interface IProductImageCreationAttributes
-  extends Optional<IProductImageAttributes, "id"> {}
+export type ProductImageCreationAttributes = Optional<
+  ProductImageAttributes,
+  "id"
+>;
 
 @Table
 export class ProductImage extends Model<
-  IProductImageAttributes,
-  IProductImageCreationAttributes
+  ProductImageAttributes,
+  ProductImageCreationAttributes
 > {
   @PrimaryKey
   @AutoIncrement
@@ -63,4 +65,4 @@ export class ProductImage extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<IProductImageAttributes, ProductImage>();
+exhaustiveModelCheck<ProductImageAttributes, ProductImage>();

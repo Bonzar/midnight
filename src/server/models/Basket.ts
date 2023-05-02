@@ -16,18 +16,15 @@ import { User } from "./User";
 import { Product } from "./Product";
 import { BasketProduct } from "./BasketProduct";
 
-interface IBasketAttributes {
-  id: number;
-  userId: number;
+interface BasketAttributes {
+  id: Basket["id"];
+  userId: Basket["userId"];
 }
 
-interface IBasketCreationAttributes extends Optional<IBasketAttributes, "id"> {}
+export type BasketCreationAttributes = Optional<BasketAttributes, "id">;
 
 @Table
-export class Basket extends Model<
-  IBasketAttributes,
-  IBasketCreationAttributes
-> {
+export class Basket extends Model<BasketAttributes, BasketCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -46,4 +43,4 @@ export class Basket extends Model<
   products!: Array<Product & { BasketProduct: BasketProduct }>;
 }
 
-exhaustiveModelCheck<IBasketAttributes, Basket>();
+exhaustiveModelCheck<BasketAttributes, Basket>();

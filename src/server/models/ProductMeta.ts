@@ -14,20 +14,22 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import { Product } from "./Product";
 
-export interface IProductMetaAttributes {
-  id: number;
-  title: string;
-  description: string;
-  productId: number;
+interface ProductMetaAttributes {
+  id: ProductMeta["id"];
+  title: ProductMeta["title"];
+  description: ProductMeta["description"];
+  productId: ProductMeta["productId"];
 }
 
-export interface IProductMetaCreationAttributes
-  extends Optional<IProductMetaAttributes, "id"> {}
+export type ProductMetaCreationAttributes = Optional<
+  ProductMetaAttributes,
+  "id"
+>;
 
 @Table
 export class ProductMeta extends Model<
-  IProductMetaAttributes,
-  IProductMetaCreationAttributes
+  ProductMetaAttributes,
+  ProductMetaCreationAttributes
 > {
   @PrimaryKey
   @AutoIncrement
@@ -55,4 +57,4 @@ export class ProductMeta extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<IProductMetaAttributes, ProductMeta>();
+exhaustiveModelCheck<ProductMetaAttributes, ProductMeta>();

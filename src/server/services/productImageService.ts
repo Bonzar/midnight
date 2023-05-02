@@ -1,5 +1,5 @@
 import { sequelize } from "../database";
-import type { IProductImageCreationAttributes } from "../models/ProductImage";
+import type { ProductImageCreationAttributes } from "../models/ProductImage";
 import { ProductImage } from "../models/ProductImage";
 import { v4 as uuidV4 } from "uuid";
 import path from "path";
@@ -15,7 +15,7 @@ export interface ProductImageData {
 }
 
 export type UpdateProductImageData = Omit<
-  Partial<IProductImageCreationAttributes>,
+  Partial<ProductImageCreationAttributes>,
   "id" | "url"
 >;
 

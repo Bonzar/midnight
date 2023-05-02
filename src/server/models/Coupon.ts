@@ -10,31 +10,28 @@ import {
   PrimaryKey,
   Table,
   Unique,
+  Is,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
 import { OrderCoupon } from "./OrderCoupon";
 import { Order } from "./Order";
 
-interface ICouponAttributes {
-  id: number;
-  key: string;
-  value: number;
-  type: "AMOUNT" | "PERCENTAGE";
-  expiresTime: number | null;
-  expiresCount: number | null;
+interface CouponAttributes {
+  id: Coupon["id"];
+  key: Coupon["key"];
+  value: Coupon["value"];
+  type: Coupon["type"];
+  expiresTime: Coupon["expiresTime"] | null;
+  expiresCount: Coupon["expiresCount"] | null;
 }
 
-interface ICouponCreationAttributes
-  extends Optional<
-    ICouponAttributes,
-    "id" | "type" | "expiresTime" | "expiresCount"
-  > {}
+export type CouponCreationAttributes = Optional<
+  CouponAttributes,
+  "id" | "type" | "expiresTime" | "expiresCount"
+>;
 
 @Table
-export class Coupon extends Model<
-  ICouponAttributes,
-  ICouponCreationAttributes
-> {
+export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -56,7 +53,16 @@ export class Coupon extends Model<
   type!: "AMOUNT" | "PERCENTAGE";
 
   @AllowNull(true)
-  @Min(1672531200) // Sun Jan 01 2023 00:00:00 GMT+0000
+  @Is(
+    "ExpiresTimeMoreThenNow",
+    (value: CouponAttributes["expiresTime"]): void => {
+      if (typeof value === "number" && value < Date.now()) {
+        throw new Error(
+          "Дата истечения промокода должна быть позже текущего момента"
+        );
+      }
+    }
+  )
   @Column
   expiresTime!: number;
 
@@ -69,4 +75,4 @@ export class Coupon extends Model<
   orders!: Array<Order & { OrderCoupon: OrderCoupon }>;
 }
 
-exhaustiveModelCheck<ICouponAttributes, Coupon>();
+exhaustiveModelCheck<CouponAttributes, Coupon>();

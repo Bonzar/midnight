@@ -20,21 +20,23 @@ import { Coupon } from "./Coupon";
 import { OrderCoupon } from "./OrderCoupon";
 import { Shipment } from "./Shipment";
 
-interface IOrderAttributes {
-  id: number;
-  isPaid: boolean;
-  status: "NEW" | "COLLECT" | "SHIP" | "COMPLETE";
-  note: string | null;
-  shipDate: Date | null;
-  total: number;
-  userId: number;
+interface OrderAttributes {
+  id: Order["id"];
+  isPaid: Order["isPaid"];
+  status: Order["status"];
+  note: Order["note"] | null;
+  shipDate: Order["shipDate"] | null;
+  total: Order["total"];
+  userId: Order["userId"];
 }
 
-interface IOrderCreationAttributes
-  extends Optional<IOrderAttributes, "id" | "isPaid" | "status"> {}
+export type OrderCreationAttributes = Optional<
+  OrderAttributes,
+  "id" | "isPaid" | "status"
+>;
 
 @Table
-export class Order extends Model<IOrderAttributes, IOrderCreationAttributes> {
+export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -86,4 +88,4 @@ export class Order extends Model<IOrderAttributes, IOrderCreationAttributes> {
   coupons!: Array<Coupon & { OrderCoupon: OrderCoupon }>;
 }
 
-exhaustiveModelCheck<IOrderAttributes, Order>();
+exhaustiveModelCheck<OrderAttributes, Order>();

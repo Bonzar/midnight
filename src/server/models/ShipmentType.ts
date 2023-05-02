@@ -15,13 +15,15 @@ import { exhaustiveModelCheck } from "./helpers";
 import { Shipment } from "./Shipment";
 
 interface ShipmentTypeAttributes {
-  id: number;
-  code: string;
-  price: number;
+  id: ShipmentType["id"];
+  code: ShipmentType["code"];
+  price: ShipmentType["price"];
 }
 
-interface ShipmentTypeCreationAttributes
-  extends Optional<ShipmentTypeAttributes, "id"> {}
+export type ShipmentTypeCreationAttributes = Optional<
+  ShipmentTypeAttributes,
+  "id"
+>;
 
 @Table
 export class ShipmentType extends Model<

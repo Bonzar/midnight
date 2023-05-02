@@ -14,15 +14,17 @@ import { Order } from "./Order";
 import { Product } from "./Product";
 
 interface OrderProductAttributes {
-  id: number;
-  quantity: number;
-  salePrice: number;
-  orderId: number;
-  productId: number;
+  id: OrderProduct["id"];
+  quantity: OrderProduct["quantity"];
+  salePrice: OrderProduct["salePrice"];
+  orderId: OrderProduct["orderId"];
+  productId: OrderProduct["productId"];
 }
 
-interface OrderProductCreationAttributes
-  extends Optional<OrderProductAttributes, "id"> {}
+export type OrderProductCreationAttributes = Optional<
+  OrderProductAttributes,
+  "id"
+>;
 
 @Table
 export class OrderProduct extends Model<

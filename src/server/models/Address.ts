@@ -14,23 +14,25 @@ import type { Optional } from "sequelize";
 import { User } from "./User";
 import { exhaustiveModelCheck } from "./helpers";
 
-interface IAddressAttributes {
-  id: number;
-  country: string;
-  city: string;
-  street: string;
-  house: string;
-  flat: number | null;
-  userId: number;
+interface AddressAttributes {
+  id: Address["id"];
+  country: Address["country"];
+  city: Address["city"];
+  street: Address["street"];
+  house: Address["house"];
+  flat: Address["flat"] | null;
+  userId: Address["userId"];
 }
 
-interface IAddressCreationAttributes
-  extends Optional<IAddressAttributes, "id" | "flat"> {}
+export type AddressCreationAttributes = Optional<
+  AddressAttributes,
+  "id" | "flat"
+>;
 
 @Table
 export class Address extends Model<
-  IAddressAttributes,
-  IAddressCreationAttributes
+  AddressAttributes,
+  AddressCreationAttributes
 > {
   @PrimaryKey
   @AutoIncrement
@@ -71,4 +73,4 @@ export class Address extends Model<
   user!: User;
 }
 
-exhaustiveModelCheck<IAddressAttributes, Address>();
+exhaustiveModelCheck<AddressAttributes, Address>();

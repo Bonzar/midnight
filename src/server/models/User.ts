@@ -20,25 +20,24 @@ import { Basket } from "./Basket";
 import { Order } from "./Order";
 import { Wishlist } from "./Wishlist";
 
-interface IUserAttributes {
-  id: number;
-  firstName: string;
-  lastName: string | null;
-  middleName: string | null;
-  email: string;
-  password: string;
-  isVerified: boolean;
-  role: "USER" | "ADMIN";
+interface UserAttributes {
+  id: User["id"];
+  firstName: User["firstName"];
+  lastName: User["lastName"] | null;
+  middleName: User["middleName"] | null;
+  email: User["email"];
+  password: User["password"];
+  isVerified: User["isVerified"];
+  role: User["role"];
 }
 
-interface IUserCreationAttributes
-  extends Optional<
-    IUserAttributes,
-    "id" | "isVerified" | "role" | "lastName" | "middleName"
-  > {}
+export type UserCreationAttributes = Optional<
+  UserAttributes,
+  "id" | "isVerified" | "role" | "lastName" | "middleName"
+>;
 
 @Table
-export class User extends Model<IUserAttributes, IUserCreationAttributes> {
+export class User extends Model<UserAttributes, UserCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -93,4 +92,4 @@ export class User extends Model<IUserAttributes, IUserCreationAttributes> {
   wishlist?: Wishlist;
 }
 
-exhaustiveModelCheck<IUserAttributes, User>();
+exhaustiveModelCheck<UserAttributes, User>();

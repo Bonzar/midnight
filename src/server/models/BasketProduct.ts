@@ -14,14 +14,16 @@ import { Basket } from "./Basket";
 import { Product } from "./Product";
 
 interface BasketProductAttributes {
-  id: number;
-  quantity: number;
-  basketId: number;
-  productId: number;
+  id: BasketProduct["id"];
+  quantity: BasketProduct["quantity"];
+  basketId: BasketProduct["basketId"];
+  productId: BasketProduct["productId"];
 }
 
-interface BasketProductCreationAttributes
-  extends Optional<BasketProductAttributes, "id"> {}
+export type BasketProductCreationAttributes = Optional<
+  BasketProductAttributes,
+  "id"
+>;
 
 @Table
 export class BasketProduct extends Model<

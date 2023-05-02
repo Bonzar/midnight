@@ -26,26 +26,25 @@ import { Basket } from "./Basket";
 import { Wishlist } from "./Wishlist";
 import { WishlistProduct } from "./WishlistProduct";
 
-export interface IProductAttributes {
-  id: number;
-  name: string;
-  description: string | null;
-  price: number;
-  discount: number;
-  stock: number;
-  categoryId: number;
+export interface ProductAttributes {
+  id: Product["id"];
+  name: Product["name"];
+  description: Product["description"] | null;
+  price: Product["price"];
+  discount: Product["discount"];
+  stock: Product["stock"];
+  categoryId: Product["categoryId"];
 }
 
-export interface IProductCreationAttributes
-  extends Optional<
-    IProductAttributes,
-    "id" | "description" | "discount" | "stock"
-  > {}
+export type ProductCreationAttributes = Optional<
+  ProductAttributes,
+  "id" | "description" | "discount" | "stock"
+>;
 
 @Table
 export class Product extends Model<
-  IProductAttributes,
-  IProductCreationAttributes
+  ProductAttributes,
+  ProductCreationAttributes
 > {
   @PrimaryKey
   @AutoIncrement
@@ -105,4 +104,4 @@ export class Product extends Model<
   wishlist!: Array<Basket & { WishlistProduct: WishlistProduct }>;
 }
 
-exhaustiveModelCheck<IProductAttributes, Product>();
+exhaustiveModelCheck<ProductAttributes, Product>();

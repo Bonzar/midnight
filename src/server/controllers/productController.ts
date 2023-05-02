@@ -9,12 +9,12 @@ import type {
 import { productService } from "../services/productService";
 import type { AllAsString } from "../../../types/types";
 
-type CreateProductBody = CreateProductData;
+export type CreateProductBody = CreateProductData;
 
-type UpdateProductBody = UpdateProductData;
+export type UpdateProductBody = UpdateProductData;
 
-type GetAllProductResponse = { rows: Product[]; count: number };
-type GetAllProductQuery = {
+export type GetAllProductsResponse = { rows: Product[]; count: number };
+export type GetAllProductsQuery = {
   categoryId?: number;
   limit?: number;
   page?: number;
@@ -57,9 +57,9 @@ class ProductController {
 
   getAll: RequestHandler<
     void,
-    GetAllProductResponse,
+    GetAllProductsResponse,
     void,
-    AllAsString<GetAllProductQuery>
+    AllAsString<GetAllProductsQuery>
   > = async (req, res, next) => {
     try {
       let limit;

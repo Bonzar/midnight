@@ -16,13 +16,12 @@ import { Order } from "./Order";
 import { ShipmentType } from "./ShipmentType";
 
 interface ShipmentAttributes {
-  id: number;
-  address: string | null;
-  shipmentTypeId: number;
+  id: Shipment["id"];
+  address: Shipment["address"] | null;
+  shipmentTypeId: Shipment["shipmentTypeId"];
 }
 
-interface ShipmentCreationAttributes
-  extends Optional<ShipmentAttributes, "id"> {}
+export type ShipmentCreationAttributes = Optional<ShipmentAttributes, "id">;
 
 @Table
 export class Shipment extends Model<

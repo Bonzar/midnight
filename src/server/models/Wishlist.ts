@@ -16,18 +16,17 @@ import { User } from "./User";
 import { Product } from "./Product";
 import { WishlistProduct } from "./WishlistProduct";
 
-interface IWishlistAttributes {
-  id: number;
-  userId: number;
+interface WishlistAttributes {
+  id: Wishlist["id"];
+  userId: Wishlist["userId"];
 }
 
-interface IWishlistCreationAttributes
-  extends Optional<IWishlistAttributes, "id"> {}
+export type WishlistCreationAttributes = Optional<WishlistAttributes, "id">;
 
 @Table
 export class Wishlist extends Model<
-  IWishlistAttributes,
-  IWishlistCreationAttributes
+  WishlistAttributes,
+  WishlistCreationAttributes
 > {
   @PrimaryKey
   @AutoIncrement
@@ -47,4 +46,4 @@ export class Wishlist extends Model<
   products!: Array<Product & { WishlistProduct: WishlistProduct }>;
 }
 
-exhaustiveModelCheck<IWishlistAttributes, Wishlist>();
+exhaustiveModelCheck<WishlistAttributes, Wishlist>();

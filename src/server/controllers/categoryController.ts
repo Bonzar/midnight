@@ -1,12 +1,15 @@
 import type { RequestHandler } from "express";
-import type { ICategoryAttributes } from "../models/Category";
 import type { Category } from "../models/Category";
 import { ApiError } from "../error/ApiError";
+import type {
+  CreateCategoryData,
+  UpdateCategoryData,
+} from "../services/categoryService";
 import { categoryService } from "../services/categoryService";
 import { parseInt } from "../../helpers/parseInt";
 
-type CreateCategoryBody = Omit<ICategoryAttributes, "id">;
-type UpdateCategoryBody = Omit<Partial<ICategoryAttributes>, "id">;
+export type CreateCategoryBody = CreateCategoryData;
+export type UpdateCategoryBody = UpdateCategoryData;
 
 class CategoryController {
   create: RequestHandler<void, Category, CreateCategoryBody, void> = async (

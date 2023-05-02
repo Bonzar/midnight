@@ -1,8 +1,11 @@
-import type { ICategoryAttributes } from "../models/Category";
+import type { CategoryCreationAttributes } from "../models/Category";
 import { Category } from "../models/Category";
 
-type CreateCategoryData = Omit<ICategoryAttributes, "id">;
-type UpdateCategoryData = Omit<Partial<ICategoryAttributes>, "id">;
+export type CreateCategoryData = Omit<CategoryCreationAttributes, "id">;
+export type UpdateCategoryData = Omit<
+  Partial<CategoryCreationAttributes>,
+  "id"
+>;
 
 class CategoryService {
   async create(data: CreateCategoryData) {

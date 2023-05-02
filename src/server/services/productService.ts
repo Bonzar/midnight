@@ -1,6 +1,6 @@
 import type {
-  IProductAttributes,
-  IProductCreationAttributes,
+  ProductAttributes,
+  ProductCreationAttributes,
 } from "../models/Product";
 import { Product } from "../models/Product";
 import type { WhereOptions } from "sequelize";
@@ -12,8 +12,8 @@ import {
 } from "../../helpers/constants";
 import { Category } from "../models/Category";
 
-export type CreateProductData = Omit<IProductCreationAttributes, "id">;
-export type UpdateProductData = Omit<Partial<IProductCreationAttributes>, "id">;
+export type CreateProductData = Omit<ProductCreationAttributes, "id">;
+export type UpdateProductData = Omit<Partial<ProductCreationAttributes>, "id">;
 
 class ProductService {
   async create(data: CreateProductData) {
@@ -47,7 +47,7 @@ class ProductService {
     limit: number = DEFAULT_ITEMS_LIMIT,
     page: number = DEFAULT_ITEMS_PAGE
   ) {
-    const where: WhereOptions<IProductAttributes> = {};
+    const where: WhereOptions<ProductAttributes> = {};
     if (categoryId) {
       where.categoryId = categoryId;
     }
