@@ -114,7 +114,7 @@ class ProductImageService {
 
       // save productIds for restore it later
       const savedImageProductIds: {
-        [id: number]: { productId: number };
+        [id: number]: { productId: number | null };
       } = {};
       for (const productImage of productImages) {
         savedImageProductIds[productImage.id] = {
