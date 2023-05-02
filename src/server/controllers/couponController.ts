@@ -58,7 +58,7 @@ class CouponController {
       } catch (error) {
         next(
           ApiError.badRequest(
-            "При обновлении промокода произошла ошибка",
+            `При обновлении промокода с id - ${req.params.id} произошла ошибка`,
             error
           )
         );
@@ -77,7 +77,12 @@ class CouponController {
 
       res.status(200).end();
     } catch (error) {
-      next(ApiError.badRequest("При удалении  произошла ошибка", error));
+      next(
+        ApiError.badRequest(
+          `При удалении промокода с id - ${req.params.id} произошла ошибка`,
+          error
+        )
+      );
     }
   };
 }

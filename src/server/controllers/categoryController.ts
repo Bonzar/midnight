@@ -61,7 +61,7 @@ class CategoryController {
       } catch (error) {
         next(
           ApiError.badRequest(
-            "При обновлении категории произошла ошибка",
+            `При обновлении категории с id - ${req.params.id} произошла ошибка`,
             error
           )
         );
@@ -81,7 +81,10 @@ class CategoryController {
       res.status(200);
     } catch (error) {
       next(
-        ApiError.badRequest("При удалении категории произошла ошибка", error)
+        ApiError.badRequest(
+          `При удалении категории с id - ${req.params.id} произошла ошибка`,
+          error
+        )
       );
     }
   };

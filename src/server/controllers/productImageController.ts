@@ -11,7 +11,7 @@ import type { AllAsString } from "../../../types/types";
 
 // Form data as string
 // todo add `images` field  in type
-export interface CreateProductImageBody {
+export interface CreateProductImageFormDataBody {
   productId?: number;
   sort?: number;
   description: string[];
@@ -24,7 +24,7 @@ class ProductImageController {
   create: RequestHandler<
     void,
     ProductImage[],
-    AllAsString<CreateProductImageBody>,
+    AllAsString<CreateProductImageFormDataBody>,
     void
   > = async (req, res, next) => {
     try {
@@ -125,7 +125,7 @@ class ProductImageController {
     } catch (error) {
       next(
         ApiError.badRequest(
-          "При обновлении изображения произошла ошибка",
+          `При обновлении изображения с id - ${req.params.id} произошла ошибка`,
           error
         )
       );
@@ -165,7 +165,10 @@ class ProductImageController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest("При удалении изображения произошла ошибка", error)
+        ApiError.badRequest(
+          `При удалении изображения с id - ${req.params.id} произошла ошибка`,
+          error
+        )
       );
     }
   };

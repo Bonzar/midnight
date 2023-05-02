@@ -41,7 +41,7 @@ class ProductMetaController {
     } catch (error) {
       next(
         ApiError.badRequest(
-          "При обновлении характеристики товара произошла ошибка",
+          `При обновлении характеристики товара с id - ${req.params.id} произошла ошибка`,
           error
         )
       );
@@ -60,7 +60,7 @@ class ProductMetaController {
     } catch (error) {
       next(
         ApiError.badRequest(
-          "При удаления характеристики товара произошла ошибка",
+          `При удаления характеристики товара с id - ${req.params.id} произошла ошибка`,
           error
         )
       );

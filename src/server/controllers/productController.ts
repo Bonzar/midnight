@@ -50,7 +50,10 @@ class ProductController {
       return res.json(product);
     } catch (error) {
       next(
-        ApiError.badRequest("При получении продукта произошла ошибка", error)
+        ApiError.badRequest(
+          `При получении продукта с id - ${req.params.id} произошла ошибка`,
+          error
+        )
       );
     }
   };
@@ -100,7 +103,10 @@ class ProductController {
         return res.json(updatedProduct);
       } catch (error) {
         next(
-          ApiError.badRequest("При обновлении продукта произошла ошибка", error)
+          ApiError.badRequest(
+            `При обновлении продукта с id - ${req.params.id} произошла ошибка`,
+            error
+          )
         );
       }
     };
@@ -118,7 +124,10 @@ class ProductController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest("При удалении продукта произошла ошибка", error)
+        ApiError.badRequest(
+          `При удалении продукта с id - ${req.params.id} произошла ошибка`,
+          error
+        )
       );
     }
   };
