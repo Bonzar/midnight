@@ -11,6 +11,7 @@ import {
   Table,
 } from "sequelize-typescript";
 import type { Optional } from "sequelize";
+import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
 import { exhaustiveModelCheck } from "./helpers";
 import { DataTypes } from "sequelize";
@@ -26,9 +27,11 @@ interface AddressAttributes {
 }
 
 export type AddressCreationAttributes = Optional<
-  AddressAttributes,
-  "id" | "flat"
->;
+  Omit<AddressAttributes, "id">,
+  "flat"
+> & {
+  user?: UserCreationAttributes;
+};
 
 @Table
 export class Address extends Model<

@@ -12,8 +12,8 @@ import {
 } from "../../helpers/constants";
 import { Category } from "../models/Category";
 
-export type CreateProductData = Omit<ProductCreationAttributes, "id">;
-export type UpdateProductData = Omit<Partial<ProductCreationAttributes>, "id">;
+export type CreateProductData = ProductCreationAttributes;
+export type UpdateProductData = Partial<ProductCreationAttributes>;
 
 class ProductService {
   async create(data: CreateProductData) {

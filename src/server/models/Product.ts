@@ -16,13 +16,19 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { CategoryCreationAttributes } from "./Category";
 import { Category } from "./Category";
+import type { ProductImageCreationAttributes } from "./ProductImage";
 import { ProductImage } from "./ProductImage";
+import type { ProductMetaCreationAttributes } from "./ProductMeta";
 import { ProductMeta } from "./ProductMeta";
 import { OrderProduct } from "./OrderProduct";
+import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import { BasketProduct } from "./BasketProduct";
+import type { BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
+import type { WishlistCreationAttributes } from "./Wishlist";
 import { Wishlist } from "./Wishlist";
 import { WishlistProduct } from "./WishlistProduct";
 import { DataTypes } from "sequelize";
@@ -38,9 +44,19 @@ export interface ProductAttributes {
 }
 
 export type ProductCreationAttributes = Optional<
-  ProductAttributes,
-  "id" | "description" | "discount" | "stock"
->;
+  Omit<ProductAttributes, "id">,
+  "description" | "discount" | "stock"
+> & {
+  category?: CategoryCreationAttributes;
+  productImages?: Omit<
+    ProductImageCreationAttributes,
+    "productId" | "product"
+  >[];
+  productMetas?: Omit<ProductMetaCreationAttributes, "productId" | "product">[];
+  orders?: OrderCreationAttributes;
+  baskets?: BasketCreationAttributes;
+  wishlist?: WishlistCreationAttributes;
+};
 
 @Table
 export class Product extends Model<

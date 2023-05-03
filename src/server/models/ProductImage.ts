@@ -13,6 +13,7 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import { DataTypes } from "sequelize";
 
@@ -25,9 +26,11 @@ interface ProductImageAttributes {
 }
 
 export type ProductImageCreationAttributes = Optional<
-  ProductImageAttributes,
-  "id"
->;
+  Omit<ProductImageAttributes, "id">,
+  never
+> & {
+  product?: ProductCreationAttributes;
+};
 
 @Table
 export class ProductImage extends Model<

@@ -2,8 +2,8 @@ import type { CouponCreationAttributes } from "../models/Coupon";
 import { Coupon } from "../models/Coupon";
 import { OrderCoupon } from "../models/OrderCoupon";
 
-export type CreateCouponData = Omit<CouponCreationAttributes, "id">;
-export type UpdateCouponData = Omit<Partial<CouponCreationAttributes>, "id">;
+export type CreateCouponData = CouponCreationAttributes;
+export type UpdateCouponData = Partial<CouponCreationAttributes>;
 
 class CouponService {
   async create(data: CreateCouponData) {

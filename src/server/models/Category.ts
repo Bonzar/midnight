@@ -14,6 +14,7 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import { DataTypes } from "sequelize";
 
@@ -24,9 +25,16 @@ interface CategoryAttributes {
 }
 
 export type CategoryCreationAttributes = Optional<
-  CategoryAttributes,
-  "id" | "parentCategoryId"
->;
+  Omit<CategoryAttributes, "id">,
+  "parentCategoryId"
+> & {
+  parentCategory?: CategoryCreationAttributes;
+  childCategories?: Omit<
+    CategoryCreationAttributes,
+    "parentCategoryId" | "parentCategory"
+  >[];
+  products?: Omit<ProductCreationAttributes, "categoryId" | "category">[];
+};
 
 @Table
 export class Category extends Model<

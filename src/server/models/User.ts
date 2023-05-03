@@ -14,11 +14,15 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { Address } from "./Address";
 import { exhaustiveModelCheck } from "./helpers";
+import { Address } from "./Address";
+import type { AddressCreationAttributes } from "./Address";
 import { Basket } from "./Basket";
+import type { BasketCreationAttributes } from "./Basket";
 import { Order } from "./Order";
+import type { OrderCreationAttributes } from "./Order";
 import { Wishlist } from "./Wishlist";
+import type { WishlistCreationAttributes } from "./Wishlist";
 import { DataTypes } from "sequelize";
 
 interface UserAttributes {
@@ -33,9 +37,14 @@ interface UserAttributes {
 }
 
 export type UserCreationAttributes = Optional<
-  UserAttributes,
-  "id" | "isVerified" | "role" | "lastName" | "middleName"
->;
+  Omit<UserAttributes, "id">,
+  "isVerified" | "role" | "lastName" | "middleName"
+> & {
+  basket?: Omit<BasketCreationAttributes, "userId" | "user">;
+  wishlist?: Omit<WishlistCreationAttributes, "userId" | "user">;
+  orders?: Omit<OrderCreationAttributes, "userId" | "user">[];
+  addresses?: Omit<AddressCreationAttributes, "userId" | "user">[];
+};
 
 @Table
 export class User extends Model<UserAttributes, UserCreationAttributes> {

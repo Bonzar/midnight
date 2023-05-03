@@ -20,8 +20,8 @@ interface OrderCouponAttributes {
 }
 
 export type OrderCouponCreationAttributes = Optional<
-  OrderCouponAttributes,
-  "id"
+  Omit<OrderCouponAttributes, "id">,
+  never
 >;
 
 @Table

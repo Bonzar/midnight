@@ -19,8 +19,8 @@ interface WishlistProductAttributes {
 }
 
 export type WishlistProductCreationAttributes = Optional<
-  WishlistProductAttributes,
-  "id"
+  Omit<WishlistProductAttributes, "id">,
+  never
 >;
 
 @Table

@@ -21,8 +21,8 @@ interface BasketProductAttributes {
 }
 
 export type BasketProductCreationAttributes = Optional<
-  BasketProductAttributes,
-  "id"
+  Omit<BasketProductAttributes, "id">,
+  never
 >;
 
 @Table

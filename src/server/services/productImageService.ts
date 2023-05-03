@@ -16,7 +16,7 @@ export interface ProductImageData {
 
 export type UpdateProductImageData = Omit<
   Partial<ProductImageCreationAttributes>,
-  "id" | "url"
+  "url"
 >;
 
 export type UpdateManyProductImageData = (UpdateProductImageData & {

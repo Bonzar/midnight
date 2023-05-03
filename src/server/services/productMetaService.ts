@@ -1,12 +1,8 @@
 import type { ProductMetaCreationAttributes } from "../models/ProductMeta";
 import { ProductMeta } from "../models/ProductMeta";
 
-export type CreateProductMetaData = Omit<ProductMetaCreationAttributes, "id">;
-
-export type UpdateProductMetaData = Omit<
-  Partial<ProductMetaCreationAttributes>,
-  "id"
->;
+export type CreateProductMetaData = ProductMetaCreationAttributes;
+export type UpdateProductMetaData = Partial<ProductMetaCreationAttributes>;
 
 class ProductMetaService {
   async create(data: CreateProductMetaData) {

@@ -13,6 +13,7 @@ import {
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
 import { Order } from "./Order";
+import type { ShipmentTypeCreationAttributes } from "./ShipmentType";
 import { ShipmentType } from "./ShipmentType";
 import { DataTypes } from "sequelize";
 
@@ -22,7 +23,12 @@ interface ShipmentAttributes {
   shipmentTypeId: Shipment["shipmentTypeId"];
 }
 
-export type ShipmentCreationAttributes = Optional<ShipmentAttributes, "id">;
+export type ShipmentCreationAttributes = Optional<
+  Omit<ShipmentAttributes, "id">,
+  never
+> & {
+  shipmentType?: ShipmentTypeCreationAttributes;
+};
 
 @Table
 export class Shipment extends Model<

@@ -12,7 +12,9 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import { BasketProduct } from "./BasketProduct";
 
@@ -21,7 +23,13 @@ interface BasketAttributes {
   userId: Basket["userId"];
 }
 
-export type BasketCreationAttributes = Optional<BasketAttributes, "id">;
+export type BasketCreationAttributes = Optional<
+  Omit<BasketAttributes, "id">,
+  never
+> & {
+  user?: Omit<UserCreationAttributes, "basket">;
+  products?: ProductCreationAttributes[];
+};
 
 @Table
 export class Basket extends Model<BasketAttributes, BasketCreationAttributes> {

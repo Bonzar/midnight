@@ -12,7 +12,9 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import { WishlistProduct } from "./WishlistProduct";
 
@@ -21,7 +23,13 @@ interface WishlistAttributes {
   userId: Wishlist["userId"];
 }
 
-export type WishlistCreationAttributes = Optional<WishlistAttributes, "id">;
+export type WishlistCreationAttributes = Optional<
+  Omit<WishlistAttributes, "id">,
+  never
+> & {
+  user?: Omit<UserCreationAttributes, "wishlist">;
+  products?: ProductCreationAttributes[];
+};
 
 @Table
 export class Wishlist extends Model<

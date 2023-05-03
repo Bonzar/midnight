@@ -3,11 +3,8 @@ import { BasketProduct } from "../models/BasketProduct";
 import { BasketCoupon } from "../models/BasketCoupon";
 import { couponService } from "./couponService";
 
-export type AddBasketProductData = Omit<BasketProductCreationAttributes, "id">;
-export type UpdateBasketProductData = Omit<
-  Partial<BasketProductCreationAttributes>,
-  "id"
-> &
+export type AddBasketProductData = BasketProductCreationAttributes;
+export type UpdateBasketProductData = Partial<BasketProductCreationAttributes> &
   Pick<BasketProductCreationAttributes, "basketId" | "productId">;
 
 class BasketService {

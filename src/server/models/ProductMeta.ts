@@ -12,6 +12,7 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 
 interface ProductMetaAttributes {
@@ -22,9 +23,11 @@ interface ProductMetaAttributes {
 }
 
 export type ProductMetaCreationAttributes = Optional<
-  ProductMetaAttributes,
-  "id"
->;
+  Omit<ProductMetaAttributes, "id">,
+  never
+> & {
+  product?: ProductCreationAttributes;
+};
 
 @Table
 export class ProductMeta extends Model<

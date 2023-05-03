@@ -13,11 +13,15 @@ import {
   Table,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
 import { OrderProduct } from "./OrderProduct";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
+import type { CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
 import { OrderCoupon } from "./OrderCoupon";
+import type { ShipmentCreationAttributes } from "./Shipment";
 import { Shipment } from "./Shipment";
 import { DataTypes } from "sequelize";
 
@@ -32,9 +36,14 @@ export interface OrderAttributes {
 }
 
 export type OrderCreationAttributes = Optional<
-  OrderAttributes,
-  "id" | "isPaid" | "status"
->;
+  Omit<OrderAttributes, "id">,
+  "isPaid" | "status"
+> & {
+  user?: UserCreationAttributes;
+  shipment?: ShipmentCreationAttributes;
+  products?: ProductCreationAttributes[];
+  coupons?: CouponCreationAttributes[];
+};
 
 @Table
 export class Order extends Model<OrderAttributes, OrderCreationAttributes> {

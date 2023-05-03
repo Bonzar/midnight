@@ -20,8 +20,8 @@ interface BasketCouponAttributes {
 }
 
 export type BasketCouponCreationAttributes = Optional<
-  BasketCouponAttributes,
-  "id"
+  Omit<BasketCouponAttributes, "id">,
+  never
 >;
 
 @Table

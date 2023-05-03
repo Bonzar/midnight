@@ -22,8 +22,8 @@ interface OrderProductAttributes {
 }
 
 export type OrderProductCreationAttributes = Optional<
-  OrderProductAttributes,
-  "id"
+  Omit<OrderProductAttributes, "id">,
+  never
 >;
 
 @Table

@@ -6,8 +6,8 @@ import {
   DEFAULT_ITEMS_PAGE,
 } from "../../helpers/constants";
 
-export type CreateOrderData = Omit<OrderCreationAttributes, "id">;
-export type UpdateOrderData = Omit<Partial<OrderCreationAttributes>, "id">;
+export type CreateOrderData = OrderCreationAttributes;
+export type UpdateOrderData = Partial<OrderCreationAttributes>;
 
 class OrderService {
   async create(data: CreateOrderData) {

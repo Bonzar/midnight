@@ -14,6 +14,7 @@ import {
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
 import { OrderCoupon } from "./OrderCoupon";
+import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import { DataTypes } from "sequelize";
 
@@ -27,9 +28,11 @@ interface CouponAttributes {
 }
 
 export type CouponCreationAttributes = Optional<
-  CouponAttributes,
-  "id" | "type" | "expiresTime" | "expiresCount"
->;
+  Omit<CouponAttributes, "id">,
+  "type" | "expiresTime" | "expiresCount"
+> & {
+  orders?: OrderCreationAttributes[];
+};
 
 @Table
 export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
