@@ -54,9 +54,6 @@ class OrderService {
             transaction
           );
 
-          // Saving current product price as salePrice in orderProducts
-          orderData.orderProducts[index].salePrice = product.price;
-
           // Decrease a product stocks
           return product.update(
             {

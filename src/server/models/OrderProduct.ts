@@ -15,6 +15,7 @@ import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
+import { productService } from "../services/productService";
 
 interface OrderProductAttributes {
   id: OrderProduct["id"];
@@ -25,7 +26,7 @@ interface OrderProductAttributes {
 }
 
 export type OrderProductCreationAttributes = Optional<
-  Omit<OrderProductAttributes, "id">,
+  Omit<OrderProductAttributes, "id" | "salePrice">,
   never
 > & {
   order?: OrderCreationAttributes;
@@ -49,7 +50,15 @@ export class OrderProduct extends Model<
 
   @AllowNull(false)
   @Min(0)
-  @Column
+  @Column({
+    async set() {
+      const productId = this.getDataValue("productId");
+
+      const product = await productService.getOne(productId);
+
+      this.setDataValue("salePrice", product.price);
+    },
+  })
   salePrice!: number;
 
   @AllowNull(false)
