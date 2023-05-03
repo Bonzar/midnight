@@ -1,5 +1,6 @@
 import type { ProductMetaCreationAttributes } from "../models/ProductMeta";
 import { ProductMeta } from "../models/ProductMeta";
+import type { Transaction } from "sequelize";
 
 export type CreateProductMetaData = ProductMetaCreationAttributes;
 export type UpdateProductMetaData = Partial<ProductMetaCreationAttributes>;
@@ -9,30 +10,33 @@ class ProductMetaService {
     return await ProductMeta.create(data);
   }
 
-  async update(id: number, updateData: UpdateProductMetaData) {
+  async getOne(id: number, transaction?: Transaction) {
     if (!id) {
-      throw new Error("Для обновления характеристики не был предоставлен ID");
+      throw new Error(
+        "Для получения характеристики товара не был предоставлен ID"
+      );
     }
 
-    const productMeta = await ProductMeta.findOne({ where: { id } });
+    const productMeta = await ProductMeta.findOne({
+      where: { id },
+      transaction,
+    });
 
     if (!productMeta) {
       throw new Error(`Характеристика товара с id - ${id} не найдена`);
     }
+
+    return productMeta;
+  }
+
+  async update(id: number, updateData: UpdateProductMetaData) {
+    const productMeta = await this.getOne(id);
 
     return await productMeta.update(updateData);
   }
 
   async delete(id: number) {
-    if (!id) {
-      throw new Error("Для удаления характеристики не был предоставлен ID");
-    }
-
-    const productMeta = await ProductMeta.findOne({ where: { id } });
-
-    if (!productMeta) {
-      throw new Error(`Характеристика товара с id - ${id} не найдена`);
-    }
+    const productMeta = await this.getOne(id);
 
     return await productMeta.destroy();
   }

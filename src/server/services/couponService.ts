@@ -1,6 +1,7 @@
 import type { CouponCreationAttributes } from "../models/Coupon";
 import { Coupon } from "../models/Coupon";
 import { OrderCoupon } from "../models/OrderCoupon";
+import type { Transaction } from "sequelize";
 
 export type CreateCouponData = CouponCreationAttributes;
 export type UpdateCouponData = Partial<CouponCreationAttributes>;
@@ -10,26 +11,32 @@ class CouponService {
     return await Coupon.create(data);
   }
 
+  async getOne(id: number, transaction?: Transaction) {
+    if (!id) {
+      throw new Error("Для получения промокода не был предоставлен ID");
+    }
+
+    const coupon = await Coupon.findOne({ where: { id }, transaction });
+
+    if (!coupon) {
+      throw new Error(`Промокод с id - ${id} не найден`);
+    }
+
+    return coupon;
+  }
+
   async getAll() {
     return await Coupon.findAll();
   }
 
   async update(id: number, updateData: UpdateCouponData) {
-    const coupon = await Coupon.findOne({ where: { id } });
-
-    if (!coupon) {
-      throw new Error(`Промокод с id - ${id} не найден`);
-    }
+    const coupon = await this.getOne(id);
 
     return await coupon.update(updateData);
   }
 
   async delete(id: number) {
-    const coupon = await Coupon.findOne({ where: { id } });
-
-    if (!coupon) {
-      throw new Error(`Промокод с id - ${id} не найден`);
-    }
+    const coupon = await this.getOne(id);
 
     return await coupon.destroy();
   }

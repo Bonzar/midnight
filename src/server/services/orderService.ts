@@ -1,6 +1,6 @@
 import type { OrderAttributes, OrderCreationAttributes } from "../models/Order";
 import { Order } from "../models/Order";
-import type { WhereOptions } from "sequelize";
+import type { Transaction, WhereOptions } from "sequelize";
 import {
   DEFAULT_ITEMS_LIMIT,
   DEFAULT_ITEMS_PAGE,
@@ -74,8 +74,12 @@ class OrderService {
     });
   }
 
-  async get(id: number) {
-    const order = await Order.findOne({ where: { id } });
+  async getOne(id: number, transaction?: Transaction) {
+    if (!id) {
+      throw new Error("Для получения заказа не был предоставлен ID");
+    }
+
+    const order = await Order.findOne({ where: { id }, transaction });
 
     if (!order) {
       throw new Error(`Заказ с id - ${id} не найден`);
@@ -104,21 +108,13 @@ class OrderService {
   }
 
   async update(id: number, updateData: UpdateOrderData) {
-    const order = await Order.findOne({ where: { id } });
-
-    if (!order) {
-      throw new Error(`Заказ с id - ${id} не найден`);
-    }
+    const order = await this.getOne(id);
 
     return order.update(updateData);
   }
 
   async delete(id: number) {
-    const order = await Order.findOne({ where: { id } });
-
-    if (!order) {
-      throw new Error(`Заказ с id - ${id} не найден`);
-    }
+    const order = await this.getOne(id);
 
     return order.destroy();
   }

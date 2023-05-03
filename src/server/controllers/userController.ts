@@ -32,7 +32,7 @@ class UserController {
     next
   ) => {
     try {
-      const user = await userService.get(req.body.id);
+      const user = await userService.getOne(req.body.id);
 
       res.status(200).json(user);
     } catch (error) {

@@ -43,7 +43,7 @@ class OrderController {
     try {
       const orderId = parseInt(req.params.id);
 
-      const order = await orderService.get(orderId);
+      const order = await orderService.getOne(orderId);
 
       res.status(200).json(order);
     } catch (error) {

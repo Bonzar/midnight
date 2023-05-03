@@ -5,6 +5,7 @@ import { v4 as uuidV4 } from "uuid";
 import path from "path";
 import type { UploadedFile } from "express-fileupload";
 import fs from "fs/promises";
+import type { Transaction } from "sequelize";
 
 const PATH_TO_PRODUCT_IMAGES =
   path.resolve(__dirname, "../../../static/productImages") + "/";
@@ -81,19 +82,29 @@ class ProductImageService {
     });
   }
 
-  async update(id: number, data: UpdateProductImageData) {
+  async getOne(id: number, transaction?: Transaction) {
     if (!id) {
-      throw new Error(`Для обновления изображения не был предоставлен ID`);
+      throw new Error(`Для получения изображения не был предоставлен ID`);
     }
+
+    const productImage = await ProductImage.findOne({
+      where: { id },
+      transaction,
+    });
+
+    if (!productImage) {
+      throw new Error(`Изображение с id - ${id} не найдено`);
+    }
+
+    return productImage;
+  }
+
+  async update(id: number, data: UpdateProductImageData) {
+    const productImage = await this.getOne(id);
 
     // prevent updating url
     if ("url" in data) {
       delete data.url;
-    }
-
-    const productImage = await ProductImage.findOne({ where: { id } });
-    if (!productImage) {
-      throw new Error(`Изображение с id - ${id} не найдено`);
     }
 
     return await productImage.update(data);
@@ -161,14 +172,7 @@ class ProductImageService {
 
   async delete(id: number) {
     return await sequelize.transaction(async (transaction) => {
-      const productImage = await ProductImage.findOne({
-        where: { id },
-        transaction,
-      });
-
-      if (!productImage) {
-        throw new Error(`Изображение с id - ${id} не найдено`);
-      }
+      const productImage = await this.getOne(id, transaction);
 
       await productImage.destroy({ transaction });
 

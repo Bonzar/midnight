@@ -20,7 +20,12 @@ class ProductService {
   async create(data: CreateProductData) {
     return await Product.create(data);
   }
+
   async getOne(id: number, transaction?: Transaction) {
+    if (!id) {
+      throw new Error("Для получения товара не был предоставлен ID");
+    }
+
     const product = await Product.findOne({
       where: { id },
       transaction,
@@ -32,6 +37,10 @@ class ProductService {
   }
 
   async getDetailed(id: number) {
+    if (!id) {
+      throw new Error("Для получения товара не был предоставлен ID");
+    }
+
     const product = await Product.findOne({
       where: { id },
       include: [

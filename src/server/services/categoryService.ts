@@ -1,10 +1,28 @@
 import type { CategoryCreationAttributes } from "../models/Category";
 import { Category } from "../models/Category";
+import type { Transaction } from "sequelize";
 
 export type CreateCategoryData = CategoryCreationAttributes;
 export type UpdateCategoryData = Partial<CategoryCreationAttributes>;
 
 class CategoryService {
+  async getOne(id: number, transaction?: Transaction) {
+    if (!id) {
+      throw new Error("Для получения категории не был предоставлен ID");
+    }
+
+    const category = await Category.findOne({
+      where: { id },
+      transaction,
+    });
+
+    if (!category) {
+      throw new Error(`Категория с id - ${id} не найдена`);
+    }
+
+    return category;
+  }
+
   async create(data: CreateCategoryData) {
     return await Category.create(data);
   }
@@ -20,29 +38,13 @@ class CategoryService {
   }
 
   async update(id: number, updateData: UpdateCategoryData) {
-    if (!id) {
-      throw new Error("Для обновления категории не был предоставлен ID");
-    }
-
-    const category = await Category.findOne({ where: { id } });
-
-    if (!category) {
-      throw new Error(`Категория с id - ${id} не найдена`);
-    }
+    const category = await this.getOne(id);
 
     return await category.update(updateData);
   }
 
   async delete(id: number) {
-    if (!id) {
-      throw new Error("Для удаления категории не был предоставлен ID");
-    }
-
-    const category = await Category.findOne({ where: { id } });
-
-    if (!category) {
-      throw new Error(`Категория с id - ${id} не найдена`);
-    }
+    const category = await this.getOne(id);
 
     return await category.destroy();
   }
