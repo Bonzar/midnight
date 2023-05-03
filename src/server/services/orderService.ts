@@ -59,6 +59,13 @@ class OrderService {
         })
       );
 
+      // Save current product price as salePrice
+      orderData.orderProducts.map(
+        (orderProduct, index) =>
+          (orderProduct.salePrice = orderProducts[index].price)
+      );
+
+      // Calculating total
       let total = orderProducts.reduce(
         (total, currentProduct, index) =>
           total +

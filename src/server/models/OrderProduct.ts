@@ -5,7 +5,6 @@ import {
   BelongsTo,
   Column,
   ForeignKey,
-  Is,
   Min,
   Model,
   PrimaryKey,
@@ -16,7 +15,6 @@ import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
-import { productService } from "../services/productService";
 
 interface OrderProductAttributes {
   id: OrderProduct["id"];
@@ -27,7 +25,7 @@ interface OrderProductAttributes {
 }
 
 export type OrderProductCreationAttributes = Optional<
-  Omit<OrderProductAttributes, "id" | "salePrice">,
+  Omit<OrderProductAttributes, "id">,
   never
 > & {
   order?: OrderCreationAttributes;
@@ -51,23 +49,8 @@ export class OrderProduct extends Model<
 
   @AllowNull(false)
   @Min(0)
-  // check product exist on validate, for not crash when setter run
-  @Is(async function productExist() {
-    // @ts-ignore - Can't infer `this` type
-    const currentInstance: OrderProduct = this;
-
-    const productId = currentInstance.getDataValue("productId");
-    await productService.getOne(productId);
-  })
-  @Column({
-    async set() {
-      const productId = this.getDataValue("productId");
-
-      const product = await productService.getOne(productId);
-
-      this.setDataValue("salePrice", product.price);
-    },
-  })
+  @Column
+  // saving on order create
   salePrice!: number;
 
   @AllowNull(false)
