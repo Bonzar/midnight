@@ -14,6 +14,17 @@ class BasketService {
     basketId: number,
     transaction?: Transaction
   ) {
+    if (typeof productId === "undefined" || typeof basketId === "undefined") {
+      throw new Error(
+        `Для получения продукта в корзине не был предоставлен ID: ${[
+          typeof productId === "undefined" && "продукта",
+          typeof basketId === "undefined" && "корзины",
+        ]
+          .filter(Boolean)
+          .join(", ")}`
+      );
+    }
+
     const basketProductNote = await BasketProduct.findOne({
       where: { productId, basketId },
       transaction,
