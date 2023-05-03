@@ -1,9 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { fulfillDb } from "./src/server/fulfillDb";
-import { queriesToDb } from "./src/server/queriesToDb";
-
 import type { Request, Response, NextFunction } from "express";
 import fs from "fs/promises";
 import path from "path";
@@ -21,12 +18,8 @@ const isTest = process.env.NODE_ENV === "test" || !!process.env.VITE_TEST_BUILD;
 const resolve = (p: string) => path.resolve(__dirname, p);
 
 async function createServer(isProd = process.env.NODE_ENV === "production") {
-  //todo enable db connection
   await sequelize.authenticate();
   await sequelize.sync();
-
-  // await fulfillDb();
-  // await queriesToDb();
 
   const app = express();
   app.use(express.json());

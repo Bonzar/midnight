@@ -3,12 +3,31 @@ import { BasketProduct } from "../models/BasketProduct";
 import { BasketCoupon } from "../models/BasketCoupon";
 import { couponService } from "./couponService";
 import type { Transaction } from "sequelize";
+import { Basket } from "../models/Basket";
 
 export type AddBasketProductData = BasketProductCreationAttributes;
 export type UpdateBasketProductData = Partial<BasketProductCreationAttributes> &
   Pick<BasketProductCreationAttributes, "basketId" | "productId">;
 
 class BasketService {
+  // todo add total calculation
+  async getBasket(id: number, transaction?: Transaction) {
+    if (!id) {
+      throw new Error("Для получения корзины не был предоставлен ID");
+    }
+
+    const basket = await Basket.findOne({
+      where: { id },
+      transaction,
+    });
+
+    if (!basket) {
+      throw new Error(`Корзина с id - ${id} не найдена`);
+    }
+
+    return basket;
+  }
+
   async getBasketProduct(
     productId: number,
     basketId: number,
