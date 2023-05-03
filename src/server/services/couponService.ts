@@ -2,6 +2,7 @@ import type { CouponCreationAttributes } from "../models/Coupon";
 import { Coupon } from "../models/Coupon";
 import { OrderCoupon } from "../models/OrderCoupon";
 import type { Transaction } from "sequelize";
+import { exhaustiveCheck } from "../helpers/exhaustiveCheck";
 
 export type CreateCouponData = CouponCreationAttributes;
 export type UpdateCouponData = Partial<CouponCreationAttributes>;
@@ -66,6 +67,38 @@ class CouponService {
         );
       }
     }
+  }
+
+  async apply(ids: number[], subtotal: number, transaction?: Transaction) {
+    if (ids.length === 0) {
+      throw new Error(
+        "Для применения промокодов не был предоставлен ни один ID"
+      );
+    }
+
+    const coupons = await Coupon.findAll({ where: { id: ids }, transaction });
+
+    if (coupons.length === 0) {
+      throw new Error(`Ни один промокод с id - ${ids.join(", ")} не найден`);
+    }
+
+    let total = subtotal;
+    for (const coupon of coupons) {
+      switch (coupon.type) {
+        case "AMOUNT":
+          total -= coupon.value;
+          break;
+        case "PERCENTAGE":
+          // always calculate percentage sale from subtotal, for guarantee of stable cost
+          total -= subtotal * (coupon.value / 100);
+          break;
+        default:
+          exhaustiveCheck(coupon.type);
+          throw new Error("Не известный тип промокода для применения");
+      }
+    }
+
+    return total;
   }
 }
 

@@ -78,6 +78,7 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
   @AllowNull(false)
   @Min(0)
   @Column
+  // calculate when order create
   total!: number;
 
   @AllowNull(false)

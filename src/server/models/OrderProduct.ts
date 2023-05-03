@@ -5,6 +5,7 @@ import {
   BelongsTo,
   Column,
   ForeignKey,
+  Is,
   Min,
   Model,
   PrimaryKey,
@@ -50,6 +51,14 @@ export class OrderProduct extends Model<
 
   @AllowNull(false)
   @Min(0)
+  // check product exist on validate, for not crash when setter run
+  @Is(async function productExist() {
+    // @ts-ignore - Can't infer `this` type
+    const currentInstance: OrderProduct = this;
+
+    const productId = currentInstance.getDataValue("productId");
+    await productService.getOne(productId);
+  })
   @Column({
     async set() {
       const productId = this.getDataValue("productId");

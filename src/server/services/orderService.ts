@@ -27,17 +27,12 @@ class OrderService {
 
     const checkPromises = [
       // Check on coupons valid
-      ...orderData.orderCoupons.map(
-        async (coupon) =>
-          await couponService.checkValid({ id: coupon.couponId })
+      ...orderData.orderCoupons.map((coupon) =>
+        couponService.checkValid({ id: coupon.couponId })
       ),
       // Check on products stocks
-      ...orderData.orderProducts.map(
-        async (orderProduct) =>
-          await productService.checkStock(
-            orderProduct.productId,
-            orderProduct.quantity
-          )
+      ...orderData.orderProducts.map((orderProduct) =>
+        productService.checkStock(orderProduct.productId, orderProduct.quantity)
       ),
     ];
 
@@ -47,8 +42,8 @@ class OrderService {
     //todo add total calculation
 
     return await sequelize.transaction(async (transaction) => {
-      await Promise.all(
-        orderData.orderProducts.map(async (orderProduct, index) => {
+      const orderProducts = await Promise.all(
+        orderData.orderProducts.map(async (orderProduct) => {
           const product = await productService.getOne(
             orderProduct.productId,
             transaction
@@ -64,15 +59,33 @@ class OrderService {
         })
       );
 
+      let total = orderProducts.reduce(
+        (total, currentProduct, index) =>
+          total +
+          currentProduct.price * orderData.orderProducts[index].quantity,
+        0
+      );
+
+      if (orderData.orderCoupons.length > 0) {
+        total = await couponService.apply(
+          orderData.orderCoupons.map((coupon) => coupon.couponId),
+          total,
+          transaction
+        );
+      }
+
       // Create order + corresponding notes in OrderCoupon and OrderProduct
-      return await Order.create(orderData, {
-        include: [
-          { model: OrderCoupon, as: "orderCoupons" },
-          { model: OrderProduct, as: "orderProducts" },
-          Shipment,
-        ],
-        transaction,
-      });
+      return await Order.create(
+        { ...orderData, total },
+        {
+          include: [
+            { model: OrderCoupon, as: "orderCoupons" },
+            { model: OrderProduct, as: "orderProducts" },
+            Shipment,
+          ],
+          transaction,
+        }
+      );
     });
   }
 
