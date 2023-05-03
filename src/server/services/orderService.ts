@@ -46,17 +46,18 @@ class OrderService {
 
     //todo add total calculation
 
-    //todo add salePrice saving in orderProducts (should override if it was specified by user)
-
     return await sequelize.transaction(async (transaction) => {
-      // Decrease a product stocks
       await Promise.all(
-        orderData.orderProducts.map(async (orderProduct) => {
+        orderData.orderProducts.map(async (orderProduct, index) => {
           const product = await productService.getOne(
             orderProduct.productId,
             transaction
           );
 
+          // Saving current product price as salePrice in orderProducts
+          orderData.orderProducts[index].salePrice = product.price;
+
+          // Decrease a product stocks
           return product.update(
             {
               stock: product.stock - orderProduct.quantity,
