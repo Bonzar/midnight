@@ -43,7 +43,7 @@ class BasketService {
   }
 
   async addCoupon(basketId: number, couponId: number) {
-    await couponService.checkValid(couponId);
+    await couponService.checkValid({ id: couponId });
 
     return await BasketCoupon.create({ basketId, couponId });
   }

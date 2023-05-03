@@ -2,6 +2,7 @@ import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
+  BelongsTo,
   Column,
   ForeignKey,
   Model,
@@ -9,7 +10,9 @@ import {
   Table,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { WishlistCreationAttributes } from "./Wishlist";
 import { Wishlist } from "./Wishlist";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 
 interface WishlistProductAttributes {
@@ -21,7 +24,10 @@ interface WishlistProductAttributes {
 export type WishlistProductCreationAttributes = Optional<
   Omit<WishlistProductAttributes, "id">,
   never
->;
+> & {
+  wishlist?: WishlistCreationAttributes;
+  product?: ProductCreationAttributes;
+};
 
 @Table
 export class WishlistProduct extends Model<
@@ -38,10 +44,16 @@ export class WishlistProduct extends Model<
   @Column
   wishlistId!: number;
 
+  @BelongsTo(() => Wishlist)
+  wishlist!: Wishlist;
+
   @AllowNull(false)
   @ForeignKey(() => Product)
   @Column
   productId!: number;
+
+  @BelongsTo(() => Product)
+  product!: Product;
 }
 
 exhaustiveModelCheck<WishlistProductAttributes, WishlistProduct>();

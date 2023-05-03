@@ -2,6 +2,7 @@ import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
+  BelongsTo,
   Column,
   ForeignKey,
   Model,
@@ -10,7 +11,9 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
+import type { CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
 
 interface BasketCouponAttributes {
@@ -22,7 +25,10 @@ interface BasketCouponAttributes {
 export type BasketCouponCreationAttributes = Optional<
   Omit<BasketCouponAttributes, "id">,
   never
->;
+> & {
+  basket?: BasketCreationAttributes;
+  coupon?: CouponCreationAttributes;
+};
 
 @Table
 export class BasketCoupon extends Model<
@@ -40,11 +46,17 @@ export class BasketCoupon extends Model<
   @Column
   basketId!: number;
 
+  @BelongsTo(() => Basket)
+  basket!: Basket;
+
   @AllowNull(false)
   @ForeignKey(() => Coupon)
   @Unique("BasketId_CouponId")
   @Column
   couponId!: number;
+
+  @BelongsTo(() => Coupon)
+  coupon!: Coupon;
 }
 
 exhaustiveModelCheck<BasketCouponAttributes, BasketCoupon>();

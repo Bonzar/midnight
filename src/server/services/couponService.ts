@@ -34,11 +34,15 @@ class CouponService {
     return await coupon.destroy();
   }
 
-  async checkValid(id: number) {
-    const coupon = await Coupon.findOne({ where: { id } });
+  async checkValid(identifier: { id: number } | { key: string }) {
+    const coupon = await Coupon.findOne({ where: identifier });
 
     if (!coupon) {
-      throw new Error(`Промокод с id - ${id} не найден`);
+      throw new Error(
+        `Промокод с ${"id" in identifier ? "id" : "key"} - ${
+          "id" in identifier ? identifier.id : identifier.key
+        } не найден`
+      );
     }
 
     if (coupon.expiresTime && coupon.expiresTime > Date.now()) {
@@ -47,9 +51,9 @@ class CouponService {
 
     if (coupon.expiresCount) {
       const suppressCount = await OrderCoupon.count({
-        where: { couponId: id },
+        where: { couponId: coupon.id },
       });
-      if (suppressCount > coupon.expiresCount) {
+      if (suppressCount >= coupon.expiresCount) {
         throw new Error(
           `Этот промокод уже был применен максимальное количество раз`
         );

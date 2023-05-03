@@ -6,6 +6,7 @@ import {
   BelongsToMany,
   Column,
   ForeignKey,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
@@ -16,6 +17,7 @@ import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
 import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
+import type { WishlistProductCreationAttributes } from "./WishlistProduct";
 import { WishlistProduct } from "./WishlistProduct";
 
 interface WishlistAttributes {
@@ -29,6 +31,11 @@ export type WishlistCreationAttributes = Optional<
 > & {
   user?: Omit<UserCreationAttributes, "wishlist">;
   products?: ProductCreationAttributes[];
+} & {
+  wishlistProducts?: Omit<
+    WishlistProductCreationAttributes,
+    "wishlistId" | "wishlist"
+  >[];
 };
 
 @Table
@@ -52,6 +59,9 @@ export class Wishlist extends Model<
 
   @BelongsToMany(() => Product, () => WishlistProduct)
   products!: Array<Product & { WishlistProduct: WishlistProduct }>;
+
+  @HasMany(() => WishlistProduct)
+  wishlistProducts!: WishlistProduct[];
 }
 
 exhaustiveModelCheck<WishlistAttributes, Wishlist>();

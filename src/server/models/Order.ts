@@ -7,6 +7,7 @@ import {
   Column,
   Default,
   ForeignKey,
+  HasMany,
   Min,
   Model,
   PrimaryKey,
@@ -15,11 +16,13 @@ import {
 import { exhaustiveModelCheck } from "./helpers";
 import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
+import type { OrderProductCreationAttributes } from "./OrderProduct";
 import { OrderProduct } from "./OrderProduct";
 import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import type { CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
+import type { OrderCouponCreationAttributes } from "./OrderCoupon";
 import { OrderCoupon } from "./OrderCoupon";
 import type { ShipmentCreationAttributes } from "./Shipment";
 import { Shipment } from "./Shipment";
@@ -37,12 +40,14 @@ export interface OrderAttributes {
 
 export type OrderCreationAttributes = Optional<
   Omit<OrderAttributes, "id">,
-  "isPaid" | "status"
+  "isPaid" | "status" | "note" | "shipDate"
 > & {
   user?: UserCreationAttributes;
   shipment?: ShipmentCreationAttributes;
-  products?: ProductCreationAttributes[];
+  products?: Array<ProductCreationAttributes & OrderProductCreationAttributes>;
   coupons?: CouponCreationAttributes[];
+  orderProducts?: Omit<OrderProductCreationAttributes, "orderId" | "order">[];
+  orderCoupons?: Omit<OrderCouponCreationAttributes, "orderId" | "order">[];
 };
 
 @Table
@@ -94,8 +99,14 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
   @BelongsToMany(() => Product, () => OrderProduct)
   products!: Array<Product & { OrderProduct: OrderProduct }>;
 
+  @HasMany(() => OrderProduct)
+  orderProducts!: OrderProduct[];
+
   @BelongsToMany(() => Coupon, () => OrderCoupon)
   coupons!: Array<Coupon & { OrderCoupon: OrderCoupon }>;
+
+  @HasMany(() => OrderCoupon)
+  orderCoupons!: OrderCoupon[];
 }
 
 exhaustiveModelCheck<OrderAttributes, Order>();

@@ -22,14 +22,17 @@ import type { ProductImageCreationAttributes } from "./ProductImage";
 import { ProductImage } from "./ProductImage";
 import type { ProductMetaCreationAttributes } from "./ProductMeta";
 import { ProductMeta } from "./ProductMeta";
+import type { OrderProductCreationAttributes } from "./OrderProduct";
 import { OrderProduct } from "./OrderProduct";
 import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
+import type { BasketProductCreationAttributes } from "./BasketProduct";
 import { BasketProduct } from "./BasketProduct";
 import type { BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
 import type { WishlistCreationAttributes } from "./Wishlist";
 import { Wishlist } from "./Wishlist";
+import type { WishlistProductCreationAttributes } from "./WishlistProduct";
 import { WishlistProduct } from "./WishlistProduct";
 import { DataTypes } from "sequelize";
 
@@ -56,6 +59,18 @@ export type ProductCreationAttributes = Optional<
   orders?: OrderCreationAttributes;
   baskets?: BasketCreationAttributes;
   wishlist?: WishlistCreationAttributes;
+  orderProducts?: Omit<
+    OrderProductCreationAttributes,
+    "productId" | "product"
+  >[];
+  wishlistProducts?: Omit<
+    WishlistProductCreationAttributes,
+    "productId" | "product"
+  >[];
+  basketProducts?: Omit<
+    BasketProductCreationAttributes,
+    "productId" | "product"
+  >[];
 };
 
 @Table
@@ -114,11 +129,20 @@ export class Product extends Model<
   @BelongsToMany(() => Order, () => OrderProduct)
   orders!: Array<Order & { OrderProduct: OrderProduct }>;
 
+  @HasMany(() => OrderProduct)
+  orderProducts!: OrderProduct[];
+
   @BelongsToMany(() => Basket, () => BasketProduct)
   baskets!: Array<Basket & { BasketProduct: BasketProduct }>;
 
+  @HasMany(() => BasketProduct)
+  basketProducts!: BasketProduct[];
+
   @BelongsToMany(() => Wishlist, () => WishlistProduct)
   wishlist!: Array<Basket & { WishlistProduct: WishlistProduct }>;
+
+  @HasMany(() => WishlistProduct)
+  wishlistProducts!: WishlistProduct[];
 }
 
 exhaustiveModelCheck<ProductAttributes, Product>();

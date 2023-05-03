@@ -2,6 +2,7 @@ import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
+  BelongsTo,
   Column,
   ForeignKey,
   Min,
@@ -10,7 +11,9 @@ import {
   Table,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 
 interface OrderProductAttributes {
@@ -24,7 +27,10 @@ interface OrderProductAttributes {
 export type OrderProductCreationAttributes = Optional<
   Omit<OrderProductAttributes, "id">,
   never
->;
+> & {
+  order?: OrderCreationAttributes;
+  product?: ProductCreationAttributes;
+};
 
 @Table
 export class OrderProduct extends Model<
@@ -51,10 +57,16 @@ export class OrderProduct extends Model<
   @Column
   orderId!: number;
 
+  @BelongsTo(() => Order)
+  order!: Order;
+
   @AllowNull(false)
   @ForeignKey(() => Product)
   @Column
   productId!: number;
+
+  @BelongsTo(() => Product)
+  product!: Product;
 }
 
 exhaustiveModelCheck<OrderProductAttributes, OrderProduct>();

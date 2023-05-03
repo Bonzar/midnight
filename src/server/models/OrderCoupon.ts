@@ -2,6 +2,7 @@ import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
+  BelongsTo,
   Column,
   ForeignKey,
   Model,
@@ -10,7 +11,9 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
+import type { CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
 
 interface OrderCouponAttributes {
@@ -22,7 +25,10 @@ interface OrderCouponAttributes {
 export type OrderCouponCreationAttributes = Optional<
   Omit<OrderCouponAttributes, "id">,
   never
->;
+> & {
+  order?: OrderCreationAttributes;
+  coupon?: CouponCreationAttributes;
+};
 
 @Table
 export class OrderCoupon extends Model<
@@ -40,11 +46,17 @@ export class OrderCoupon extends Model<
   @Column
   orderId!: number;
 
+  @BelongsTo(() => Order)
+  order!: Order;
+
   @AllowNull(false)
   @ForeignKey(() => Coupon)
   @Unique("OrderId_CouponId")
   @Column
   couponId!: number;
+
+  @BelongsTo(() => Coupon)
+  coupon!: Coupon;
 }
 
 exhaustiveModelCheck<OrderCouponAttributes, OrderCoupon>();

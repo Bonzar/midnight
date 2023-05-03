@@ -11,6 +11,7 @@ import {
   DEFAULT_ITEMS_PAGE,
 } from "../../helpers/constants";
 import { Category } from "../models/Category";
+import type { Transaction } from "sequelize";
 
 export type CreateProductData = ProductCreationAttributes;
 export type UpdateProductData = Partial<ProductCreationAttributes>;
@@ -19,7 +20,18 @@ class ProductService {
   async create(data: CreateProductData) {
     return await Product.create(data);
   }
-  async get(id: number) {
+  async getOne(id: number, transaction?: Transaction) {
+    const product = await Product.findOne({
+      where: { id },
+      transaction,
+    });
+
+    this.checkExist(product, id);
+
+    return product;
+  }
+
+  async getDetailed(id: number) {
     const product = await Product.findOne({
       where: { id },
       include: [
@@ -36,9 +48,7 @@ class ProductService {
       ],
     });
 
-    if (!product) {
-      throw new Error(`Продукт с id - ${id} не найден`);
-    }
+    this.checkExist(product, id);
 
     return product;
   }
@@ -64,21 +74,35 @@ class ProductService {
   }
 
   async update(id: number, data: UpdateProductData) {
-    const product = await Product.findOne({ where: { id } });
-    if (!product) {
-      throw new Error("`Продукт с id - ${productId} не найден`");
-    }
+    const product = await this.getOne(id);
 
     return await product.update(data);
   }
 
   async delete(id: number) {
-    const product = await Product.findOne({ where: { id } });
+    const product = await this.getOne(id);
+
+    return await product.destroy();
+  }
+
+  async checkStock(id: number, quantity: number) {
+    const product = await this.getOne(id);
+
+    if (product.stock === 0) {
+      throw new Error(`К сожалению товар с id - ${id} — закончился`);
+    }
+
+    if (product.stock < quantity) {
+      throw new Error(
+        `Максимально доступное количество товара с id - ${id} — ${product.stock} шт.`
+      );
+    }
+  }
+
+  checkExist(product: Product | null, id: number): asserts product is Product {
     if (!product) {
       throw new Error(`Продукт с id - ${id} не найден`);
     }
-
-    return await product.destroy();
   }
 }
 

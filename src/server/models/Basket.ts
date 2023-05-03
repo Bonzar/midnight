@@ -6,6 +6,7 @@ import {
   BelongsToMany,
   Column,
   ForeignKey,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
@@ -16,7 +17,11 @@ import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
 import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
+import type { BasketProductCreationAttributes } from "./BasketProduct";
 import { BasketProduct } from "./BasketProduct";
+import { Coupon } from "./Coupon";
+import type { BasketCouponCreationAttributes } from "./BasketCoupon";
+import { BasketCoupon } from "./BasketCoupon";
 
 interface BasketAttributes {
   id: Basket["id"];
@@ -29,6 +34,11 @@ export type BasketCreationAttributes = Optional<
 > & {
   user?: Omit<UserCreationAttributes, "basket">;
   products?: ProductCreationAttributes[];
+  basketProducts?: Omit<
+    BasketProductCreationAttributes,
+    "basketId" | "basket"
+  >[];
+  basketCoupons?: Omit<BasketCouponCreationAttributes, "basketId" | "basket">[];
 };
 
 @Table
@@ -49,6 +59,15 @@ export class Basket extends Model<BasketAttributes, BasketCreationAttributes> {
 
   @BelongsToMany(() => Product, () => BasketProduct)
   products!: Array<Product & { BasketProduct: BasketProduct }>;
+
+  @HasMany(() => BasketProduct)
+  basketProducts!: BasketProduct[];
+
+  @BelongsToMany(() => Coupon, () => BasketCoupon)
+  coupons!: Array<Basket & { BasketCoupon: BasketCoupon }>;
+
+  @HasMany(() => BasketCoupon)
+  basketCoupons!: BasketCoupon[];
 }
 
 exhaustiveModelCheck<BasketAttributes, Basket>();

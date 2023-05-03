@@ -45,7 +45,7 @@ class ProductController {
     try {
       const productId = parseInt(req.params.id);
 
-      const product = await productService.get(productId);
+      const product = await productService.getDetailed(productId);
 
       return res.json(product);
     } catch (error) {

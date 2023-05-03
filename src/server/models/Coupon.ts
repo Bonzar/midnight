@@ -11,8 +11,10 @@ import {
   Table,
   Unique,
   Is,
+  HasMany,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { OrderCouponCreationAttributes } from "./OrderCoupon";
 import { OrderCoupon } from "./OrderCoupon";
 import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
@@ -32,6 +34,7 @@ export type CouponCreationAttributes = Optional<
   "type" | "expiresTime" | "expiresCount"
 > & {
   orders?: OrderCreationAttributes[];
+  orderCoupons?: Omit<OrderCouponCreationAttributes, "couponId" | "coupon">[];
 };
 
 @Table
@@ -43,11 +46,23 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
 
   @AllowNull(false)
   @Unique
-  @Column
+  @Column({
+    set(value: CouponAttributes["key"]) {
+      this.setDataValue("key", value.toUpperCase());
+    },
+  })
   key!: string;
 
   @AllowNull(false)
   @Min(0)
+  @Is(function noMore100Percentage(value: CouponAttributes["value"]) {
+    // @ts-ignore - Can't infer `this` type
+    const currentInstance: Coupon = this;
+
+    if (value > 100 && currentInstance.getDataValue("type") === "PERCENTAGE") {
+      throw new Error("Скидка по промокоду не может быть больше 100%");
+    }
+  })
   @Column
   value!: number;
 
@@ -77,6 +92,9 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
 
   @BelongsToMany(() => Order, () => OrderCoupon)
   orders!: Array<Order & { OrderCoupon: OrderCoupon }>;
+
+  @HasMany(() => OrderCoupon)
+  orderCoupons!: OrderCoupon[];
 }
 
 exhaustiveModelCheck<CouponAttributes, Coupon>();

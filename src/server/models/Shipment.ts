@@ -25,7 +25,7 @@ interface ShipmentAttributes {
 
 export type ShipmentCreationAttributes = Optional<
   Omit<ShipmentAttributes, "id">,
-  never
+  "address"
 > & {
   shipmentType?: ShipmentTypeCreationAttributes;
 };

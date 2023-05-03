@@ -45,7 +45,9 @@ export class ShipmentType extends Model<
   @NotEmpty
   @Unique
   @Column({
-    set: (value: ShipmentTypeAttributes["code"]) => value.toUpperCase(),
+    set(value: ShipmentTypeAttributes["code"]) {
+      this.setDataValue("code", value.toUpperCase());
+    },
   })
   code!: string;
 

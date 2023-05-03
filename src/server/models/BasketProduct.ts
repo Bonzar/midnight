@@ -2,6 +2,7 @@ import type { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
+  BelongsTo,
   Column,
   ForeignKey,
   Min,
@@ -10,7 +11,9 @@ import {
   Table,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
+import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 
 interface BasketProductAttributes {
@@ -23,7 +26,10 @@ interface BasketProductAttributes {
 export type BasketProductCreationAttributes = Optional<
   Omit<BasketProductAttributes, "id">,
   never
->;
+> & {
+  basket?: BasketCreationAttributes;
+  product?: ProductCreationAttributes;
+};
 
 @Table
 export class BasketProduct extends Model<
@@ -45,10 +51,16 @@ export class BasketProduct extends Model<
   @Column
   basketId!: number;
 
+  @BelongsTo(() => Basket)
+  basket!: Basket;
+
   @AllowNull(false)
   @ForeignKey(() => Product)
   @Column
   productId!: number;
+
+  @BelongsTo(() => Product)
+  product!: Product;
 }
 
 exhaustiveModelCheck<BasketProductAttributes, BasketProduct>();
