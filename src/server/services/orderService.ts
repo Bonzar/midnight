@@ -25,24 +25,28 @@ class OrderService {
       throw new Error("Заказ не может быть пустым");
     }
 
-    // Check on coupons valid
-    await Promise.all(
-      orderData.orderCoupons.map(
+    const checkPromises = [
+      // Check on coupons valid
+      ...orderData.orderCoupons.map(
         async (coupon) =>
           await couponService.checkValid({ id: coupon.couponId })
-      )
-    );
-
-    // Check on products stocks
-    await Promise.all(
-      orderData.orderProducts.map(
+      ),
+      // Check on products stocks
+      ...orderData.orderProducts.map(
         async (orderProduct) =>
           await productService.checkStock(
             orderProduct.productId,
             orderProduct.quantity
           )
-      )
-    );
+      ),
+    ];
+
+    // wait for all checks
+    await Promise.all(checkPromises);
+
+    //todo add total calculation
+
+    //todo add salePrice saving in orderProducts (should override if it was specified by user)
 
     return await sequelize.transaction(async (transaction) => {
       // Decrease a product stocks
