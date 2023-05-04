@@ -15,7 +15,7 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { CategoryCreationAttributes } from "./Category";
 import { Category } from "./Category";
 import type { ProductImageCreationAttributes } from "./ProductImage";

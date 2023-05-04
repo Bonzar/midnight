@@ -12,7 +12,7 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
 import type { ProductCreationAttributes } from "./Product";

@@ -13,7 +13,7 @@ import {
 import type { Optional } from "sequelize";
 import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import { DataTypes } from "sequelize";
 
 interface AddressAttributes {

@@ -1,7 +1,7 @@
 import type { CouponCreationAttributes } from "../models/Coupon";
 import { Coupon } from "../models/Coupon";
 import { OrderCoupon } from "../models/OrderCoupon";
-import { exhaustiveCheck } from "../helpers/exhaustiveCheck";
+import { exhaustiveCheck } from "../../helpers/exhaustiveCheck";
 
 export type CreateCouponData = CouponCreationAttributes;
 export type UpdateCouponData = Partial<CouponCreationAttributes>;

@@ -13,7 +13,7 @@ import {
   Is,
   HasMany,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { OrderCouponCreationAttributes } from "./OrderCoupon";
 import { OrderCoupon } from "./OrderCoupon";
 import type { OrderCreationAttributes } from "./Order";

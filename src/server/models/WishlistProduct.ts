@@ -9,7 +9,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { WishlistCreationAttributes } from "./Wishlist";
 import { Wishlist } from "./Wishlist";
 import type { ProductCreationAttributes } from "./Product";

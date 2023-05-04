@@ -11,7 +11,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import type { ShipmentTypeCreationAttributes } from "./ShipmentType";

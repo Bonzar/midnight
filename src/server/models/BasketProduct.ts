@@ -10,7 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
 import type { ProductCreationAttributes } from "./Product";

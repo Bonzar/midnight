@@ -12,13 +12,14 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
 import type { ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import type { BasketProductCreationAttributes } from "./BasketProduct";
 import { BasketProduct } from "./BasketProduct";
+import type { CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
 import type { BasketCouponCreationAttributes } from "./BasketCoupon";
 import { BasketCoupon } from "./BasketCoupon";
@@ -38,6 +39,7 @@ export type BasketCreationAttributes = Optional<
     BasketProductCreationAttributes,
     "basketId" | "basket"
   >[];
+  coupons?: CouponCreationAttributes[];
   basketCoupons?: Omit<BasketCouponCreationAttributes, "basketId" | "basket">[];
 };
 

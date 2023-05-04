@@ -14,7 +14,7 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import { Address } from "./Address";
 import type { AddressCreationAttributes } from "./Address";
 import { Basket } from "./Basket";

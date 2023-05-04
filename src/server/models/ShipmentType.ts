@@ -11,7 +11,7 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { ShipmentCreationAttributes } from "./Shipment";
 import { Shipment } from "./Shipment";
 

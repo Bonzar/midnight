@@ -13,7 +13,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "./helpers";
+import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
 import type { UserCreationAttributes } from "./User";
 import { User } from "./User";
 import type { OrderProductCreationAttributes } from "./OrderProduct";
