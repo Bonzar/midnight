@@ -5,6 +5,7 @@ import { orderRouter } from "./orderRouter";
 import { couponRouter } from "./couponRouter";
 import { productRouter } from "./productRouter";
 import { basketRouter } from "./basketRouter";
+import { shipmentRouter } from "./shipmentRouter";
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.use("/order", orderRouter); // order + shipmentType
 router.use("/coupon", couponRouter);
 router.use("/product", productRouter);
 router.use("/basket", basketRouter);
+router.use("/shipment", shipmentRouter);
 
 router.use("/*", (req, res) => res.status(404).end());
 

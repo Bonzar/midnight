@@ -121,7 +121,7 @@ class OrderController {
 
       await orderService.delete(orderId);
 
-      res.status(200);
+      res.status(200).end();
     } catch (error) {
       next(
         ApiError.badRequest(

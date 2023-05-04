@@ -10,6 +10,6 @@ orderRouter.get("/:id", orderController.get);
 
 orderRouter.patch("/:id", orderController.update);
 
-orderRouter.delete("/:id", orderController.update);
+orderRouter.delete("/:id", orderController.delete);
 
 export { orderRouter };

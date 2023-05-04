@@ -114,7 +114,7 @@ class BasketController {
       try {
         await basketService.deleteCoupon(req.body.basketId, req.body.couponId);
 
-        res.status(200);
+        res.status(200).end();
       } catch (error) {
         next(
           ApiError.badRequest(

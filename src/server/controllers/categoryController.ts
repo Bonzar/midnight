@@ -78,7 +78,7 @@ class CategoryController {
 
       await categoryService.delete(categoryId);
 
-      res.status(200);
+      res.status(200).end();
     } catch (error) {
       next(
         ApiError.badRequest(
