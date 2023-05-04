@@ -25,7 +25,7 @@ class BasketController {
       try {
         const basketId = parseInt(req.params.id);
 
-        const basket = await basketService.getBasket(basketId);
+        const basket = await basketService.getOneBasket(basketId);
 
         res.status(200).json(basket);
       } catch (error) {

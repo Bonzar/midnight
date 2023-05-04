@@ -19,7 +19,7 @@ export type UpdateBasketProductData = Partial<BasketProductCreationAttributes> &
   Pick<BasketProductCreationAttributes, "basketId" | "productId">;
 
 class BasketService {
-  async getBasket(id: number): Promise<GetBasketResult> {
+  async getOneBasket(id: number): Promise<GetBasketResult> {
     if (!id) {
       throw new Error("Для получения корзины не был предоставлен ID");
     }
@@ -65,7 +65,7 @@ class BasketService {
     return { basket, total, subtotal };
   }
 
-  async getProduct(basketId: number, productId: number) {
+  async getOneProduct(basketId: number, productId: number) {
     if (typeof productId === "undefined" || typeof basketId === "undefined") {
       throw new Error(
         `Для получения продукта в корзине не был предоставлен ID: ${[
@@ -97,13 +97,13 @@ class BasketService {
   async updateProduct(updateData: UpdateBasketProductData) {
     const { productId, basketId, ...newData } = updateData;
 
-    const basketProductNote = await this.getProduct(basketId, productId);
+    const basketProductNote = await this.getOneProduct(basketId, productId);
 
     return await basketProductNote.update(newData);
   }
 
   async deleteProduct(basketId: number, productId: number) {
-    const basketProductNote = await this.getProduct(basketId, productId);
+    const basketProductNote = await this.getOneProduct(basketId, productId);
 
     return await basketProductNote.destroy();
   }

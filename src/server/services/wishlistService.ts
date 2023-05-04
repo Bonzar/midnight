@@ -21,7 +21,7 @@ class WishlistService {
     }
   }
 
-  async getWishlist(id: number) {
+  async getOneWishlist(id: number) {
     if (!id) {
       throw new Error("Для получения списка желаний не был предоставлен ID");
     }
@@ -60,7 +60,7 @@ class WishlistService {
     return await WishlistProduct.create({ wishlistId, productId });
   }
 
-  async getProduct(wishlistId: number, productId: number) {
+  async getOneProduct(wishlistId: number, productId: number) {
     this.checkIdsPresent(
       wishlistId,
       productId,
@@ -81,7 +81,7 @@ class WishlistService {
   }
 
   async deleteProduct(wishlistId: number, productId: number) {
-    const wishlistProductNote = await this.getProduct(wishlistId, productId);
+    const wishlistProductNote = await this.getOneProduct(wishlistId, productId);
 
     return await wishlistProductNote.destroy();
   }

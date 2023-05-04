@@ -20,7 +20,7 @@ class WishlistController {
     try {
       const wishlistId = parseInt(req.params.id);
 
-      const wishlist = await wishlistService.getWishlist(wishlistId);
+      const wishlist = await wishlistService.getOneWishlist(wishlistId);
 
       res.status(200).json(wishlist);
     } catch (error) {
