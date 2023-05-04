@@ -7,7 +7,6 @@ import {
   HasMany,
   HasOne,
   IsEmail,
-  Length,
   Model,
   NotEmpty,
   PrimaryKey,
@@ -24,6 +23,7 @@ import type { OrderCreationAttributes } from "./Order";
 import { Wishlist } from "./Wishlist";
 import type { WishlistCreationAttributes } from "./Wishlist";
 import { DataTypes } from "sequelize";
+import bcrypt from "bcrypt";
 
 interface UserAttributes {
   id: User["id"];
@@ -75,8 +75,21 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   email!: string;
 
   @AllowNull(false)
-  @Length({ min: 8, max: 20 })
-  @Column
+  @NotEmpty
+  @Column({
+    set(value: UserAttributes["password"]) {
+      const password = value.toString();
+
+      if (password.length < 8 || password.length > 20) {
+        throw new Error("Длинна пароля может быть от 8 до 20 символов");
+      }
+
+      const currentInstance = <User>this;
+
+      const hashPassword = bcrypt.hashSync(currentInstance.email + password, 5);
+      this.setDataValue("password", hashPassword);
+    },
+  })
   password!: string;
 
   @AllowNull(false)

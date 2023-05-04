@@ -39,6 +39,12 @@ export class ApiError extends Error {
     return new ApiError(500, message?.toString() ?? defaultMessage);
   }
 
+  static notAuthorize(defaultMessage: string, error?: unknown) {
+    const message = this.getErrorMessage(error);
+
+    return new ApiError(401, message?.toString() ?? defaultMessage);
+  }
+
   static forbidden(defaultMessage: string, error?: unknown) {
     const message = this.getErrorMessage(error);
 

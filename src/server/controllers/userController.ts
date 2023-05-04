@@ -1,4 +1,4 @@
-import type { NextFunction, Request, RequestHandler, Response } from "express";
+import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import type {
   CreateAddressData,
@@ -11,17 +11,23 @@ import type { Address } from "../models/Address";
 import { parseInt } from "../../helpers/parseInt";
 
 type RegistrationUserBody = CreateUserData;
+type RegistrationUserResponse = { user: Omit<User, "password">; token: string };
+
+type LoginUserBody = { email: string; password: string };
+type LoginUserResponse = { user: Omit<User, "password">; token: string };
+
 type CreateAddressBody = CreateAddressData;
 type UpdateAddressBody = UpdateAddressData;
 
 class UserController {
-  registration: RequestHandler<void, User, RegistrationUserBody, void> = async (
-    req,
-    res,
-    next
-  ) => {
+  registration: RequestHandler<
+    void,
+    RegistrationUserResponse,
+    RegistrationUserBody,
+    void
+  > = async (req, res, next) => {
     try {
-      const user = await userService.create(req.body);
+      const user = await userService.registration(req.body);
 
       res.status(200).json(user);
     } catch (error) {
@@ -34,27 +40,37 @@ class UserController {
     }
   };
 
-  login: RequestHandler<void, User, { id: number }, void> = async (
+  login: RequestHandler<void, LoginUserResponse, LoginUserBody, void> = async (
     req,
     res,
     next
   ) => {
     try {
-      const user = await userService.getOne(req.body.id);
+      const user = await userService.login(req.body.email, req.body.password);
 
       res.status(200).json(user);
     } catch (error) {
-      next(ApiError.badRequest("При  произошла ошибка", error));
+      next(ApiError.badRequest("При входе в аккаунт произошла ошибка", error));
     }
   };
 
-  async check(req: Request, res: Response, next: NextFunction) {
-    if (!req.query.id) {
-      return next(ApiError.forbidden("Ошибка"));
-    }
+  check: RequestHandler<void, { token: string }, void, void> = async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const token = userService.generateJwt(
+        req.user.id,
+        req.user.email,
+        req.user.role
+      );
 
-    res.status(200).json({ message: "hello" });
-  }
+      res.status(200).json({ token });
+    } catch (error) {
+      next(ApiError.badRequest("При получении токена произошла ошибка", error));
+    }
+  };
 
   createAddress: RequestHandler<void, Address, CreateAddressBody, void> =
     async (req, res, next) => {

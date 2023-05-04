@@ -1,8 +1,13 @@
 import { Router } from "express";
 import { categoryController } from "../controllers/categoryController";
+import { checkRoleMiddleware } from "../middleware/checkRoleMiddleware";
 const categoryRouter = Router();
 
-categoryRouter.post("/", categoryController.create);
+categoryRouter.post(
+  "/",
+  checkRoleMiddleware("ADMIN"),
+  categoryController.create
+);
 
 categoryRouter.get("/", categoryController.getAll);
 

@@ -48,7 +48,8 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
   @Unique
   @Column({
     set(value: CouponAttributes["key"]) {
-      this.setDataValue("key", value.toUpperCase());
+      const currentInstance = <Coupon>this;
+      currentInstance.setDataValue("key", value.toUpperCase());
     },
   })
   key!: string;
