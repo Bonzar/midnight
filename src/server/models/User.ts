@@ -24,6 +24,8 @@ import { Wishlist } from "./Wishlist";
 import type { WishlistCreationAttributes } from "./Wishlist";
 import { DataTypes } from "sequelize";
 import bcrypt from "bcrypt";
+import type { TokenCreationAttributes } from "./Token";
+import { Token } from "./Token";
 
 interface UserAttributes {
   id: User["id"];
@@ -32,18 +34,20 @@ interface UserAttributes {
   middleName: User["middleName"];
   email: User["email"];
   password: User["password"];
-  isVerified: User["isVerified"];
+  isActivated: User["isActivated"];
+  activationLink: User["activationLink"];
   role: User["role"];
 }
 
 export type UserCreationAttributes = Optional<
   Omit<UserAttributes, "id">,
-  "isVerified" | "role" | "lastName" | "middleName"
+  "isActivated" | "activationLink" | "role" | "lastName" | "middleName"
 > & {
   basket?: Omit<BasketCreationAttributes, "userId" | "user">;
   wishlist?: Omit<WishlistCreationAttributes, "userId" | "user">;
   orders?: Omit<OrderCreationAttributes, "userId" | "user">[];
   addresses?: Omit<AddressCreationAttributes, "userId" | "user">[];
+  token?: Omit<TokenCreationAttributes, "userId" | "user">;
 };
 
 @Table
@@ -95,7 +99,13 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @AllowNull(false)
   @Default(false)
   @Column
-  isVerified!: boolean;
+  isActivated!: boolean;
+
+  @AllowNull(false)
+  @Unique
+  @NotEmpty
+  @Column
+  activationLink!: string;
 
   @AllowNull(false)
   @Default("USER")
@@ -113,6 +123,9 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @HasOne(() => Wishlist)
   wishlist?: Wishlist;
+
+  @HasOne(() => Token)
+  token?: Token;
 }
 
 exhaustiveModelCheck<UserAttributes, UserCreationAttributes, User>(true);
