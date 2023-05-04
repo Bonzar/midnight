@@ -3,25 +3,55 @@ import { BasketProduct } from "../models/BasketProduct";
 import { BasketCoupon } from "../models/BasketCoupon";
 import { couponService } from "./couponService";
 import { Basket } from "../models/Basket";
+import { Product } from "../models/Product";
+import { Coupon } from "../models/Coupon";
+
+export type GetBasketResult = {
+  basket: Basket;
+  total: number;
+  subtotal: number;
+};
 
 export type AddBasketProductData = BasketProductCreationAttributes;
+
 export type UpdateBasketProductData = Partial<BasketProductCreationAttributes> &
   Pick<BasketProductCreationAttributes, "basketId" | "productId">;
 
 class BasketService {
-  // todo add total calculation
-  async getBasket(id: number) {
+  async getBasket(id: number): Promise<GetBasketResult> {
     if (!id) {
       throw new Error("Для получения корзины не был предоставлен ID");
     }
 
-    const basket = await Basket.findOne({ where: { id } });
+    const basket = await Basket.findOne({
+      where: { id },
+      include: [
+        { model: BasketProduct, include: [Product] },
+        { model: BasketCoupon, include: [Coupon] },
+      ],
+    });
 
     if (!basket) {
       throw new Error(`Корзина с id - ${id} не найдена`);
     }
 
-    return basket;
+    // Calculating total and subtotal
+    const subtotal = basket.basketProducts.reduce(
+      (total, currentBasketProduct) =>
+        total +
+        currentBasketProduct.product.price * currentBasketProduct.quantity,
+      0
+    );
+
+    let total = subtotal;
+    if (basket.basketCoupons.length > 0) {
+      total = await couponService.apply(
+        basket.basketCoupons.map((coupon) => coupon.couponId),
+        total
+      );
+    }
+
+    return { basket, total, subtotal };
   }
 
   async getBasketProduct(productId: number, basketId: number) {

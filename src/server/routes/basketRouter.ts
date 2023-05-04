@@ -9,4 +9,6 @@ basketRouter.delete("/product", basketController.deleteProduct);
 basketRouter.post("/coupon", basketController.addCoupon);
 basketRouter.delete("/coupon", basketController.deleteCoupon);
 
+basketRouter.get("/:id", basketController.getBasket);
+
 export { basketRouter };
