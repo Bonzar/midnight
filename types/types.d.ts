@@ -17,3 +17,5 @@ declare global {
 export type AllAsString<T> = {
   [N in keyof T]: string;
 };
+
+export type NotUndefined<T> = { [k in keyof T]-?: Exclude<T[k], undefined> };

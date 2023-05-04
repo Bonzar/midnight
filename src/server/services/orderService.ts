@@ -11,9 +11,10 @@ import { OrderProduct } from "../models/OrderProduct";
 import { OrderCoupon } from "../models/OrderCoupon";
 import { sequelize } from "../database";
 import { productService } from "./productService";
+import type { NotUndefined } from "../../../types/types";
 
-export type CreateOrderData = OrderCreationAttributes &
-  Required<
+export type CreateOrderData = Omit<OrderCreationAttributes, "total"> &
+  NotUndefined<
     Pick<OrderCreationAttributes, "orderCoupons" | "orderProducts" | "shipment">
   >;
 
@@ -38,8 +39,6 @@ class OrderService {
 
     // wait for all checks
     await Promise.all(checkPromises);
-
-    //todo add total calculation
 
     return await sequelize.transaction(async () => {
       const orderProducts = await Promise.all(
