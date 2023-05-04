@@ -5,6 +5,7 @@ import { couponService } from "./couponService";
 import { Basket } from "../models/Basket";
 import { Product } from "../models/Product";
 import { Coupon } from "../models/Coupon";
+import { ProductImage } from "../models/ProductImage";
 
 export type GetBasketResult = {
   basket: Basket;
@@ -26,7 +27,17 @@ class BasketService {
     const basket = await Basket.findOne({
       where: { id },
       include: [
-        { model: BasketProduct, include: [Product] },
+        {
+          model: BasketProduct,
+          include: [
+            {
+              model: Product,
+              include: [
+                { model: ProductImage, limit: 1, order: [["sort", "ASC"]] },
+              ],
+            },
+          ],
+        },
         { model: BasketCoupon, include: [Coupon] },
       ],
     });
@@ -54,7 +65,7 @@ class BasketService {
     return { basket, total, subtotal };
   }
 
-  async getBasketProduct(productId: number, basketId: number) {
+  async getProduct(basketId: number, productId: number) {
     if (typeof productId === "undefined" || typeof basketId === "undefined") {
       throw new Error(
         `Для получения продукта в корзине не был предоставлен ID: ${[
@@ -86,13 +97,13 @@ class BasketService {
   async updateProduct(updateData: UpdateBasketProductData) {
     const { productId, basketId, ...newData } = updateData;
 
-    const basketProductNote = await this.getBasketProduct(productId, basketId);
+    const basketProductNote = await this.getProduct(basketId, productId);
 
     return await basketProductNote.update(newData);
   }
 
   async deleteProduct(basketId: number, productId: number) {
-    const basketProductNote = await this.getBasketProduct(productId, basketId);
+    const basketProductNote = await this.getProduct(basketId, productId);
 
     return await basketProductNote.destroy();
   }
