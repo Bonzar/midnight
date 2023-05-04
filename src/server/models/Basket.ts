@@ -70,4 +70,4 @@ export class Basket extends Model<BasketAttributes, BasketCreationAttributes> {
   basketCoupons!: BasketCoupon[];
 }
 
-exhaustiveModelCheck<BasketAttributes, Basket>();
+exhaustiveModelCheck<BasketAttributes, BasketCreationAttributes, Basket>(true);

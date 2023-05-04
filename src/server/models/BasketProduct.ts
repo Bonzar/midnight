@@ -63,4 +63,8 @@ export class BasketProduct extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<BasketProductAttributes, BasketProduct>();
+exhaustiveModelCheck<
+  BasketProductAttributes,
+  BasketProductCreationAttributes,
+  BasketProduct
+>(true);

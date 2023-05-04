@@ -1,8 +1,31 @@
-import type { Attributes } from "sequelize";
+import type { Attributes, InferAttributes } from "sequelize";
+import type { Model } from "sequelize-typescript";
+
+type DefaultModelAttributes =
+  | "createdAt"
+  | "updatedAt"
+  | "deletedAt"
+  | "version";
+
+type ModelInstanceKeys<T extends Model> = keyof Omit<
+  InferAttributes<T>,
+  DefaultModelAttributes
+>;
 
 export function exhaustiveModelCheck<
   ModelAttributes extends Attributes<any>,
-  ModelInstance extends ModelAttributes
->() {
-  return;
+  ModelAssociationsAttributes extends Attributes<any>,
+  ModelInstance extends Model
+>(
+  value: ModelInstanceKeys<ModelInstance> extends
+    | keyof ModelAttributes
+    | keyof ModelAssociationsAttributes
+    ?
+        | keyof ModelAttributes
+        | keyof ModelAssociationsAttributes extends ModelInstanceKeys<ModelInstance>
+      ? true
+      : never
+    : never
+) {
+  return value;
 }

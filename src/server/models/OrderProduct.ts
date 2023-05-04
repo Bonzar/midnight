@@ -70,4 +70,8 @@ export class OrderProduct extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<OrderProductAttributes, OrderProduct>();
+exhaustiveModelCheck<
+  OrderProductAttributes,
+  OrderProductCreationAttributes,
+  OrderProduct
+>(true);

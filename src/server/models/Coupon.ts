@@ -97,4 +97,4 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
   orderCoupons!: OrderCoupon[];
 }
 
-exhaustiveModelCheck<CouponAttributes, Coupon>();
+exhaustiveModelCheck<CouponAttributes, CouponCreationAttributes, Coupon>(true);

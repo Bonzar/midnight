@@ -59,4 +59,8 @@ export class BasketCoupon extends Model<
   coupon!: Coupon;
 }
 
-exhaustiveModelCheck<BasketCouponAttributes, BasketCoupon>();
+exhaustiveModelCheck<
+  BasketCouponAttributes,
+  BasketCouponCreationAttributes,
+  BasketCoupon
+>(true);

@@ -77,4 +77,6 @@ export class Address extends Model<
   user!: User;
 }
 
-exhaustiveModelCheck<AddressAttributes, Address>();
+exhaustiveModelCheck<AddressAttributes, AddressCreationAttributes, Address>(
+  true
+);

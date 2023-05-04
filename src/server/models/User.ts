@@ -102,4 +102,4 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   wishlist?: Wishlist;
 }
 
-exhaustiveModelCheck<UserAttributes, User>();
+exhaustiveModelCheck<UserAttributes, UserCreationAttributes, User>(true);

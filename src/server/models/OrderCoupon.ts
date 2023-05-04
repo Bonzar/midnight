@@ -59,4 +59,8 @@ export class OrderCoupon extends Model<
   coupon!: Coupon;
 }
 
-exhaustiveModelCheck<OrderCouponAttributes, OrderCoupon>();
+exhaustiveModelCheck<
+  OrderCouponAttributes,
+  OrderCouponCreationAttributes,
+  OrderCoupon
+>(true);

@@ -12,6 +12,7 @@ import {
   Table,
 } from "sequelize-typescript";
 import { exhaustiveModelCheck } from "./helpers";
+import type { OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import type { ShipmentTypeCreationAttributes } from "./ShipmentType";
 import { ShipmentType } from "./ShipmentType";
@@ -27,6 +28,7 @@ export type ShipmentCreationAttributes = Optional<
   Omit<ShipmentAttributes, "id">,
   "address"
 > & {
+  order?: Omit<OrderCreationAttributes, "shipmentId" | "shipment">;
   shipmentType?: ShipmentTypeCreationAttributes;
 };
 
@@ -57,4 +59,6 @@ export class Shipment extends Model<
   shipmentType!: ShipmentType;
 }
 
-exhaustiveModelCheck<ShipmentAttributes, Shipment>();
+exhaustiveModelCheck<ShipmentAttributes, ShipmentCreationAttributes, Shipment>(
+  true
+);

@@ -60,4 +60,8 @@ export class ProductMeta extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<ProductMetaAttributes, ProductMeta>();
+exhaustiveModelCheck<
+  ProductMetaAttributes,
+  ProductMetaCreationAttributes,
+  ProductMeta
+>(true);

@@ -145,4 +145,6 @@ export class Product extends Model<
   wishlistProducts!: WishlistProduct[];
 }
 
-exhaustiveModelCheck<ProductAttributes, Product>();
+exhaustiveModelCheck<ProductAttributes, ProductCreationAttributes, Product>(
+  true
+);

@@ -35,6 +35,7 @@ export interface OrderAttributes {
   note: Order["note"];
   shipDate: Order["shipDate"];
   total: Order["total"];
+  shipmentId: Order["shipmentId"];
   userId: Order["userId"];
 }
 
@@ -110,4 +111,4 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
   orderCoupons!: OrderCoupon[];
 }
 
-exhaustiveModelCheck<OrderAttributes, Order>();
+exhaustiveModelCheck<OrderAttributes, OrderCreationAttributes, Order>(true);

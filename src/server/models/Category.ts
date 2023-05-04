@@ -87,4 +87,6 @@ export class Category extends Model<
   products!: Product[];
 }
 
-exhaustiveModelCheck<CategoryAttributes, Category>();
+exhaustiveModelCheck<CategoryAttributes, CategoryCreationAttributes, Category>(
+  true
+);

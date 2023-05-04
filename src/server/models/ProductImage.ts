@@ -69,4 +69,8 @@ export class ProductImage extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<ProductImageAttributes, ProductImage>();
+exhaustiveModelCheck<
+  ProductImageAttributes,
+  ProductImageCreationAttributes,
+  ProductImage
+>(true);

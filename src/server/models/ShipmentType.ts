@@ -60,4 +60,8 @@ export class ShipmentType extends Model<
   shipments!: Shipment[];
 }
 
-exhaustiveModelCheck<ShipmentTypeAttributes, ShipmentType>();
+exhaustiveModelCheck<
+  ShipmentTypeAttributes,
+  ShipmentTypeCreationAttributes,
+  ShipmentType
+>(true);
