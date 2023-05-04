@@ -5,7 +5,6 @@ import { v4 as uuidV4 } from "uuid";
 import path from "path";
 import type { UploadedFile } from "express-fileupload";
 import fs from "fs/promises";
-import type { Transaction } from "sequelize";
 
 const PATH_TO_PRODUCT_IMAGES =
   path.resolve(__dirname, "../../../static/productImages") + "/";
@@ -67,11 +66,8 @@ class ProductImageService {
       return getImageModelObjectToSave(currentSortIndex, image.description);
     });
 
-    return await sequelize.transaction(async (transaction) => {
-      const newProductImages = await ProductImage.bulkCreate(
-        imageModelObjects,
-        { transaction }
-      );
+    return await sequelize.transaction(async () => {
+      const newProductImages = await ProductImage.bulkCreate(imageModelObjects);
 
       // If success save in DB -> move to static folder
       images.forEach((image, index) =>
@@ -82,15 +78,12 @@ class ProductImageService {
     });
   }
 
-  async getOne(id: number, transaction?: Transaction) {
+  async getOne(id: number) {
     if (!id) {
       throw new Error(`Для получения изображения не был предоставлен ID`);
     }
 
-    const productImage = await ProductImage.findOne({
-      where: { id },
-      transaction,
-    });
+    const productImage = await ProductImage.findOne({ where: { id } });
 
     if (!productImage) {
       throw new Error(`Изображение с id - ${id} не найдено`);
@@ -115,12 +108,11 @@ class ProductImageService {
       throw new Error("Не для всех изображений предоставлен id для обновления");
     }
 
-    return await sequelize.transaction(async (transaction) => {
+    return await sequelize.transaction(async () => {
       const productImages = await ProductImage.findAll({
         where: {
           id: data.map((updateImage) => updateImage.id),
         },
-        transaction,
       });
 
       // save productIds for restore it later
@@ -136,9 +128,7 @@ class ProductImageService {
       // unlink all given images from products
       const resetPromises: Promise<ProductImage>[] = [];
       for (const productImage of productImages) {
-        resetPromises.push(
-          productImage.update({ productId: null }, { transaction })
-        );
+        resetPromises.push(productImage.update({ productId: null }));
       }
       await Promise.all(resetPromises);
 
@@ -161,8 +151,7 @@ class ProductImageService {
 
         return await productImage.update(
           // return back productId or override it from new data
-          { productId: prevImageProductId, ...updateImage },
-          { transaction }
+          { productId: prevImageProductId, ...updateImage }
         );
       });
 
@@ -171,10 +160,10 @@ class ProductImageService {
   }
 
   async delete(id: number) {
-    return await sequelize.transaction(async (transaction) => {
-      const productImage = await this.getOne(id, transaction);
+    return await sequelize.transaction(async () => {
+      const productImage = await this.getOne(id);
 
-      await productImage.destroy({ transaction });
+      await productImage.destroy();
 
       await fs.unlink(PATH_TO_PRODUCT_IMAGES + productImage.url);
     });

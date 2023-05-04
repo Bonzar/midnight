@@ -2,7 +2,6 @@ import type { BasketProductCreationAttributes } from "../models/BasketProduct";
 import { BasketProduct } from "../models/BasketProduct";
 import { BasketCoupon } from "../models/BasketCoupon";
 import { couponService } from "./couponService";
-import type { Transaction } from "sequelize";
 import { Basket } from "../models/Basket";
 
 export type AddBasketProductData = BasketProductCreationAttributes;
@@ -11,15 +10,12 @@ export type UpdateBasketProductData = Partial<BasketProductCreationAttributes> &
 
 class BasketService {
   // todo add total calculation
-  async getBasket(id: number, transaction?: Transaction) {
+  async getBasket(id: number) {
     if (!id) {
       throw new Error("Для получения корзины не был предоставлен ID");
     }
 
-    const basket = await Basket.findOne({
-      where: { id },
-      transaction,
-    });
+    const basket = await Basket.findOne({ where: { id } });
 
     if (!basket) {
       throw new Error(`Корзина с id - ${id} не найдена`);
@@ -28,11 +24,7 @@ class BasketService {
     return basket;
   }
 
-  async getBasketProduct(
-    productId: number,
-    basketId: number,
-    transaction?: Transaction
-  ) {
+  async getBasketProduct(productId: number, basketId: number) {
     if (typeof productId === "undefined" || typeof basketId === "undefined") {
       throw new Error(
         `Для получения продукта в корзине не был предоставлен ID: ${[
@@ -46,7 +38,6 @@ class BasketService {
 
     const basketProductNote = await BasketProduct.findOne({
       where: { productId, basketId },
-      transaction,
     });
 
     if (!basketProductNote) {

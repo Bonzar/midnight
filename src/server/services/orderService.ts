@@ -1,6 +1,6 @@
 import type { OrderAttributes, OrderCreationAttributes } from "../models/Order";
 import { Order } from "../models/Order";
-import type { Transaction, WhereOptions } from "sequelize";
+import type { WhereOptions } from "sequelize";
 import {
   DEFAULT_ITEMS_LIMIT,
   DEFAULT_ITEMS_PAGE,
@@ -41,21 +41,15 @@ class OrderService {
 
     //todo add total calculation
 
-    return await sequelize.transaction(async (transaction) => {
+    return await sequelize.transaction(async () => {
       const orderProducts = await Promise.all(
         orderData.orderProducts.map(async (orderProduct) => {
-          const product = await productService.getOne(
-            orderProduct.productId,
-            transaction
-          );
+          const product = await productService.getOne(orderProduct.productId);
 
           // Decrease a product stocks
-          return product.update(
-            {
-              stock: product.stock - orderProduct.quantity,
-            },
-            { transaction }
-          );
+          return product.update({
+            stock: product.stock - orderProduct.quantity,
+          });
         })
       );
 
@@ -76,8 +70,7 @@ class OrderService {
       if (orderData.orderCoupons.length > 0) {
         total = await couponService.apply(
           orderData.orderCoupons.map((coupon) => coupon.couponId),
-          total,
-          transaction
+          total
         );
       }
 
@@ -90,18 +83,17 @@ class OrderService {
             { model: OrderProduct, as: "orderProducts" },
             Shipment,
           ],
-          transaction,
         }
       );
     });
   }
 
-  async getOne(id: number, transaction?: Transaction) {
+  async getOne(id: number) {
     if (!id) {
       throw new Error("Для получения заказа не был предоставлен ID");
     }
 
-    const order = await Order.findOne({ where: { id }, transaction });
+    const order = await Order.findOne({ where: { id } });
 
     if (!order) {
       throw new Error(`Заказ с id - ${id} не найден`);

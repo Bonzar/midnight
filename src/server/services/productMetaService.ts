@@ -1,6 +1,5 @@
 import type { ProductMetaCreationAttributes } from "../models/ProductMeta";
 import { ProductMeta } from "../models/ProductMeta";
-import type { Transaction } from "sequelize";
 
 export type CreateProductMetaData = ProductMetaCreationAttributes;
 export type UpdateProductMetaData = Partial<ProductMetaCreationAttributes>;
@@ -10,17 +9,14 @@ class ProductMetaService {
     return await ProductMeta.create(data);
   }
 
-  async getOne(id: number, transaction?: Transaction) {
+  async getOne(id: number) {
     if (!id) {
       throw new Error(
         "Для получения характеристики товара не был предоставлен ID"
       );
     }
 
-    const productMeta = await ProductMeta.findOne({
-      where: { id },
-      transaction,
-    });
+    const productMeta = await ProductMeta.findOne({ where: { id } });
 
     if (!productMeta) {
       throw new Error(`Характеристика товара с id - ${id} не найдена`);

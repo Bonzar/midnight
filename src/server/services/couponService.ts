@@ -1,7 +1,6 @@
 import type { CouponCreationAttributes } from "../models/Coupon";
 import { Coupon } from "../models/Coupon";
 import { OrderCoupon } from "../models/OrderCoupon";
-import type { Transaction } from "sequelize";
 import { exhaustiveCheck } from "../helpers/exhaustiveCheck";
 
 export type CreateCouponData = CouponCreationAttributes;
@@ -12,12 +11,12 @@ class CouponService {
     return await Coupon.create(data);
   }
 
-  async getOne(id: number, transaction?: Transaction) {
+  async getOne(id: number) {
     if (!id) {
       throw new Error("Для получения промокода не был предоставлен ID");
     }
 
-    const coupon = await Coupon.findOne({ where: { id }, transaction });
+    const coupon = await Coupon.findOne({ where: { id } });
 
     if (!coupon) {
       throw new Error(`Промокод с id - ${id} не найден`);
@@ -69,14 +68,14 @@ class CouponService {
     }
   }
 
-  async apply(ids: number[], subtotal: number, transaction?: Transaction) {
+  async apply(ids: number[], subtotal: number) {
     if (ids.length === 0) {
       throw new Error(
         "Для применения промокодов не был предоставлен ни один ID"
       );
     }
 
-    const coupons = await Coupon.findAll({ where: { id: ids }, transaction });
+    const coupons = await Coupon.findAll({ where: { id: ids } });
 
     if (coupons.length === 0) {
       throw new Error(`Ни один промокод с id - ${ids.join(", ")} не найден`);

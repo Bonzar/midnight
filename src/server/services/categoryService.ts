@@ -1,20 +1,16 @@
 import type { CategoryCreationAttributes } from "../models/Category";
 import { Category } from "../models/Category";
-import type { Transaction } from "sequelize";
 
 export type CreateCategoryData = CategoryCreationAttributes;
 export type UpdateCategoryData = Partial<CategoryCreationAttributes>;
 
 class CategoryService {
-  async getOne(id: number, transaction?: Transaction) {
+  async getOne(id: number) {
     if (!id) {
       throw new Error("Для получения категории не был предоставлен ID");
     }
 
-    const category = await Category.findOne({
-      where: { id },
-      transaction,
-    });
+    const category = await Category.findOne({ where: { id } });
 
     if (!category) {
       throw new Error(`Категория с id - ${id} не найдена`);

@@ -11,7 +11,6 @@ import {
   DEFAULT_ITEMS_PAGE,
 } from "../../helpers/constants";
 import { Category } from "../models/Category";
-import type { Transaction } from "sequelize";
 
 export type CreateProductData = ProductCreationAttributes;
 export type UpdateProductData = Partial<ProductCreationAttributes>;
@@ -21,15 +20,12 @@ class ProductService {
     return await Product.create(data);
   }
 
-  async getOne(id: number, transaction?: Transaction) {
+  async getOne(id: number) {
     if (!id) {
       throw new Error("Для получения товара не был предоставлен ID");
     }
 
-    const product = await Product.findOne({
-      where: { id },
-      transaction,
-    });
+    const product = await Product.findOne({ where: { id } });
 
     this.checkExist(product, id);
 

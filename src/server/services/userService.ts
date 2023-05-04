@@ -3,7 +3,6 @@ import { User } from "../models/User";
 import { Basket } from "../models/Basket";
 import { Wishlist } from "../models/Wishlist";
 import { Address } from "../models/Address";
-import type { Transaction } from "sequelize";
 
 export type CreateUserData = UserCreationAttributes;
 
@@ -19,12 +18,12 @@ class UserService {
     );
   }
 
-  async getOne(id: number, transaction?: Transaction) {
+  async getOne(id: number) {
     if (!id) {
       throw new Error("Для получения пользователя не был предоставлен ID");
     }
 
-    const user = await User.findOne({ where: { id }, transaction });
+    const user = await User.findOne({ where: { id } });
 
     if (!user) {
       throw new Error(`Пользователь с id - ${id} не найден`);
