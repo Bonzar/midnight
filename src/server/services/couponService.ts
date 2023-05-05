@@ -2,6 +2,7 @@ import type { CouponCreationAttributes } from "../models/Coupon";
 import { Coupon } from "../models/Coupon";
 import { OrderCoupon } from "../models/OrderCoupon";
 import { exhaustiveCheck } from "../../helpers/exhaustiveCheck";
+import { ApiError } from "../error/ApiError";
 
 export type CreateCouponData = CouponCreationAttributes;
 export type UpdateCouponData = Partial<CouponCreationAttributes>;
@@ -13,13 +14,15 @@ class CouponService {
 
   async getOne(id: number) {
     if (!id) {
-      throw new Error("Для получения промокода не был предоставлен ID");
+      throw ApiError.badRequest(
+        "Для получения промокода не был предоставлен ID"
+      );
     }
 
     const coupon = await Coupon.findOne({ where: { id } });
 
     if (!coupon) {
-      throw new Error(`Промокод с id - ${id} не найден`);
+      throw ApiError.badRequest(`Промокод с id - ${id} не найден`);
     }
 
     return coupon;
@@ -45,7 +48,7 @@ class CouponService {
     const coupon = await Coupon.findOne({ where: identifier });
 
     if (!coupon) {
-      throw new Error(
+      throw ApiError.badRequest(
         `Промокод с ${"id" in identifier ? "id" : "key"} - ${
           "id" in identifier ? identifier.id : identifier.key
         } не найден`
@@ -53,7 +56,7 @@ class CouponService {
     }
 
     if (coupon.expiresTime && coupon.expiresTime > Date.now()) {
-      throw new Error(`У этого промокода истек срок действия`);
+      throw ApiError.badRequest(`У этого промокода истек срок действия`);
     }
 
     if (coupon.expiresCount) {
@@ -61,7 +64,7 @@ class CouponService {
         where: { couponId: coupon.id },
       });
       if (suppressCount >= coupon.expiresCount) {
-        throw new Error(
+        throw ApiError.badRequest(
           `Этот промокод уже был применен максимальное количество раз`
         );
       }
@@ -70,7 +73,7 @@ class CouponService {
 
   async apply(ids: number[], subtotal: number) {
     if (ids.length === 0) {
-      throw new Error(
+      throw ApiError.badRequest(
         "Для применения промокодов не был предоставлен ни один ID"
       );
     }
@@ -78,7 +81,9 @@ class CouponService {
     const coupons = await Coupon.findAll({ where: { id: ids } });
 
     if (coupons.length === 0) {
-      throw new Error(`Ни один промокод с id - ${ids.join(", ")} не найден`);
+      throw ApiError.badRequest(
+        `Ни один промокод с id - ${ids.join(", ")} не найден`
+      );
     }
 
     let total = subtotal;
@@ -93,7 +98,9 @@ class CouponService {
           break;
         default:
           exhaustiveCheck(coupon.type);
-          throw new Error("Не известный тип промокода для применения");
+          throw ApiError.badRequest(
+            "Не известный тип промокода для применения"
+          );
       }
     }
 

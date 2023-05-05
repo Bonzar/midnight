@@ -99,7 +99,7 @@ class ProductImageController {
       return res.json(newProductImages);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При сохранении изображения произошла ошибка",
           error
         )
@@ -124,7 +124,7 @@ class ProductImageController {
       return res.json(updatedProductImage);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При обновлении изображения с id - ${req.params.id} произошла ошибка`,
           error
         )
@@ -144,7 +144,7 @@ class ProductImageController {
       return res.json(updatedImages);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "Во время обновления изображений произошла ошибка",
           error
         )
@@ -165,7 +165,7 @@ class ProductImageController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При удалении изображения с id - ${req.params.id} произошла ошибка`,
           error
         )

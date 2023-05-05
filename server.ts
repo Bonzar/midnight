@@ -12,6 +12,7 @@ import { router } from "./src/server/routes";
 import { createServer as createViteServer } from "vite";
 import { sequelize } from "./src/server/database";
 import { errorHandlingMiddleware } from "./src/server/middleware/errorHandlingMiddleware";
+import cookieParser from "cookie-parser";
 
 const isTest = process.env.NODE_ENV === "test" || !!process.env.VITE_TEST_BUILD;
 
@@ -22,6 +23,7 @@ async function createServer(isProd = process.env.NODE_ENV === "production") {
   await sequelize.sync();
 
   const app = express();
+  app.use(cookieParser());
   app.use(express.json());
   app.use(fileUpload({}));
 

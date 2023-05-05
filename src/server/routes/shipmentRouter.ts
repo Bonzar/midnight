@@ -1,13 +1,26 @@
 import { Router } from "express";
 import { shipmentController } from "../controllers/shipmentController";
+import { roleMiddleware } from "../middleware/roleMiddleware";
 const shipmentRouter = Router();
 
-shipmentRouter.post("/", shipmentController.createType);
+shipmentRouter.post(
+  "/",
+  roleMiddleware("ADMIN"),
+  shipmentController.createType
+);
 
 shipmentRouter.get("/", shipmentController.getAllTypes);
 
-shipmentRouter.patch("/:id", shipmentController.updateType);
+shipmentRouter.patch(
+  "/:id",
+  roleMiddleware("ADMIN"),
+  shipmentController.updateType
+);
 
-shipmentRouter.delete("/:id", shipmentController.deleteType);
+shipmentRouter.delete(
+  "/:id",
+  roleMiddleware("ADMIN"),
+  shipmentController.deleteType
+);
 
 export { shipmentRouter };

@@ -11,6 +11,7 @@ import {
   DEFAULT_ITEMS_PAGE,
 } from "../../helpers/constants";
 import { Category } from "../models/Category";
+import { ApiError } from "../error/ApiError";
 
 export type CreateProductData = ProductCreationAttributes;
 export type UpdateProductData = Partial<ProductCreationAttributes>;
@@ -22,7 +23,7 @@ class ProductService {
 
   async getOne(id: number) {
     if (!id) {
-      throw new Error("Для получения товара не был предоставлен ID");
+      throw ApiError.badRequest("Для получения товара не был предоставлен ID");
     }
 
     const product = await Product.findOne({ where: { id } });
@@ -34,7 +35,7 @@ class ProductService {
 
   async getDetailed(id: number) {
     if (!id) {
-      throw new Error("Для получения товара не был предоставлен ID");
+      throw ApiError.badRequest("Для получения товара не был предоставлен ID");
     }
 
     const product = await Product.findOne({
@@ -94,11 +95,11 @@ class ProductService {
     const product = await this.getOne(id);
 
     if (product.stock === 0) {
-      throw new Error(`К сожалению товар с id - ${id} — закончился`);
+      throw ApiError.badRequest(`К сожалению товар с id - ${id} — закончился`);
     }
 
     if (product.stock < quantity) {
-      throw new Error(
+      throw ApiError.badRequest(
         `Максимально доступное количество товара с id - ${id} — ${product.stock} шт.`
       );
     }
@@ -106,7 +107,7 @@ class ProductService {
 
   checkExist(product: Product | null, id: number): asserts product is Product {
     if (!product) {
-      throw new Error(`Продукт с id - ${id} не найден`);
+      throw ApiError.badRequest(`Продукт с id - ${id} не найден`);
     }
   }
 }

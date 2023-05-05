@@ -6,6 +6,7 @@ import { Basket } from "../models/Basket";
 import { Product } from "../models/Product";
 import { Coupon } from "../models/Coupon";
 import { ProductImage } from "../models/ProductImage";
+import { ApiError } from "../error/ApiError";
 
 export type GetBasketResult = {
   basket: Basket;
@@ -21,7 +22,7 @@ export type UpdateBasketProductData = Partial<BasketProductCreationAttributes> &
 class BasketService {
   async getOneBasket(id: number): Promise<GetBasketResult> {
     if (!id) {
-      throw new Error("Для получения корзины не был предоставлен ID");
+      throw ApiError.badRequest("Для получения корзины не был предоставлен ID");
     }
 
     const basket = await Basket.findOne({
@@ -43,7 +44,7 @@ class BasketService {
     });
 
     if (!basket) {
-      throw new Error(`Корзина с id - ${id} не найдена`);
+      throw ApiError.badRequest(`Корзина с id - ${id} не найдена`);
     }
 
     // Calculating total and subtotal
@@ -67,9 +68,9 @@ class BasketService {
 
   async getOneProduct(basketId: number, productId: number) {
     if (typeof productId === "undefined" || typeof basketId === "undefined") {
-      throw new Error(
-        `Для получения продукта в корзине не был предоставлен ID: ${[
-          typeof productId === "undefined" && "продукта",
+      throw ApiError.badRequest(
+        `Для получения товара в корзине не был предоставлен ID: ${[
+          typeof productId === "undefined" && "товара",
           typeof basketId === "undefined" && "корзины",
         ]
           .filter(Boolean)
@@ -82,8 +83,8 @@ class BasketService {
     });
 
     if (!basketProductNote) {
-      throw new Error(
-        `Запись о продукте в корзине с идентификаторами: id корзины - ${basketId}, id продукта - ${productId} — не найдена`
+      throw ApiError.badRequest(
+        `Запись о товара в корзине с идентификаторами: id корзины - ${basketId}, id товара - ${productId} — не найдена`
       );
     }
 
@@ -120,7 +121,7 @@ class BasketService {
     });
 
     if (!basketCouponNote) {
-      throw new Error(
+      throw ApiError.badRequest(
         `Запись о примененном купоне в корзине с идентификаторами: id корзины - ${basketId}, id купона - ${couponId} — не найдена`
       );
     }

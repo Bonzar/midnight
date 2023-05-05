@@ -1,8 +1,6 @@
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
-import { verify as jwtVerify } from "jsonwebtoken";
-import * as process from "process";
-import type { UserJwtPayload } from "../services/userService";
+import { tokenService } from "../services/tokenService";
 
 export const authMiddleware: RequestHandler<any, any, any, any> = (
   req,
@@ -13,14 +11,19 @@ export const authMiddleware: RequestHandler<any, any, any, any> = (
     next();
   }
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return next(ApiError.notAuthorize("Пользователь не авторизован"));
+    const accessToken = req.headers.authorization?.split(" ")[1];
+    if (!accessToken) {
+      return next(ApiError.unauthorized());
     }
 
-    req.user = jwtVerify(token, process.env.JWT_SECRET) as UserJwtPayload;
+    const userDto = tokenService.validateAccessToken(accessToken);
+    if (!userDto) {
+      return next(ApiError.unauthorized());
+    }
+
+    req.user = userDto;
     next();
   } catch (error) {
-    next(ApiError.notAuthorize("Пользователь не авторизован", error));
+    next(ApiError.unauthorized(error));
   }
 };

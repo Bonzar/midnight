@@ -5,6 +5,7 @@ import { v4 as uuidV4 } from "uuid";
 import path from "path";
 import type { UploadedFile } from "express-fileupload";
 import fs from "fs/promises";
+import { ApiError } from "../error/ApiError";
 
 const PATH_TO_PRODUCT_IMAGES =
   path.resolve(__dirname, "../../../static/productImages") + "/";
@@ -46,7 +47,7 @@ class ProductImageService {
     }
 
     if (images.length === 0) {
-      throw new Error("Массив изображений пустой");
+      throw ApiError.badRequest("Массив изображений пустой");
     }
 
     const getImageModelObjectToSave = (sort: number, description: string) => {
@@ -80,13 +81,15 @@ class ProductImageService {
 
   async getOne(id: number) {
     if (!id) {
-      throw new Error(`Для получения изображения не был предоставлен ID`);
+      throw ApiError.badRequest(
+        `Для получения изображения не был предоставлен ID`
+      );
     }
 
     const productImage = await ProductImage.findOne({ where: { id } });
 
     if (!productImage) {
-      throw new Error(`Изображение с id - ${id} не найдено`);
+      throw ApiError.badRequest(`Изображение с id - ${id} не найдено`);
     }
 
     return productImage;
@@ -105,7 +108,9 @@ class ProductImageService {
 
   async updateMany(data: UpdateManyProductImageData) {
     if (!data.map((imgObject) => imgObject.id).every(Boolean)) {
-      throw new Error("Не для всех изображений предоставлен id для обновления");
+      throw ApiError.badRequest(
+        "Не для всех изображений предоставлен id для обновления"
+      );
     }
 
     return await sequelize.transaction(async () => {
@@ -143,7 +148,9 @@ class ProductImageService {
         );
 
         if (!productImage) {
-          throw new Error(`Изображение с id - ${updateImage.id} не найдено`);
+          throw ApiError.badRequest(
+            `Изображение с id - ${updateImage.id} не найдено`
+          );
         }
 
         const prevImageProductId =

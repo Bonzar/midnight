@@ -25,7 +25,7 @@ class WishlistController {
       res.status(200).json(wishlist);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При получении списка желаний произошла ошибка",
           error
         )
@@ -48,7 +48,7 @@ class WishlistController {
       res.status(200).json(wishlistProductNote);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При добавлении товара в список желаний произошла ошибка",
           error
         )
@@ -67,7 +67,7 @@ class WishlistController {
         res.status(200).end();
       } catch (error) {
         next(
-          ApiError.badRequest(
+          ApiError.setDefaultMessage(
             "При удалении товара из списка желаний произошла ошибка",
             error
           )

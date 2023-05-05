@@ -1,25 +1,37 @@
-import type { RequestHandler } from "express";
+import type { Response, RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import type {
   CreateAddressData,
   CreateUserData,
   UpdateAddressData,
+  UserAuthData,
 } from "../services/userService";
 import { userService } from "../services/userService";
-import type { User } from "../models/User";
 import type { Address } from "../models/Address";
 import { parseInt } from "../../helpers/parseInt";
+import { REFRESH_TOKEN_EXPIRES_DAYS } from "../../helpers/constants";
+import * as process from "process";
 
 type RegistrationUserBody = CreateUserData;
-type RegistrationUserResponse = { user: Omit<User, "password">; token: string };
+type RegistrationUserResponse = UserAuthData;
 
 type LoginUserBody = { email: string; password: string };
-type LoginUserResponse = { user: Omit<User, "password">; token: string };
+type LoginUserResponse = UserAuthData;
+
+type RefreshUserResponse = UserAuthData;
 
 type CreateAddressBody = CreateAddressData;
 type UpdateAddressBody = UpdateAddressData;
 
 class UserController {
+  #setRefreshCookie(res: Response, refreshToken: string) {
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: REFRESH_TOKEN_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
   registration: RequestHandler<
     void,
     RegistrationUserResponse,
@@ -28,11 +40,12 @@ class UserController {
   > = async (req, res, next) => {
     try {
       const user = await userService.registration(req.body);
+      this.#setRefreshCookie(res, user.refreshToken);
 
       res.status(200).json(user);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При регистрации пользователя произошла ошибка",
           error
         )
@@ -47,30 +60,95 @@ class UserController {
   ) => {
     try {
       const user = await userService.login(req.body.email, req.body.password);
+      this.#setRefreshCookie(res, user.refreshToken);
 
       res.status(200).json(user);
     } catch (error) {
-      next(ApiError.badRequest("При входе в аккаунт произошла ошибка", error));
+      next(
+        ApiError.setDefaultMessage(
+          "При входе в аккаунт произошла ошибка",
+          error
+        )
+      );
     }
   };
 
-  check: RequestHandler<void, { token: string }, void, void> = async (
+  logout: RequestHandler<void, void, void, void> = async (req, res, next) => {
+    try {
+      const { refreshToken } = req.cookies as { refreshToken: string };
+      await userService.logout(refreshToken);
+      res.clearCookie("refreshToken");
+
+      res.status(200).end();
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          "При выходе из аккаунта произошла ошибка",
+          error
+        )
+      );
+    }
+  };
+
+  refresh: RequestHandler<void, RefreshUserResponse, void, void> = async (
     req,
     res,
     next
   ) => {
     try {
-      const token = userService.generateJwt(
-        req.user.id,
-        req.user.email,
-        req.user.role
-      );
+      const { refreshToken } = req.cookies as { refreshToken: string };
+      const user = await userService.refresh(refreshToken);
+      this.#setRefreshCookie(res, user.refreshToken);
 
-      res.status(200).json({ token });
+      res.status(200).json(user);
     } catch (error) {
-      next(ApiError.badRequest("При получении токена произошла ошибка", error));
+      next(
+        ApiError.setDefaultMessage(
+          "При обновлении токена произошла ошибка",
+          error
+        )
+      );
     }
   };
+
+  activate: RequestHandler<{ link: string }, void, void, void> = async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      await userService.activate(req.params.link);
+
+      res.redirect("/");
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          "При активации аккаунта произошла ошибка",
+          error
+        )
+      );
+    }
+  };
+
+  // todo delete
+  // check: RequestHandler<
+  //   void,
+  //   { accessToken: string; refreshToken: string },
+  //   void,
+  //   void
+  // > = async (req, res, next) => {
+  //   try {
+  //     const tokens = tokenService.generateTokens(req.user);
+  //     res.status(200).json(tokens);
+  //   } catch (error) {
+  //     next(
+  //       ApiError.setDefaultMessage(
+  //         "При получении токенов произошла ошибка",
+  //         error
+  //       )
+  //     );
+  //   }
+  // };
 
   createAddress: RequestHandler<void, Address, CreateAddressBody, void> =
     async (req, res, next) => {
@@ -80,7 +158,10 @@ class UserController {
         res.status(200).json(address);
       } catch (error) {
         next(
-          ApiError.badRequest("При создании адреса произошла ошибка", error)
+          ApiError.setDefaultMessage(
+            "При создании адреса произошла ошибка",
+            error
+          )
         );
       }
     };
@@ -99,7 +180,10 @@ class UserController {
       res.status(200).json(address);
     } catch (error) {
       next(
-        ApiError.badRequest("При обновлении адреса произошла ошибка", error)
+        ApiError.setDefaultMessage(
+          "При обновлении адреса произошла ошибка",
+          error
+        )
       );
     }
   };
@@ -116,7 +200,12 @@ class UserController {
 
       res.status(200).end();
     } catch (error) {
-      next(ApiError.badRequest("При удалении адреса произошла ошибка", error));
+      next(
+        ApiError.setDefaultMessage(
+          "При удалении адреса произошла ошибка",
+          error
+        )
+      );
     }
   };
 }

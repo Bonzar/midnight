@@ -31,7 +31,12 @@ class OrderController {
 
       res.status(200).json(order);
     } catch (error) {
-      next(ApiError.badRequest("При создании заказа произошла ошибка", error));
+      next(
+        ApiError.setDefaultMessage(
+          "При создании заказа произошла ошибка",
+          error
+        )
+      );
     }
   };
 
@@ -48,7 +53,7 @@ class OrderController {
       res.status(200).json(order);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При получении заказа с id - ${req.params.id} произошла ошибка`,
           error
         )
@@ -82,7 +87,7 @@ class OrderController {
       res.status(200).json(orders);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При получении всех заказов произошла ошибка",
           error
         )
@@ -103,7 +108,7 @@ class OrderController {
       res.status(200).json(order);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При обновлении заказа с id - ${req.params.id} произошла ошибка`,
           error
         )
@@ -124,7 +129,7 @@ class OrderController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При удалении заказа с id - ${req.params.id} произошла ошибка`,
           error
         )

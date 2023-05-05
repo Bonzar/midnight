@@ -2,6 +2,7 @@ import { WishlistProduct } from "../models/WishlistProduct";
 import { Wishlist } from "../models/Wishlist";
 import { Product } from "../models/Product";
 import { ProductImage } from "../models/ProductImage";
+import { ApiError } from "../error/ApiError";
 
 class WishlistService {
   private checkIdsPresent(
@@ -10,9 +11,9 @@ class WishlistService {
     messageAction: string
   ) {
     if (typeof productId === "undefined" || typeof wishlistId === "undefined") {
-      throw new Error(
+      throw ApiError.badRequest(
         `Для ${messageAction} не был предоставлен ID: ${[
-          typeof productId === "undefined" && "продукта",
+          typeof productId === "undefined" && "товара",
           typeof wishlistId === "undefined" && "списка желаний",
         ]
           .filter(Boolean)
@@ -23,7 +24,9 @@ class WishlistService {
 
   async getOneWishlist(id: number) {
     if (!id) {
-      throw new Error("Для получения списка желаний не был предоставлен ID");
+      throw ApiError.badRequest(
+        "Для получения списка желаний не был предоставлен ID"
+      );
     }
 
     const wishlist = await Wishlist.findOne({
@@ -44,7 +47,7 @@ class WishlistService {
     });
 
     if (!wishlist) {
-      throw new Error(`Список желаний с id - ${id} не найден`);
+      throw ApiError.badRequest(`Список желаний с id - ${id} не найден`);
     }
 
     return wishlist;
@@ -54,7 +57,7 @@ class WishlistService {
     this.checkIdsPresent(
       wishlistId,
       productId,
-      "добавления продукта в список желаний"
+      "добавления товара в список желаний"
     );
 
     return await WishlistProduct.create({ wishlistId, productId });
@@ -64,7 +67,7 @@ class WishlistService {
     this.checkIdsPresent(
       wishlistId,
       productId,
-      "получения продукта из списка желаний"
+      "получения товара из списка желаний"
     );
 
     const wishlistProductNote = await WishlistProduct.findOne({
@@ -72,8 +75,8 @@ class WishlistService {
     });
 
     if (!wishlistProductNote) {
-      throw new Error(
-        `Запись о продукте в списке желаний с идентификаторами: id списка желаний - ${wishlistId}, id продукта - ${productId} — не найдена`
+      throw ApiError.badRequest(
+        `Запись о товаре в списке желаний с идентификаторами: id списка желаний - ${wishlistId}, id товара - ${productId} — не найдена`
       );
     }
 

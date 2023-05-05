@@ -1,5 +1,6 @@
 import type { ProductMetaCreationAttributes } from "../models/ProductMeta";
 import { ProductMeta } from "../models/ProductMeta";
+import { ApiError } from "../error/ApiError";
 
 export type CreateProductMetaData = ProductMetaCreationAttributes;
 export type UpdateProductMetaData = Partial<ProductMetaCreationAttributes>;
@@ -11,7 +12,7 @@ class ProductMetaService {
 
   async getOne(id: number) {
     if (!id) {
-      throw new Error(
+      throw ApiError.badRequest(
         "Для получения характеристики товара не был предоставлен ID"
       );
     }
@@ -19,7 +20,9 @@ class ProductMetaService {
     const productMeta = await ProductMeta.findOne({ where: { id } });
 
     if (!productMeta) {
-      throw new Error(`Характеристика товара с id - ${id} не найдена`);
+      throw ApiError.badRequest(
+        `Характеристика товара с id - ${id} не найдена`
+      );
     }
 
     return productMeta;

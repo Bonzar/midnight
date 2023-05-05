@@ -23,7 +23,10 @@ class CategoryController {
       res.status(200).json(category);
     } catch (error) {
       next(
-        ApiError.badRequest("При создании категории произошла ошибка", error)
+        ApiError.setDefaultMessage(
+          "При создании категории произошла ошибка",
+          error
+        )
       );
     }
   };
@@ -39,7 +42,7 @@ class CategoryController {
       res.status(200).json(allCategories);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При получении всех категорий произошла ошибка",
           error
         )
@@ -60,7 +63,7 @@ class CategoryController {
         res.status(200).json(updatedCategory);
       } catch (error) {
         next(
-          ApiError.badRequest(
+          ApiError.setDefaultMessage(
             `При обновлении категории с id - ${req.params.id} произошла ошибка`,
             error
           )
@@ -81,7 +84,7 @@ class CategoryController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При удалении категории с id - ${req.params.id} произошла ошибка`,
           error
         )

@@ -12,6 +12,7 @@ import { OrderCoupon } from "../models/OrderCoupon";
 import { sequelize } from "../database";
 import { productService } from "./productService";
 import type { NotUndefined } from "../../../types/types";
+import { ApiError } from "../error/ApiError";
 
 export type CreateOrderData = Omit<OrderCreationAttributes, "total"> &
   NotUndefined<
@@ -23,7 +24,7 @@ export type UpdateOrderData = Partial<OrderCreationAttributes>;
 class OrderService {
   async create(orderData: CreateOrderData) {
     if (orderData.orderProducts.length === 0) {
-      throw new Error("Заказ не может быть пустым");
+      throw ApiError.badRequest("Заказ не может быть пустым");
     }
 
     const checkPromises = [
@@ -89,13 +90,13 @@ class OrderService {
 
   async getOne(id: number) {
     if (!id) {
-      throw new Error("Для получения заказа не был предоставлен ID");
+      throw ApiError.badRequest("Для получения заказа не был предоставлен ID");
     }
 
     const order = await Order.findOne({ where: { id } });
 
     if (!order) {
-      throw new Error(`Заказ с id - ${id} не найден`);
+      throw ApiError.badRequest(`Заказ с id - ${id} не найден`);
     }
 
     return order;

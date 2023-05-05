@@ -1,5 +1,6 @@
 import type { CategoryCreationAttributes } from "../models/Category";
 import { Category } from "../models/Category";
+import { ApiError } from "../error/ApiError";
 
 export type CreateCategoryData = CategoryCreationAttributes;
 export type UpdateCategoryData = Partial<CategoryCreationAttributes>;
@@ -7,13 +8,15 @@ export type UpdateCategoryData = Partial<CategoryCreationAttributes>;
 class CategoryService {
   async getOne(id: number) {
     if (!id) {
-      throw new Error("Для получения категории не был предоставлен ID");
+      throw ApiError.badRequest(
+        "Для получения категории не был предоставлен ID"
+      );
     }
 
     const category = await Category.findOne({ where: { id } });
 
     if (!category) {
-      throw new Error(`Категория с id - ${id} не найдена`);
+      throw ApiError.badRequest(`Категория с id - ${id} не найдена`);
     }
 
     return category;

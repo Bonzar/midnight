@@ -2,42 +2,83 @@ import { Router } from "express";
 import { productController } from "../controllers/productController";
 import { productImageController } from "../controllers/productImageController";
 import { productMetaController } from "../controllers/productMetaController";
+import { roleMiddleware } from "../middleware/roleMiddleware";
 const productRouter = Router();
 
 /**
  * Product Image
  */
 
-productRouter.post("/image", productImageController.create);
+// Create
+productRouter.post(
+  "/image",
+  roleMiddleware("ADMIN"),
+  productImageController.create
+);
 
-productRouter.patch("/image/:id", productImageController.update);
+// Update
+productRouter.patch(
+  "/image/:id",
+  roleMiddleware("ADMIN"),
+  productImageController.update
+);
 
-productRouter.patch("/image", productImageController.updateMany);
+// Update Many
+productRouter.patch(
+  "/image",
+  roleMiddleware("ADMIN"),
+  productImageController.updateMany
+);
 
-productRouter.delete("/image/:id", productImageController.delete);
+// Delete
+productRouter.delete(
+  "/image/:id",
+  roleMiddleware("ADMIN"),
+  productImageController.delete
+);
 
 /**
  * Product Meta
  */
 
-productRouter.post("/meta", productMetaController.create);
+// Create
+productRouter.post(
+  "/meta",
+  roleMiddleware("ADMIN"),
+  productMetaController.create
+);
 
-productRouter.patch("/meta/:id", productMetaController.update);
+// Update
+productRouter.patch(
+  "/meta/:id",
+  roleMiddleware("ADMIN"),
+  productMetaController.update
+);
 
-productRouter.delete("/meta/:id", productMetaController.delete);
+// Delete
+productRouter.delete(
+  "/meta/:id",
+  roleMiddleware("ADMIN"),
+  productMetaController.delete
+);
 
 /**
  * Product its self
  */
 
-productRouter.post("/", productController.create);
+// Create
+productRouter.post("/", roleMiddleware("ADMIN"), productController.create);
 
+// Get products list
 productRouter.get("/", productController.getAll);
 
+// Get detailed product
 productRouter.get("/:id", productController.get);
 
-productRouter.patch("/:id", productController.update);
+// Update
+productRouter.patch("/:id", roleMiddleware("ADMIN"), productController.update);
 
-productRouter.delete("/:id", productController.delete);
+// Delete
+productRouter.delete("/:id", roleMiddleware("ADMIN"), productController.delete);
 
 export { productRouter };

@@ -1,5 +1,6 @@
 import type { ShipmentTypeCreationAttributes } from "../models/ShipmentType";
 import { ShipmentType } from "../models/ShipmentType";
+import { ApiError } from "../error/ApiError";
 
 export type CreateShipmentTypeData = ShipmentTypeCreationAttributes;
 export type UpdateShipmentTypeData = Partial<ShipmentTypeCreationAttributes>;
@@ -15,13 +16,15 @@ class ShipmentService {
 
   async getOneType(id: number) {
     if (!id) {
-      throw new Error("Для получения типа доставки не был предоставлен ID");
+      throw ApiError.badRequest(
+        "Для получения типа доставки не был предоставлен ID"
+      );
     }
 
     const shipmentType = await ShipmentType.findOne({ where: { id } });
 
     if (!shipmentType) {
-      throw new Error(`Тип доставки с id - ${id} не найден`);
+      throw ApiError.badRequest(`Тип доставки с id - ${id} не найден`);
     }
 
     return shipmentType;

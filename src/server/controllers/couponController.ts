@@ -23,7 +23,10 @@ class CouponController {
       res.status(200).json(coupon);
     } catch (error) {
       next(
-        ApiError.badRequest("При создании промокода произошла ошибка", error)
+        ApiError.setDefaultMessage(
+          "При создании промокода произошла ошибка",
+          error
+        )
       );
     }
   };
@@ -39,7 +42,7 @@ class CouponController {
       res.status(200).json(coupons);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При получении всех промокодов произошла ошибка",
           error
         )
@@ -57,7 +60,7 @@ class CouponController {
         res.status(200).json(coupon);
       } catch (error) {
         next(
-          ApiError.badRequest(
+          ApiError.setDefaultMessage(
             `При обновлении промокода с id - ${req.params.id} произошла ошибка`,
             error
           )
@@ -78,7 +81,7 @@ class CouponController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При удалении промокода с id - ${req.params.id} произошла ошибка`,
           error
         )

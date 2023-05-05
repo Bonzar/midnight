@@ -101,9 +101,11 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @Column
   isActivated!: boolean;
 
+  //todo delete if unused OR remove default
   @AllowNull(false)
-  @Unique
+  // @Unique
   @NotEmpty
+  @Default("123")
   @Column
   activationLink!: string;
 

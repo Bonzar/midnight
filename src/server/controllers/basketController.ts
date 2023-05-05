@@ -30,7 +30,10 @@ class BasketController {
         res.status(200).json(basket);
       } catch (error) {
         next(
-          ApiError.badRequest("При получении корзины произошла ошибка", error)
+          ApiError.setDefaultMessage(
+            "При получении корзины произошла ошибка",
+            error
+          )
         );
       }
     };
@@ -43,7 +46,7 @@ class BasketController {
         res.status(200).json(basketProductNote);
       } catch (error) {
         next(
-          ApiError.badRequest(
+          ApiError.setDefaultMessage(
             "При добавлении товара в корзину произошла ошибка",
             error
           )
@@ -63,7 +66,7 @@ class BasketController {
       res.status(200).json(basketProductNote);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При обновлении товара в корзине произошла ошибка",
           error
         )
@@ -82,7 +85,7 @@ class BasketController {
         res.status(200).end();
       } catch (error) {
         next(
-          ApiError.badRequest(
+          ApiError.setDefaultMessage(
             "При удалении товара из корзины произошла ошибка",
             error
           )
@@ -101,7 +104,7 @@ class BasketController {
         res.status(200).json(basketCouponNote);
       } catch (error) {
         next(
-          ApiError.badRequest(
+          ApiError.setDefaultMessage(
             "При применении промокода к корзине произошла ошибка",
             error
           )
@@ -117,7 +120,7 @@ class BasketController {
         res.status(200).end();
       } catch (error) {
         next(
-          ApiError.badRequest(
+          ApiError.setDefaultMessage(
             "При удалении промокода из корзины произошла ошибка",
             error
           )

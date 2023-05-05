@@ -32,7 +32,10 @@ class ProductController {
       return res.json(newProduct);
     } catch (error) {
       next(
-        ApiError.badRequest("При создании продукта произошла ошибка", error)
+        ApiError.setDefaultMessage(
+          "При создании товара произошла ошибка",
+          error
+        )
       );
     }
   };
@@ -50,8 +53,8 @@ class ProductController {
       return res.json(product);
     } catch (error) {
       next(
-        ApiError.badRequest(
-          `При получении продукта с id - ${req.params.id} произошла ошибка`,
+        ApiError.setDefaultMessage(
+          `При получении товара с id - ${req.params.id} произошла ошибка`,
           error
         )
       );
@@ -85,8 +88,8 @@ class ProductController {
       return res.json(products);
     } catch (error) {
       next(
-        ApiError.badRequest(
-          "При получении всех продуктов произошла ошибка",
+        ApiError.setDefaultMessage(
+          "При получении всех товара произошла ошибка",
           error
         )
       );
@@ -103,8 +106,8 @@ class ProductController {
         return res.json(updatedProduct);
       } catch (error) {
         next(
-          ApiError.badRequest(
-            `При обновлении продукта с id - ${req.params.id} произошла ошибка`,
+          ApiError.setDefaultMessage(
+            `При обновлении товара с id - ${req.params.id} произошла ошибка`,
             error
           )
         );
@@ -124,8 +127,8 @@ class ProductController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest(
-          `При удалении продукта с id - ${req.params.id} произошла ошибка`,
+        ApiError.setDefaultMessage(
+          `При удалении товара с id - ${req.params.id} произошла ошибка`,
           error
         )
       );

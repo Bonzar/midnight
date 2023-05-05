@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { couponController } from "../controllers/couponController";
+import { roleMiddleware } from "../middleware/roleMiddleware";
 const couponRouter = Router();
 
-couponRouter.post("/", couponController.create);
+couponRouter.post("/", roleMiddleware("ADMIN"), couponController.create);
 
-couponRouter.get("/", couponController.getAll);
+couponRouter.get("/", roleMiddleware("ADMIN"), couponController.getAll);
 
-couponRouter.patch("/:id", couponController.update);
+couponRouter.patch("/:id", roleMiddleware("ADMIN"), couponController.update);
 
-couponRouter.delete("/:id", couponController.delete);
+couponRouter.delete("/:id", roleMiddleware("ADMIN"), couponController.delete);
 
 export { couponRouter };

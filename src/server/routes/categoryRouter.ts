@@ -1,18 +1,23 @@
 import { Router } from "express";
 import { categoryController } from "../controllers/categoryController";
-import { checkRoleMiddleware } from "../middleware/checkRoleMiddleware";
+import { roleMiddleware } from "../middleware/roleMiddleware";
+
 const categoryRouter = Router();
 
-categoryRouter.post(
-  "/",
-  checkRoleMiddleware("ADMIN"),
-  categoryController.create
-);
+categoryRouter.post("/", roleMiddleware("ADMIN"), categoryController.create);
 
 categoryRouter.get("/", categoryController.getAll);
 
-categoryRouter.patch("/:id", categoryController.update);
+categoryRouter.patch(
+  "/:id",
+  roleMiddleware("ADMIN"),
+  categoryController.update
+);
 
-categoryRouter.delete("/:id", categoryController.delete);
+categoryRouter.delete(
+  "/:id",
+  roleMiddleware("ADMIN"),
+  categoryController.delete
+);
 
 export { categoryRouter };

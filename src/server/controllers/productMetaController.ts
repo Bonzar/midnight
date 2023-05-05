@@ -20,7 +20,10 @@ class ProductMetaController {
         res.status(200).json(productMeta);
       } catch (error) {
         next(
-          ApiError.badRequest("При создании товара произошла ошибка", error)
+          ApiError.setDefaultMessage(
+            "При создании товара произошла ошибка",
+            error
+          )
         );
       }
     };
@@ -40,7 +43,7 @@ class ProductMetaController {
       res.status(200).json(updatedProductMeta);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При обновлении характеристики товара с id - ${req.params.id} произошла ошибка`,
           error
         )
@@ -59,7 +62,7 @@ class ProductMetaController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           `При удаления характеристики товара с id - ${req.params.id} произошла ошибка`,
           error
         )

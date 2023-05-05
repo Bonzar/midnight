@@ -4,73 +4,121 @@ import { Basket } from "../models/Basket";
 import { Wishlist } from "../models/Wishlist";
 import type { AddressCreationAttributes } from "../models/Address";
 import { Address } from "../models/Address";
-import { sign as jwtSign } from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { mailService } from "./mailService";
+import { tokenService } from "./tokenService";
+import { UserDto } from "../dtos/userDto";
+import { sequelize } from "../database";
+import { ApiError } from "../error/ApiError";
 
 export type CreateUserData = UserCreationAttributes;
 export type CreateAddressData = AddressCreationAttributes;
 export type UpdateAddressData = Partial<AddressCreationAttributes>;
-
-export type UserJwtPayload = { id: number; email: string; role: User["role"] };
+export interface UserAuthData {
+  user: UserDto;
+  accessToken: string;
+  refreshToken: string;
+}
 
 class UserService {
-  generateJwt(id: number, email: string, role: User["role"]) {
-    const payload: UserJwtPayload = { id, email, role };
+  private async generateAuthData(user: User): Promise<UserAuthData> {
+    const userDto = new UserDto(user);
 
-    return jwtSign(payload, process.env.JWT_SECRET, {
-      expiresIn: "24h",
-    });
+    const tokens = tokenService.generateTokens(userDto);
+    await tokenService.saveToken(user.id, tokens.refreshToken);
+
+    return { user: userDto, ...tokens };
   }
 
   async registration(data: UserCreationAttributes) {
-    const user = await User.create(
-      {
-        basket: {},
-        wishlist: {},
-        ...data,
-      },
-      { include: [Basket, Wishlist, Address] }
-    );
+    const { role: _role, ...userData } = data; // Prevent registration Admins
 
-    const jwt = this.generateJwt(user.id, user.email, user.role);
+    return sequelize.transaction(async () => {
+      const user = await User.create(
+        {
+          basket: {},
+          wishlist: {},
+          ...userData,
+        },
+        { include: [Basket, Wishlist, Address] }
+      );
 
-    const userData = Object.assign(user, {
-      password: undefined,
-    }) as Omit<User, "password">;
+      await mailService.sendActivationMail(user.email, user.password);
 
-    return { user: userData, token: jwt };
+      return await this.generateAuthData(user);
+    });
   }
 
   async login(email: string, password: string) {
-    const user = await this.getOne(email);
+    return sequelize.transaction(async () => {
+      const user = await this.getOneByEmail(email);
 
-    const comparePassword = bcrypt.compareSync(
-      email + password.toString(),
-      user.password
-    );
+      const isPasswordEqual = bcrypt.compareSync(
+        email + password.toString(),
+        user.password
+      );
 
-    if (!comparePassword) {
-      throw new Error("Указан неверный пароль");
-    }
+      if (!isPasswordEqual) {
+        throw ApiError.badRequest("Указан неверный пароль");
+      }
 
-    const jwt = this.generateJwt(user.id, user.email, user.role);
-
-    const userData = Object.assign(user, {
-      password: undefined,
-    }) as Omit<User, "password">;
-
-    return { user: userData, token: jwt };
+      return await this.generateAuthData(user);
+    });
   }
 
-  async getOne(email: string) {
+  async refresh(refreshToken: string) {
+    if (!refreshToken) {
+      throw ApiError.unauthorized(
+        new Error("Для обновления токена не был предоставлен токен обновления")
+      );
+    }
+
+    const userDto = tokenService.validateRefreshToken(refreshToken);
+    const refreshTokenNote = await tokenService.getRefreshTokenNote(
+      refreshToken
+    );
+    if (!userDto || !refreshTokenNote) {
+      throw ApiError.unauthorized();
+    }
+
+    const user = await this.getOneByEmail(userDto.email);
+
+    return await this.generateAuthData(user);
+  }
+
+  async logout(refreshToken: string) {
+    return await tokenService.removeToken(refreshToken);
+  }
+
+  async activate(activationLink: string) {
+    if (!activationLink) {
+      throw ApiError.badRequest(
+        "Для активации аккаунта не была предоставлена ссылка активации"
+      );
+    }
+
+    const user = await User.findOne({ where: { password: activationLink } });
+
+    if (!user) {
+      throw ApiError.badRequest(
+        `Пользователь с activationLink - ${activationLink} не найден`
+      );
+    }
+
+    return await user.update({ isActivated: true });
+  }
+
+  async getOneByEmail(email: string) {
     if (!email) {
-      throw new Error("Для получения пользователя не был предоставлен email");
+      throw ApiError.badRequest(
+        "Для получения пользователя не был предоставлен email"
+      );
     }
 
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      throw new Error(`Пользователь с email - ${email} не найден`);
+      throw ApiError.badRequest(`Пользователь с email - ${email} не найден`);
     }
 
     return user;
@@ -82,13 +130,13 @@ class UserService {
 
   async getOneAddress(id: number) {
     if (!id) {
-      throw new Error("Для получения адреса не был предоставлен ID");
+      throw ApiError.badRequest("Для получения адреса не был предоставлен ID");
     }
 
     const address = await Address.findOne({ where: { id } });
 
     if (!address) {
-      throw new Error(`Адрес с id - ${id} не найден`);
+      throw ApiError.badRequest(`Адрес с id - ${id} не найден`);
     }
 
     return address;

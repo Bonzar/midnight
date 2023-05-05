@@ -20,7 +20,7 @@ class ShipmentController {
         res.status(200).json(shipmentType);
       } catch (error) {
         next(
-          ApiError.badRequest(
+          ApiError.setDefaultMessage(
             "При создании типа доставки произошла ошибка",
             error
           )
@@ -39,7 +39,7 @@ class ShipmentController {
       res.status(200).json(shipmentTypes);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При получении всех типов доставки произошла ошибка",
           error
         )
@@ -64,7 +64,7 @@ class ShipmentController {
       res.status(200).json(shipmentType);
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При обновлении типа доставки произошла ошибка",
           error
         )
@@ -85,7 +85,7 @@ class ShipmentController {
       res.status(200).end();
     } catch (error) {
       next(
-        ApiError.badRequest(
+        ApiError.setDefaultMessage(
           "При удалении типа доставки произошла ошибка",
           error
         )
