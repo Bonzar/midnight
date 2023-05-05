@@ -123,6 +123,9 @@ class OrderService {
 
   async update(id: number, updateData: UpdateOrderData) {
     const order = await this.getOne(id);
+    if (order.isPaid) {
+      throw ApiError.badRequest("Оплаченный заказ нельзя изменить");
+    }
 
     return order.update(updateData);
   }
