@@ -1,0 +1,8 @@
+{
+  "plugins": {
+    "@csstools/postcss-global-data": {
+      "files": ["src/client/assets/styles/media-queries.global.css"]
+    },
+    "postcss-custom-media": {}
+  }
+}

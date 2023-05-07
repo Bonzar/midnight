@@ -1,0 +1,120 @@
+.text {
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--font-weight-regular);
+}
+
+/*
+  Font Size
+*/
+
+.s-0 {
+  font-size: var(--font-size-0);
+  line-height: var(--font-height-0);
+}
+
+.s-1 {
+  font-size: var(--font-size-1);
+  line-height: var(--font-height-1);
+}
+
+.s-2 {
+  font-size: var(--font-size-2);
+  line-height: var(--font-height-2);
+}
+
+.s-3 {
+  font-size: var(--font-size-3);
+  line-height: var(--font-height-3);
+}
+
+.s-4 {
+  font-size: var(--font-size-4);
+  line-height: var(--font-height-4);
+}
+
+.s-5 {
+  font-size: var(--font-size-5);
+  line-height: var(--font-height-5);
+}
+
+/*
+  Font Weight
+*/
+
+.w-semibold {
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-semibold);
+}
+
+.w-bold {
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-bold);
+}
+
+/*
+  Font Color
+*/
+
+.c-tunicGreen {
+  color: var(--tunicGreen);
+}
+.c-overgrown {
+  color: var(--overgrown);
+}
+.c-yellowMellow {
+  color: var(--yellowMellow);
+}
+.c-beer {
+  color: var(--beer);
+}
+.c-peachFury {
+  color: var(--peachFury);
+}
+.c-embarrassed {
+  color: var(--embarrassed);
+}
+.c-illicitPink {
+  color: var(--illicitPink);
+}
+.c-venusSlipperOrchid {
+  color: var(--venusSlipperOrchid);
+}
+.c-legendaryLavender {
+  color: var(--legendaryLavender);
+}
+
+.c-white {
+  color: var(--white);
+}
+
+.c-grey97 {
+  color: var(--grey97);
+}
+
+.c-grey92 {
+  color: var(--grey92);
+}
+
+.c-grey85 {
+  color: var(--grey85);
+}
+
+.c-grey76 {
+  color: var(--grey76);
+}
+
+.c-grey65 {
+  color: var(--grey65);
+}
+
+.c-grey52 {
+  color: var(--grey52);
+}
+
+.c-grey37 {
+  color: var(--grey37);
+}
+
+.c-black {
+  color: var(--black);
+}

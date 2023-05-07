@@ -1,0 +1,114 @@
+Index: src/client/pages/Main.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/client/pages/Main.tsx b/src/client/pages/Main.tsx
+--- a/src/client/pages/Main.tsx	
++++ b/src/client/pages/Main.tsx	(date 1683365790810)
+@@ -8,103 +8,13 @@
+       <Indent size={5} />
+       <div
+         style={{
+-          border: "lightgrey solid 1px",
++          // border: "lightgrey solid 1px",
+           display: "grid",
+           gridTemplateColumns: "1fr 1fr 1fr",
+         }}
+       >
+         <div>
+-          <Text as="h2">Heading 2</Text>
+-          <Text as="h3">Heading 3</Text>
+-          <Text as="h4">Heading 4</Text>
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="h2">Heading 2</Text>
+-          <Text as="p">list item 1</Text>
+-          <Indent size={1} />
+-          <Text as="p">list item 1</Text>
+-          <Indent size={1} />
+-          <Text as="p">list item 1</Text>
+-          <Indent size={1} />
+-          <Text as="p">list item 1</Text>
+-        </div>
+-        <div>
+-          <Text as="h2">Heading 2</Text>
+-          <Text as="h3">Heading 3</Text>
+-          <Text as="h4">Heading 4</Text>
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="h2">Heading 2</Text>
+-          <Text as="p">list item 1</Text>
+-          <Indent size={2} />
+-          <Text as="p">list item 1</Text>
+-          <Indent size={2} />
+-          <Text as="p">list item 1</Text>
+-          <Indent size={2} />
+-          <Text as="p">list item 1</Text>
+-        </div>
+-        <div>
+-          <Text as="h2">Heading 2</Text>
+-          <Text as="h3">Heading 3</Text>
+-          <Text as="h4">Heading 4</Text>
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="p">
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text Paragraph text Paragraph text Paragraph text
+-            Paragraph text
+-          </Text>
+-          <Indent size={3} />
+-          <Text as="h2">Heading 2</Text>
+-          <Text as="p">list item 1</Text>
+-          <Indent size={3} />
+-          <Text as="p">list item 1</Text>
+-          <Indent size={3} />
+-          <Text as="p">list item 1</Text>
+-          <Indent size={3} />
+-          <Text as="p">list item 1</Text>
++          <table></table>
+         </div>
+       </div>
+     </>

@@ -1,17 +1,33 @@
 import React from "react";
-import { Footer } from "../components/Footer";
+import { Text } from "../components/ui/Text";
+import { Indent } from "../components/ui/Indent/Indent";
 
 export const Main = () => {
-  const clickHandler = async () => {
-    const result = await fetch("/api");
-    console.log(await result.json());
-  };
-
   return (
     <>
-      <button onClick={clickHandler}>Click</button>
-      <div>Hello world!</div>
-      <Footer />
+      <div>
+        <div>
+          <Text as="h1">Heading 1</Text>
+          <Text as="h2">Heading 2</Text>
+          <Text as="p">
+            Paragraph text Paragraph text Paragraph text Paragraph text
+            Paragraph text Paragraph text Paragraph text Paragraph text
+            Paragraph text
+          </Text>
+          <Indent size={3} />
+          <Text as="p">
+            Paragraph text Paragraph text Paragraph text Paragraph text
+            Paragraph text Paragraph text Paragraph text Paragraph text
+            Paragraph text
+          </Text>
+          <Indent size={3} />
+          <Text as="p">
+            Paragraph text Paragraph text Paragraph text Paragraph text
+            Paragraph text Paragraph text Paragraph text Paragraph text
+            Paragraph text
+          </Text>
+        </div>
+      </div>
     </>
   );
 };

@@ -1,0 +1,187 @@
+Index: Main.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Main.tsx b/Main.tsx
+--- a/Main.tsx	
++++ b/Main.tsx	(date 1683365395408)
+@@ -14,175 +14,9 @@
+         }}
+       >
+         <div>
+-          <form>
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-          </form>
+-        </div>
+-        <div>
+-          <form>
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={2} />
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={2} />
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-          </form>
+-        </div>
+-        <div>
+-          <form>
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={3} />
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={3} />
+-            <Text style={{ display: "block" }} as={"label"}>
+-              Адрес
+-            </Text>
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-            <Indent size={1} />
+-            <Text
+-              style={{ display: "block", border: "lightgrey solid 1px" }}
+-              as={"input"}
+-            />
+-          </form>
++          <table>
++            
++          </table>
+         </div>
+       </div>
+     </>

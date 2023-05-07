@@ -1,0 +1,51 @@
+/* Block */
+
+.b-1 {
+  padding-top: var(--indent-1);
+}
+
+.b-2 {
+  padding-top: var(--indent-2);
+}
+
+.b-3 {
+  padding-top: var(--indent-3);
+}
+
+.b-4 {
+  padding-top: var(--indent-4);
+}
+
+.b-5 {
+  padding-top: var(--indent-5);
+}
+
+.b-6 {
+  padding-top: var(--indent-6);
+}
+
+/* Inline */
+
+.i-1 {
+  padding-left: var(--indent-1);
+}
+
+.i-2 {
+  padding-left: var(--indent-2);
+}
+
+.i-3 {
+  padding-left: var(--indent-3);
+}
+
+.i-4 {
+  padding-left: var(--indent-4);
+}
+
+.i-5 {
+  padding-left: var(--indent-5);
+}
+
+.i-6 {
+  padding-left: var(--indent-6);
+}

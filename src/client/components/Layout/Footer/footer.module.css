@@ -1,0 +1,7 @@
+.footer {
+  background-color: var(--yellowMellow);
+}
+
+.footerContainer {
+  padding: 0 var(--indent-5);
+}

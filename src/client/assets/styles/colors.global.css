@@ -1,0 +1,67 @@
+:root {
+  --tunicGreen: #00d400;
+  --overgrown: #8cde00;
+  --yellowMellow: #f2d100;
+  --beer: #ffa900;
+  --peachFury: #ff7f32;
+  --embarrassed: #ff6ca1;
+  --illicitPink: #ff6cda;
+  --venusSlipperOrchid: #dc6aea;
+  --legendaryLavender: #955cc9;
+
+  --white: hsl(0, 0%, 100%);
+  --grey97: hsl(0, 0%, 97%);
+  --grey92: hsl(0, 0%, 92%);
+  --grey85: hsl(0, 0%, 85%);
+  --grey76: hsl(0, 0%, 76%);
+  --grey65: hsl(0, 0%, 65%);
+  --grey52: hsl(0, 0%, 52%);
+  --grey37: hsl(0, 0%, 37%);
+  --black: hsl(0, 0%, 20%);
+
+  /* Gradients */
+  --gradient: linear-gradient(
+      45deg,
+      var(--tunicGreen),
+      var(--overgrown),
+      var(--yellowMellow),
+      var(--beer),
+      var(--peachFury),
+      var(--embarrassed),
+      var(--illicitPink),
+      var(--venusSlipperOrchid),
+      var(--legendaryLavender),
+      var(--legendaryLavender),
+      var(--venusSlipperOrchid),
+      var(--illicitPink),
+      var(--embarrassed),
+      var(--peachFury),
+      var(--beer),
+      var(--yellowMellow),
+      var(--overgrown),
+      var(--tunicGreen)
+  );
+
+  --conicGradient: conic-gradient(
+    var(--tunicGreen) 0%,
+    var(--overgrown) 6%,
+    var(--yellowMellow) 12%,
+    var(--beer) 18%,
+    var(--peachFury) 24%,
+    var(--embarrassed) 30%,
+    var(--illicitPink) 36%,
+    var(--venusSlipperOrchid) 42%,
+    var(--legendaryLavender) 48%,
+    var(--legendaryLavender) 54%,
+    var(--venusSlipperOrchid) 60%,
+    var(--illicitPink) 66%,
+    var(--embarrassed) 72%,
+    var(--peachFury) 78%,
+    var(--beer) 84%,
+    var(--yellowMellow) 90%,
+    var(--overgrown) 96%,
+    var(--tunicGreen) 100%
+  );
+
+  --border-gradient: var(--conicGradient) 1 50;
+}

@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import viteSvgR from "vite-plugin-svgr";
 
 import type { UserConfig } from "vitest/config";
 
@@ -13,7 +14,7 @@ const test = {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), viteSvgR()],
   server: { port: 3000 },
   build: {
     minify: false,
