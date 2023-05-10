@@ -13,22 +13,32 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { UserCreationAttributes } from "./User";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
-import type { OrderProductCreationAttributes } from "./OrderProduct";
+import type {
+  OrderProductAttributes,
+  OrderProductCreationAttributes,
+} from "./OrderProduct";
 import { OrderProduct } from "./OrderProduct";
-import type { ProductCreationAttributes } from "./Product";
+import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
-import type { CouponCreationAttributes } from "./Coupon";
+import type { CouponAttributes, CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
-import type { OrderCouponCreationAttributes } from "./OrderCoupon";
+import type {
+  OrderCouponCreationAttributes,
+  OrderCouponAttributes,
+} from "./OrderCoupon";
 import { OrderCoupon } from "./OrderCoupon";
-import type { ShipmentCreationAttributes } from "./Shipment";
+import type {
+  ShipmentAttributes,
+  ShipmentCreationAttributes,
+} from "./Shipment";
 import { Shipment } from "./Shipment";
 import { DataTypes } from "sequelize";
 
-export interface OrderAttributes {
+interface OrderBaseAttributes {
   id: Order["id"];
   isPaid: Order["isPaid"];
   status: Order["status"];
@@ -39,8 +49,17 @@ export interface OrderAttributes {
   userId: Order["userId"];
 }
 
+interface OrderAssociationAttributes {
+  user: UserAttributes;
+  shipment: ShipmentAttributes;
+  products: Array<ProductAttributes & OrderProductAttributes>;
+  coupons: CouponAttributes[];
+  orderProducts: OrderProductAttributes[];
+  orderCoupons: OrderCouponAttributes[];
+}
+
 export type OrderCreationAttributes = Optional<
-  Omit<OrderAttributes, "id">,
+  Omit<OrderBaseAttributes, "id">,
   "isPaid" | "status" | "note" | "shipDate"
 > & {
   user?: UserCreationAttributes;
@@ -52,7 +71,7 @@ export type OrderCreationAttributes = Optional<
 };
 
 @Table
-export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
+export class Order extends Model<OrderBaseAttributes, OrderCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -111,4 +130,9 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
   orderCoupons!: OrderCoupon[];
 }
 
-exhaustiveModelCheck<OrderAttributes, OrderCreationAttributes, Order>(true);
+export type OrderAttributes = OrderBaseAttributes &
+  Partial<OrderAssociationAttributes>;
+
+keysCheck<ModelKeys<Order>, keyof OrderAttributes>();
+keysCheck<OrderAttributes, keyof ModelKeys<Order>>();
+keysCheck<OrderCreationAttributes, keyof Omit<ModelKeys<Order>, "id">>();

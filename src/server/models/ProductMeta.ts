@@ -11,19 +11,24 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { ProductCreationAttributes } from "./Product";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { ProductCreationAttributes, ProductAttributes } from "./Product";
 import { Product } from "./Product";
 
-interface ProductMetaAttributes {
+interface ProductMetaBaseAttributes {
   id: ProductMeta["id"];
   title: ProductMeta["title"];
   description: ProductMeta["description"];
   productId: ProductMeta["productId"];
 }
 
+interface ProductMetaAssociationAttributes {
+  product: ProductAttributes;
+}
+
 export type ProductMetaCreationAttributes = Optional<
-  Omit<ProductMetaAttributes, "id">,
+  Omit<ProductMetaBaseAttributes, "id">,
   never
 > & {
   product?: ProductCreationAttributes;
@@ -31,7 +36,7 @@ export type ProductMetaCreationAttributes = Optional<
 
 @Table
 export class ProductMeta extends Model<
-  ProductMetaAttributes,
+  ProductMetaBaseAttributes,
   ProductMetaCreationAttributes
 > {
   @PrimaryKey
@@ -60,8 +65,12 @@ export class ProductMeta extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<
-  ProductMetaAttributes,
+export type ProductMetaAttributes = ProductMetaBaseAttributes &
+  Partial<ProductMetaAssociationAttributes>;
+
+keysCheck<ModelKeys<ProductMeta>, keyof ProductMetaAttributes>();
+keysCheck<ProductMetaAttributes, keyof ModelKeys<ProductMeta>>();
+keysCheck<
   ProductMetaCreationAttributes,
-  ProductMeta
->(true);
+  keyof Omit<ModelKeys<ProductMeta>, "id">
+>();

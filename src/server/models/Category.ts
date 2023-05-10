@@ -13,19 +13,26 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { ProductCreationAttributes } from "./Product";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import { DataTypes } from "sequelize";
 
-interface CategoryAttributes {
+interface CategoryBaseAttributes {
   id: Category["id"];
   name: Category["name"];
   parentCategoryId: Category["parentCategoryId"];
 }
 
+interface CategoryAssociationAttributes {
+  parentCategory: CategoryAttributes;
+  childCategories: CategoryAttributes[];
+  products: ProductAttributes[];
+}
+
 export type CategoryCreationAttributes = Optional<
-  Omit<CategoryAttributes, "id">,
+  Omit<CategoryBaseAttributes, "id">,
   "parentCategoryId"
 > & {
   parentCategory?: CategoryCreationAttributes;
@@ -38,7 +45,7 @@ export type CategoryCreationAttributes = Optional<
 
 @Table
 export class Category extends Model<
-  CategoryAttributes,
+  CategoryBaseAttributes,
   CategoryCreationAttributes
 > {
   @PrimaryKey
@@ -81,12 +88,15 @@ export class Category extends Model<
   parentCategory!: Category;
 
   @HasMany(() => Category)
-  childCategories!: Category;
+  childCategories!: Category[];
 
   @HasMany(() => Product)
   products!: Product[];
 }
 
-exhaustiveModelCheck<CategoryAttributes, CategoryCreationAttributes, Category>(
-  true
-);
+export type CategoryAttributes = CategoryBaseAttributes &
+  Partial<CategoryAssociationAttributes>;
+
+keysCheck<ModelKeys<Category>, keyof CategoryAttributes>();
+keysCheck<CategoryAttributes, keyof ModelKeys<Category>>();
+keysCheck<CategoryCreationAttributes, keyof Omit<ModelKeys<Category>, "id">>();

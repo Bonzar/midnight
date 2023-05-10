@@ -10,20 +10,26 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { BasketCreationAttributes } from "./Basket";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { BasketAttributes, BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
-import type { CouponCreationAttributes } from "./Coupon";
+import type { CouponAttributes, CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
 
-interface BasketCouponAttributes {
+interface BasketCouponBaseAttributes {
   id: BasketCoupon["id"];
   basketId: BasketCoupon["basketId"];
   couponId: BasketCoupon["couponId"];
 }
 
+interface BasketCouponAssociationsAttributes {
+  basket: BasketAttributes;
+  coupon: CouponAttributes;
+}
+
 export type BasketCouponCreationAttributes = Optional<
-  Omit<BasketCouponAttributes, "id">,
+  Omit<BasketCouponBaseAttributes, "id">,
   never
 > & {
   basket?: BasketCreationAttributes;
@@ -32,7 +38,7 @@ export type BasketCouponCreationAttributes = Optional<
 
 @Table
 export class BasketCoupon extends Model<
-  BasketCouponAttributes,
+  BasketCouponBaseAttributes,
   BasketCouponCreationAttributes
 > {
   @PrimaryKey
@@ -59,8 +65,12 @@ export class BasketCoupon extends Model<
   coupon!: Coupon;
 }
 
-exhaustiveModelCheck<
-  BasketCouponAttributes,
+export type BasketCouponAttributes = BasketCouponBaseAttributes &
+  Partial<BasketCouponAssociationsAttributes>;
+
+keysCheck<ModelKeys<BasketCoupon>, keyof BasketCouponAttributes>();
+keysCheck<BasketCouponAttributes, keyof ModelKeys<BasketCoupon>>();
+keysCheck<
   BasketCouponCreationAttributes,
-  BasketCoupon
->(true);
+  keyof Omit<ModelKeys<BasketCoupon>, "id">
+>();

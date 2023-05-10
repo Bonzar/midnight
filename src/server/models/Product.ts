@@ -15,28 +15,50 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { CategoryCreationAttributes } from "./Category";
+import type {
+  CategoryAttributes,
+  CategoryCreationAttributes,
+} from "./Category";
 import { Category } from "./Category";
-import type { ProductImageCreationAttributes } from "./ProductImage";
+import type {
+  ProductImageAttributes,
+  ProductImageCreationAttributes,
+} from "./ProductImage";
 import { ProductImage } from "./ProductImage";
-import type { ProductMetaCreationAttributes } from "./ProductMeta";
+import type {
+  ProductMetaAttributes,
+  ProductMetaCreationAttributes,
+} from "./ProductMeta";
 import { ProductMeta } from "./ProductMeta";
-import type { OrderProductCreationAttributes } from "./OrderProduct";
+import type {
+  OrderProductAttributes,
+  OrderProductCreationAttributes,
+} from "./OrderProduct";
 import { OrderProduct } from "./OrderProduct";
-import type { OrderCreationAttributes } from "./Order";
+import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
-import type { BasketProductCreationAttributes } from "./BasketProduct";
+import type {
+  BasketProductAttributes,
+  BasketProductCreationAttributes,
+} from "./BasketProduct";
 import { BasketProduct } from "./BasketProduct";
-import type { BasketCreationAttributes } from "./Basket";
+import type { BasketAttributes, BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
-import type { WishlistCreationAttributes } from "./Wishlist";
+import type {
+  WishlistAttributes,
+  WishlistCreationAttributes,
+} from "./Wishlist";
 import { Wishlist } from "./Wishlist";
-import type { WishlistProductCreationAttributes } from "./WishlistProduct";
+import type {
+  WishlistProductAttributes,
+  WishlistProductCreationAttributes,
+} from "./WishlistProduct";
 import { WishlistProduct } from "./WishlistProduct";
 import { DataTypes } from "sequelize";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
 
-export interface ProductAttributes {
+interface ProductBaseAttributes {
   id: Product["id"];
   name: Product["name"];
   description: Product["description"];
@@ -46,8 +68,20 @@ export interface ProductAttributes {
   categoryId: Product["categoryId"];
 }
 
+interface ProductAssociationsAttributes {
+  category: CategoryAttributes;
+  productImages: ProductImageAttributes[];
+  productMetas: ProductMetaAttributes[];
+  orders: OrderAttributes[];
+  baskets: BasketAttributes[];
+  wishlist: WishlistAttributes;
+  orderProducts: OrderProductAttributes[];
+  wishlistProducts: WishlistProductAttributes[];
+  basketProducts: BasketProductAttributes[];
+}
+
 export type ProductCreationAttributes = Optional<
-  Omit<ProductAttributes, "id">,
+  Omit<ProductBaseAttributes, "id">,
   "description" | "discount" | "stock"
 > & {
   category?: CategoryCreationAttributes;
@@ -56,8 +90,8 @@ export type ProductCreationAttributes = Optional<
     "productId" | "product"
   >[];
   productMetas?: Omit<ProductMetaCreationAttributes, "productId" | "product">[];
-  orders?: OrderCreationAttributes;
-  baskets?: BasketCreationAttributes;
+  orders?: OrderCreationAttributes[];
+  baskets?: BasketCreationAttributes[];
   wishlist?: WishlistCreationAttributes;
   orderProducts?: Omit<
     OrderProductCreationAttributes,
@@ -75,7 +109,7 @@ export type ProductCreationAttributes = Optional<
 
 @Table
 export class Product extends Model<
-  ProductAttributes,
+  ProductBaseAttributes,
   ProductCreationAttributes
 > {
   @PrimaryKey
@@ -145,6 +179,9 @@ export class Product extends Model<
   wishlistProducts!: WishlistProduct[];
 }
 
-exhaustiveModelCheck<ProductAttributes, ProductCreationAttributes, Product>(
-  true
-);
+export type ProductAttributes = ProductBaseAttributes &
+  Partial<ProductAssociationsAttributes>;
+
+keysCheck<ModelKeys<Product>, keyof ProductAttributes>();
+keysCheck<ProductAttributes, keyof ModelKeys<Product>>();
+keysCheck<ProductCreationAttributes, keyof Omit<ModelKeys<Product>, "id">>();

@@ -29,3 +29,13 @@ export function exhaustiveModelCheck<
 ) {
   return value;
 }
+
+export const keysCheck = <
+  ModelAttributes,
+  ModelInstance extends keyof ModelAttributes
+>() => {};
+
+export type ModelKeys<T extends Model> = Omit<
+  InferAttributes<T>,
+  DefaultModelAttributes
+>;

@@ -10,13 +10,14 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { OrderCreationAttributes } from "./Order";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { OrderCreationAttributes, OrderAttributes } from "./Order";
 import { Order } from "./Order";
-import type { ProductCreationAttributes } from "./Product";
+import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 
-interface OrderProductAttributes {
+interface OrderProductBaseAttributes {
   id: OrderProduct["id"];
   quantity: OrderProduct["quantity"];
   salePrice: OrderProduct["salePrice"];
@@ -24,8 +25,13 @@ interface OrderProductAttributes {
   productId: OrderProduct["productId"];
 }
 
+interface OrderProductAssociationAttributes {
+  order: OrderAttributes;
+  product: ProductAttributes;
+}
+
 export type OrderProductCreationAttributes = Optional<
-  Omit<OrderProductAttributes, "id">,
+  Omit<OrderProductBaseAttributes, "id">,
   never
 > & {
   order?: OrderCreationAttributes;
@@ -34,7 +40,7 @@ export type OrderProductCreationAttributes = Optional<
 
 @Table
 export class OrderProduct extends Model<
-  OrderProductAttributes,
+  OrderProductBaseAttributes,
   OrderProductCreationAttributes
 > {
   @PrimaryKey
@@ -70,8 +76,12 @@ export class OrderProduct extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<
-  OrderProductAttributes,
+export type OrderProductAttributes = OrderProductBaseAttributes &
+  Partial<OrderProductAssociationAttributes>;
+
+keysCheck<ModelKeys<OrderProduct>, keyof OrderProductAttributes>();
+keysCheck<OrderProductAttributes, keyof ModelKeys<OrderProduct>>();
+keysCheck<
   OrderProductCreationAttributes,
-  OrderProduct
->(true);
+  keyof Omit<ModelKeys<OrderProduct>, "id">
+>();

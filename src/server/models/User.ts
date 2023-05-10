@@ -13,21 +13,25 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
 import { Address } from "./Address";
-import type { AddressCreationAttributes } from "./Address";
+import type { AddressCreationAttributes, AddressAttributes } from "./Address";
 import { Basket } from "./Basket";
-import type { BasketCreationAttributes } from "./Basket";
+import type { BasketCreationAttributes, BasketAttributes } from "./Basket";
 import { Order } from "./Order";
-import type { OrderCreationAttributes } from "./Order";
+import type { OrderCreationAttributes, OrderAttributes } from "./Order";
 import { Wishlist } from "./Wishlist";
-import type { WishlistCreationAttributes } from "./Wishlist";
+import type {
+  WishlistCreationAttributes,
+  WishlistAttributes,
+} from "./Wishlist";
 import { DataTypes } from "sequelize";
 import bcrypt from "bcrypt";
-import type { TokenCreationAttributes } from "./Token";
+import type { TokenAttributes, TokenCreationAttributes } from "./Token";
 import { Token } from "./Token";
 
-interface UserAttributes {
+interface UserBaseAttributes {
   id: User["id"];
   firstName: User["firstName"];
   lastName: User["lastName"];
@@ -39,8 +43,16 @@ interface UserAttributes {
   role: User["role"];
 }
 
+interface UserAssociationsAttributes {
+  basket: BasketAttributes;
+  wishlist: WishlistAttributes;
+  orders: OrderAttributes;
+  addresses: AddressAttributes;
+  token: TokenAttributes;
+}
+
 export type UserCreationAttributes = Optional<
-  Omit<UserAttributes, "id">,
+  Omit<UserBaseAttributes, "id">,
   "isActivated" | "activationLink" | "role" | "lastName" | "middleName"
 > & {
   basket?: Omit<BasketCreationAttributes, "userId" | "user">;
@@ -51,7 +63,7 @@ export type UserCreationAttributes = Optional<
 };
 
 @Table
-export class User extends Model<UserAttributes, UserCreationAttributes> {
+export class User extends Model<UserBaseAttributes, UserCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -130,4 +142,9 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   token?: Token;
 }
 
-exhaustiveModelCheck<UserAttributes, UserCreationAttributes, User>(true);
+export type UserAttributes = UserBaseAttributes &
+  Partial<UserAssociationsAttributes>;
+
+keysCheck<ModelKeys<User>, keyof UserAttributes>();
+keysCheck<UserAttributes, keyof ModelKeys<User>>();
+keysCheck<UserCreationAttributes, keyof Omit<ModelKeys<User>, "id">>();

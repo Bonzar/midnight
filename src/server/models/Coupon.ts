@@ -13,14 +13,18 @@ import {
   Is,
   HasMany,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { OrderCouponCreationAttributes } from "./OrderCoupon";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  OrderCouponAttributes,
+  OrderCouponCreationAttributes,
+} from "./OrderCoupon";
 import { OrderCoupon } from "./OrderCoupon";
-import type { OrderCreationAttributes } from "./Order";
+import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import { DataTypes } from "sequelize";
 
-interface CouponAttributes {
+interface CouponBaseAttributes {
   id: Coupon["id"];
   key: Coupon["key"];
   value: Coupon["value"];
@@ -29,8 +33,13 @@ interface CouponAttributes {
   expiresCount: Coupon["expiresCount"];
 }
 
+interface CouponAssociationAttributes {
+  orders: OrderAttributes[];
+  orderCoupons: OrderCouponAttributes[];
+}
+
 export type CouponCreationAttributes = Optional<
-  Omit<CouponAttributes, "id">,
+  Omit<CouponBaseAttributes, "id">,
   "type" | "expiresTime" | "expiresCount"
 > & {
   orders?: OrderCreationAttributes[];
@@ -38,7 +47,10 @@ export type CouponCreationAttributes = Optional<
 };
 
 @Table
-export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
+export class Coupon extends Model<
+  CouponBaseAttributes,
+  CouponCreationAttributes
+> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -47,7 +59,7 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
   @AllowNull(false)
   @Unique
   @Column({
-    set(value: CouponAttributes["key"]) {
+    set(value: CouponBaseAttributes["key"]) {
       const currentInstance = <Coupon>this;
       currentInstance.setDataValue("key", value.toUpperCase());
     },
@@ -98,4 +110,9 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
   orderCoupons!: OrderCoupon[];
 }
 
-exhaustiveModelCheck<CouponAttributes, CouponCreationAttributes, Coupon>(true);
+export type CouponAttributes = CouponBaseAttributes &
+  Partial<CouponAssociationAttributes>;
+
+keysCheck<ModelKeys<Coupon>, keyof CouponAttributes>();
+keysCheck<CouponAttributes, keyof ModelKeys<Coupon>>();
+keysCheck<CouponCreationAttributes, keyof Omit<ModelKeys<Coupon>, "id">>();

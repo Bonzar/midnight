@@ -10,21 +10,27 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { BasketCreationAttributes } from "./Basket";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { BasketAttributes, BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
-import type { ProductCreationAttributes } from "./Product";
+import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 
-interface BasketProductAttributes {
+interface BasketProductBaseAttributes {
   id: BasketProduct["id"];
   quantity: BasketProduct["quantity"];
   basketId: BasketProduct["basketId"];
   productId: BasketProduct["productId"];
 }
 
+interface BasketProductAssociationsAttributes {
+  basket: BasketAttributes;
+  product: ProductAttributes;
+}
+
 export type BasketProductCreationAttributes = Optional<
-  Omit<BasketProductAttributes, "id">,
+  Omit<BasketProductBaseAttributes, "id">,
   never
 > & {
   basket?: BasketCreationAttributes;
@@ -33,7 +39,7 @@ export type BasketProductCreationAttributes = Optional<
 
 @Table
 export class BasketProduct extends Model<
-  BasketProductAttributes,
+  BasketProductBaseAttributes,
   BasketProductCreationAttributes
 > {
   @PrimaryKey
@@ -63,8 +69,12 @@ export class BasketProduct extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<
-  BasketProductAttributes,
+export type BasketProductAttributes = BasketProductBaseAttributes &
+  Partial<BasketProductAssociationsAttributes>;
+
+keysCheck<ModelKeys<BasketProduct>, keyof BasketProductAttributes>();
+keysCheck<BasketProductAttributes, keyof ModelKeys<BasketProduct>>();
+keysCheck<
   BasketProductCreationAttributes,
-  BasketProduct
->(true);
+  keyof Omit<ModelKeys<BasketProduct>, "id">
+>();

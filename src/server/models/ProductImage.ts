@@ -12,12 +12,13 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { ProductCreationAttributes } from "./Product";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import { DataTypes } from "sequelize";
 
-interface ProductImageAttributes {
+interface ProductImageBaseAttributes {
   id: ProductImage["id"];
   url: ProductImage["url"];
   sort: ProductImage["sort"];
@@ -25,8 +26,12 @@ interface ProductImageAttributes {
   productId: ProductImage["productId"];
 }
 
+interface ProductImageAssociationAttributes {
+  product: ProductAttributes;
+}
+
 export type ProductImageCreationAttributes = Optional<
-  Omit<ProductImageAttributes, "id">,
+  Omit<ProductImageBaseAttributes, "id">,
   never
 > & {
   product?: ProductCreationAttributes;
@@ -34,7 +39,7 @@ export type ProductImageCreationAttributes = Optional<
 
 @Table
 export class ProductImage extends Model<
-  ProductImageAttributes,
+  ProductImageBaseAttributes,
   ProductImageCreationAttributes
 > {
   @PrimaryKey
@@ -69,8 +74,12 @@ export class ProductImage extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<
-  ProductImageAttributes,
+export type ProductImageAttributes = ProductImageBaseAttributes &
+  Partial<ProductImageAssociationAttributes>;
+
+keysCheck<ModelKeys<ProductImage>, keyof ProductImageAttributes>();
+keysCheck<ProductImageAttributes, keyof ModelKeys<ProductImage>>();
+keysCheck<
   ProductImageCreationAttributes,
-  ProductImage
->(true);
+  keyof Omit<ModelKeys<ProductImage>, "id">
+>();

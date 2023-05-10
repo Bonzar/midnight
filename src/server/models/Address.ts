@@ -11,12 +11,13 @@ import {
   Table,
 } from "sequelize-typescript";
 import type { Optional } from "sequelize";
-import type { UserCreationAttributes } from "./User";
+import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
 import { DataTypes } from "sequelize";
 
-interface AddressAttributes {
+interface AddressBaseAttributes {
   id: Address["id"];
   country: Address["country"];
   city: Address["city"];
@@ -26,8 +27,12 @@ interface AddressAttributes {
   userId: Address["userId"];
 }
 
+interface AddressAssociationsAttributes {
+  user: UserAttributes;
+}
+
 export type AddressCreationAttributes = Optional<
-  Omit<AddressAttributes, "id">,
+  Omit<AddressBaseAttributes, "id">,
   "flat"
 > & {
   user?: UserCreationAttributes;
@@ -35,7 +40,7 @@ export type AddressCreationAttributes = Optional<
 
 @Table
 export class Address extends Model<
-  AddressAttributes,
+  AddressBaseAttributes,
   AddressCreationAttributes
 > {
   @PrimaryKey
@@ -77,6 +82,9 @@ export class Address extends Model<
   user!: User;
 }
 
-exhaustiveModelCheck<AddressAttributes, AddressCreationAttributes, Address>(
-  true
-);
+export type AddressAttributes = AddressBaseAttributes &
+  Partial<AddressAssociationsAttributes>;
+
+keysCheck<ModelKeys<Address>, keyof AddressAttributes>();
+keysCheck<AddressAttributes, keyof ModelKeys<Address>>();
+keysCheck<AddressCreationAttributes, keyof Omit<ModelKeys<Address>, "id">>();

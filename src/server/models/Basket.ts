@@ -12,25 +12,40 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { UserCreationAttributes } from "./User";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { UserCreationAttributes, UserAttributes } from "./User";
 import { User } from "./User";
-import type { ProductCreationAttributes } from "./Product";
+import type { ProductCreationAttributes, ProductAttributes } from "./Product";
 import { Product } from "./Product";
-import type { BasketProductCreationAttributes } from "./BasketProduct";
+import type {
+  BasketProductAttributes,
+  BasketProductCreationAttributes,
+} from "./BasketProduct";
 import { BasketProduct } from "./BasketProduct";
-import type { CouponCreationAttributes } from "./Coupon";
+import type { CouponAttributes, CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
-import type { BasketCouponCreationAttributes } from "./BasketCoupon";
+import type {
+  BasketCouponAttributes,
+  BasketCouponCreationAttributes,
+} from "./BasketCoupon";
 import { BasketCoupon } from "./BasketCoupon";
 
-interface BasketAttributes {
+interface BasketBaseAttributes {
   id: Basket["id"];
   userId: Basket["userId"];
 }
 
+interface BasketAssociationsAttributes {
+  user: UserAttributes;
+  products: ProductAttributes[];
+  basketProducts: BasketProductAttributes[];
+  coupons: CouponAttributes[];
+  basketCoupons: BasketCouponAttributes[];
+}
+
 export type BasketCreationAttributes = Optional<
-  Omit<BasketAttributes, "id">,
+  Omit<BasketBaseAttributes, "id">,
   never
 > & {
   user?: Omit<UserCreationAttributes, "basket">;
@@ -44,7 +59,10 @@ export type BasketCreationAttributes = Optional<
 };
 
 @Table
-export class Basket extends Model<BasketAttributes, BasketCreationAttributes> {
+export class Basket extends Model<
+  BasketBaseAttributes,
+  BasketCreationAttributes
+> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -66,10 +84,15 @@ export class Basket extends Model<BasketAttributes, BasketCreationAttributes> {
   basketProducts!: BasketProduct[];
 
   @BelongsToMany(() => Coupon, () => BasketCoupon)
-  coupons!: Array<Basket & { BasketCoupon: BasketCoupon }>;
+  coupons!: Array<Coupon & { BasketCoupon: BasketCoupon }>;
 
   @HasMany(() => BasketCoupon)
   basketCoupons!: BasketCoupon[];
 }
 
-exhaustiveModelCheck<BasketAttributes, BasketCreationAttributes, Basket>(true);
+export type BasketAttributes = BasketBaseAttributes &
+  Partial<BasketAssociationsAttributes>;
+
+keysCheck<ModelKeys<Basket>, keyof BasketAttributes>();
+keysCheck<BasketAttributes, keyof ModelKeys<Basket>>();
+keysCheck<BasketCreationAttributes, keyof Omit<ModelKeys<Basket>, "id">>();

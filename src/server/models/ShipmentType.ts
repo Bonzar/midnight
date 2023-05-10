@@ -11,18 +11,26 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { ShipmentCreationAttributes } from "./Shipment";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ShipmentAttributes,
+  ShipmentCreationAttributes,
+} from "./Shipment";
 import { Shipment } from "./Shipment";
 
-interface ShipmentTypeAttributes {
+interface ShipmentTypeBaseAttributes {
   id: ShipmentType["id"];
   code: ShipmentType["code"];
   price: ShipmentType["price"];
 }
 
+interface ShipmentTypeAssociationsAttributes {
+  shipments: ShipmentAttributes;
+}
+
 export type ShipmentTypeCreationAttributes = Optional<
-  Omit<ShipmentTypeAttributes, "id">,
+  Omit<ShipmentTypeBaseAttributes, "id">,
   never
 > & {
   shipments?: Omit<
@@ -33,7 +41,7 @@ export type ShipmentTypeCreationAttributes = Optional<
 
 @Table
 export class ShipmentType extends Model<
-  ShipmentTypeAttributes,
+  ShipmentTypeBaseAttributes,
   ShipmentTypeCreationAttributes
 > {
   @PrimaryKey
@@ -45,7 +53,7 @@ export class ShipmentType extends Model<
   @NotEmpty
   @Unique
   @Column({
-    set(value: ShipmentTypeAttributes["code"]) {
+    set(value: ShipmentTypeBaseAttributes["code"]) {
       const currentInstance = <ShipmentType>this;
       currentInstance.setDataValue("code", value.toUpperCase());
     },
@@ -61,8 +69,12 @@ export class ShipmentType extends Model<
   shipments!: Shipment[];
 }
 
-exhaustiveModelCheck<
-  ShipmentTypeAttributes,
+export type ShipmentTypeAttributes = ShipmentTypeBaseAttributes &
+  Partial<ShipmentTypeAssociationsAttributes>;
+
+keysCheck<ModelKeys<ShipmentType>, keyof ShipmentTypeAttributes>();
+keysCheck<ShipmentTypeAttributes, keyof ModelKeys<ShipmentType>>();
+keysCheck<
   ShipmentTypeCreationAttributes,
-  ShipmentType
->(true);
+  keyof Omit<ModelKeys<ShipmentType>, "id">
+>();

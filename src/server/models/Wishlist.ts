@@ -12,26 +12,35 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { UserCreationAttributes } from "./User";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
-import type { ProductCreationAttributes } from "./Product";
+import type { ProductCreationAttributes, ProductAttributes } from "./Product";
 import { Product } from "./Product";
-import type { WishlistProductCreationAttributes } from "./WishlistProduct";
+import type {
+  WishlistProductAttributes,
+  WishlistProductCreationAttributes,
+} from "./WishlistProduct";
 import { WishlistProduct } from "./WishlistProduct";
 
-interface WishlistAttributes {
+export interface WishlistBaseAttributes {
   id: Wishlist["id"];
   userId: Wishlist["userId"];
 }
 
+interface WishlistAssociationsAttributes {
+  user: UserAttributes;
+  products: ProductAttributes[];
+  wishlistProducts: WishlistProductAttributes[];
+}
+
 export type WishlistCreationAttributes = Optional<
-  Omit<WishlistAttributes, "id">,
+  Omit<WishlistBaseAttributes, "id">,
   never
 > & {
   user?: Omit<UserCreationAttributes, "wishlist">;
   products?: ProductCreationAttributes[];
-} & {
   wishlistProducts?: Omit<
     WishlistProductCreationAttributes,
     "wishlistId" | "wishlist"
@@ -40,7 +49,7 @@ export type WishlistCreationAttributes = Optional<
 
 @Table
 export class Wishlist extends Model<
-  WishlistAttributes,
+  WishlistBaseAttributes,
   WishlistCreationAttributes
 > {
   @PrimaryKey
@@ -64,6 +73,9 @@ export class Wishlist extends Model<
   wishlistProducts!: WishlistProduct[];
 }
 
-exhaustiveModelCheck<WishlistAttributes, WishlistCreationAttributes, Wishlist>(
-  true
-);
+export type WishlistAttributes = WishlistBaseAttributes &
+  Partial<WishlistAssociationsAttributes>;
+
+keysCheck<ModelKeys<Wishlist>, keyof WishlistAttributes>();
+keysCheck<WishlistAttributes, keyof ModelKeys<Wishlist>>();
+keysCheck<WishlistCreationAttributes, keyof Omit<ModelKeys<Wishlist>, "id">>();

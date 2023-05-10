@@ -30,7 +30,7 @@ class UserService {
     return { user: userDto, ...tokens };
   }
 
-  async registration(data: UserCreationAttributes) {
+  async registration(data: CreateUserData) {
     const { role: _role, ...userData } = data; // Prevent registration Admins
 
     return sequelize.transaction(async () => {

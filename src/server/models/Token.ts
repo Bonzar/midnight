@@ -10,25 +10,30 @@ import {
   Table,
 } from "sequelize-typescript";
 import type { Optional } from "sequelize";
-import type { UserCreationAttributes } from "./User";
+import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
 
-interface TokenAttributes {
+interface TokenBaseAttributes {
   id: Token["id"];
   refreshToken: Token["refreshToken"];
   userId: Token["userId"];
 }
 
+interface TokenAssociationsAttributes {
+  user: UserAttributes;
+}
+
 export type TokenCreationAttributes = Optional<
-  Omit<TokenAttributes, "id">,
+  Omit<TokenBaseAttributes, "id">,
   never
 > & {
   user?: UserCreationAttributes;
 };
 
 @Table
-export class Token extends Model<TokenAttributes, TokenCreationAttributes> {
+export class Token extends Model<TokenBaseAttributes, TokenCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -48,4 +53,9 @@ export class Token extends Model<TokenAttributes, TokenCreationAttributes> {
   user!: User;
 }
 
-exhaustiveModelCheck<TokenAttributes, TokenCreationAttributes, Token>(true);
+export type TokenAttributes = TokenBaseAttributes &
+  Partial<TokenAssociationsAttributes>;
+
+keysCheck<ModelKeys<Token>, keyof TokenAttributes>();
+keysCheck<TokenAttributes, keyof ModelKeys<Token>>();
+keysCheck<TokenCreationAttributes, keyof Omit<ModelKeys<Token>, "id">>();

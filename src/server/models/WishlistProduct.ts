@@ -9,20 +9,29 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { WishlistCreationAttributes } from "./Wishlist";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  WishlistAttributes,
+  WishlistCreationAttributes,
+} from "./Wishlist";
 import { Wishlist } from "./Wishlist";
-import type { ProductCreationAttributes } from "./Product";
+import type { ProductCreationAttributes, ProductAttributes } from "./Product";
 import { Product } from "./Product";
 
-interface WishlistProductAttributes {
+interface WishlistProductBaseAttributes {
   id: WishlistProduct["id"];
   wishlistId: WishlistProduct["wishlistId"];
   productId: WishlistProduct["productId"];
 }
 
+interface WishlistProductAssociationsAttributes {
+  wishlist: WishlistAttributes;
+  product: ProductAttributes;
+}
+
 export type WishlistProductCreationAttributes = Optional<
-  Omit<WishlistProductAttributes, "id">,
+  Omit<WishlistProductBaseAttributes, "id">,
   never
 > & {
   wishlist?: WishlistCreationAttributes;
@@ -31,7 +40,7 @@ export type WishlistProductCreationAttributes = Optional<
 
 @Table
 export class WishlistProduct extends Model<
-  WishlistProductAttributes,
+  WishlistProductBaseAttributes,
   WishlistProductCreationAttributes
 > {
   @PrimaryKey
@@ -56,8 +65,12 @@ export class WishlistProduct extends Model<
   product!: Product;
 }
 
-exhaustiveModelCheck<
-  WishlistProductAttributes,
+export type WishlistProductAttributes = WishlistProductBaseAttributes &
+  Partial<WishlistProductAssociationsAttributes>;
+
+keysCheck<ModelKeys<WishlistProduct>, keyof WishlistProductAttributes>();
+keysCheck<WishlistProductAttributes, keyof ModelKeys<WishlistProduct>>();
+keysCheck<
   WishlistProductCreationAttributes,
-  WishlistProduct
->(true);
+  keyof Omit<ModelKeys<WishlistProduct>, "id">
+>();

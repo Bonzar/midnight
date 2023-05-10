@@ -10,20 +10,26 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import { exhaustiveModelCheck } from "../helpers/exhaustiveModelCheck";
-import type { OrderCreationAttributes } from "./Order";
+import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
+import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
-import type { CouponCreationAttributes } from "./Coupon";
+import type { CouponCreationAttributes, CouponAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
 
-interface OrderCouponAttributes {
+interface OrderCouponBaseAttributes {
   id: OrderCoupon["id"];
   orderId: OrderCoupon["orderId"];
   couponId: OrderCoupon["couponId"];
 }
 
+interface OrderCouponAssociationAttributes {
+  order: OrderAttributes;
+  coupon: CouponAttributes;
+}
+
 export type OrderCouponCreationAttributes = Optional<
-  Omit<OrderCouponAttributes, "id">,
+  Omit<OrderCouponBaseAttributes, "id">,
   never
 > & {
   order?: OrderCreationAttributes;
@@ -32,7 +38,7 @@ export type OrderCouponCreationAttributes = Optional<
 
 @Table
 export class OrderCoupon extends Model<
-  OrderCouponAttributes,
+  OrderCouponBaseAttributes,
   OrderCouponCreationAttributes
 > {
   @PrimaryKey
@@ -59,8 +65,12 @@ export class OrderCoupon extends Model<
   coupon!: Coupon;
 }
 
-exhaustiveModelCheck<
-  OrderCouponAttributes,
+export type OrderCouponAttributes = OrderCouponBaseAttributes &
+  Partial<OrderCouponAssociationAttributes>;
+
+keysCheck<ModelKeys<OrderCoupon>, keyof OrderCouponAttributes>();
+keysCheck<OrderCouponAttributes, keyof ModelKeys<OrderCoupon>>();
+keysCheck<
   OrderCouponCreationAttributes,
-  OrderCoupon
->(true);
+  keyof Omit<ModelKeys<OrderCoupon>, "id">
+>();
