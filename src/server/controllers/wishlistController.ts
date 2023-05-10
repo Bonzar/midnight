@@ -2,7 +2,7 @@ import type { Wishlist } from "../models/Wishlist";
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import { wishlistService } from "../services/wishlistService";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 import type { WishlistProduct } from "../models/WishlistProduct";
 
 export type AddWishlistProductBody = { wishlistId: number; productId: number };
@@ -18,7 +18,7 @@ class WishlistController {
     next
   ) => {
     try {
-      const wishlistId = parseInt(req.params.id);
+      const wishlistId = parseAppInt(req.params.id);
 
       const wishlist = await wishlistService.getOneWishlist(wishlistId);
 

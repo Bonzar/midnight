@@ -1,0 +1,14 @@
+.input {
+  padding: var(--indent-1) var(--indent-3);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--grey52);
+  background-color: hsl(0, 0%, 100%, 33%);
+}
+
+.input::placeholder {
+  color: var(--grey52);
+}
+
+.w-fullwidth {
+  width: 100%;
+}

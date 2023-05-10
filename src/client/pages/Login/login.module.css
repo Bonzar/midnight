@@ -1,0 +1,22 @@
+@import "./../../components/ui/Input/input.module.css";
+
+.authBlock {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #8cde0011;
+  padding: var(--indent-5);
+  border-radius: 5px;
+  border: 1px solid var(--overgrown);
+}
+
+.loginLabel {
+  display: block;
+  width: 100%;
+}
+
+.buttons {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  gap: var(--indent-3);
+}

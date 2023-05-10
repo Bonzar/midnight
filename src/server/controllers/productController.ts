@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import type { Product } from "../models/Product";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 import type {
   CreateProductData,
   UpdateProductData,
@@ -46,7 +46,7 @@ class ProductController {
     next
   ) => {
     try {
-      const productId = parseInt(req.params.id);
+      const productId = parseAppInt(req.params.id);
 
       const product = await productService.getDetailed(productId);
 
@@ -70,17 +70,17 @@ class ProductController {
     try {
       let limit;
       if (req.query.limit) {
-        limit = parseInt(req.query.limit);
+        limit = parseAppInt(req.query.limit);
       }
 
       let page;
       if (req.query.page) {
-        page = parseInt(req.query.page);
+        page = parseAppInt(req.query.page);
       }
 
       let categoryId;
       if (req.query.categoryId) {
-        categoryId = parseInt(req.query.categoryId);
+        categoryId = parseAppInt(req.query.categoryId);
       }
 
       const products = await productService.getAll(categoryId, limit, page);
@@ -99,7 +99,7 @@ class ProductController {
   update: RequestHandler<{ id: string }, Product, UpdateProductBody, void> =
     async (req, res, next) => {
       try {
-        const productId = parseInt(req.params.id);
+        const productId = parseAppInt(req.params.id);
 
         const updatedProduct = await productService.update(productId, req.body);
 
@@ -120,7 +120,7 @@ class ProductController {
     next
   ) => {
     try {
-      const productId = parseInt(req.params.id);
+      const productId = parseAppInt(req.params.id);
 
       await productService.delete(productId);
 

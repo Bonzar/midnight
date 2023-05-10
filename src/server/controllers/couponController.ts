@@ -6,7 +6,7 @@ import type {
   UpdateCouponData,
 } from "../services/couponService";
 import { couponService } from "../services/couponService";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateCouponBody = CreateCouponData;
 export type UpdateCouponBody = UpdateCouponData;
@@ -53,7 +53,7 @@ class CouponController {
   update: RequestHandler<{ id: string }, Coupon, UpdateCouponBody, void> =
     async (req, res, next) => {
       try {
-        const couponId = parseInt(req.params.id);
+        const couponId = parseAppInt(req.params.id);
 
         const coupon = await couponService.update(couponId, req.body);
 
@@ -74,7 +74,7 @@ class CouponController {
     next
   ) => {
     try {
-      const couponId = parseInt(req.params.id);
+      const couponId = parseAppInt(req.params.id);
 
       await couponService.delete(couponId);
 

@@ -14,6 +14,9 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["react", "@typescript-eslint", "react-hooks"],
+  globals: {
+    JSX: "readonly",
+  },
   rules: {
     // note you must disable the base rule as it can report incorrect errors
     "no-use-before-define": "off",
@@ -35,6 +38,20 @@ module.exports = {
         importNames: ["useSelector", "useDispatch"],
         message:
           "Use typed hooks `useAppDispatch` and `useAppSelector` instead.",
+      },
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        message:
+          "Do not override parseInt DOM function",
+        selector: "VariableDeclaration [id.name='parseInt']",
+      },
+      "error",
+      {
+        message:
+          "Use app version of function instead - parseAppInt, with already specified radix",
+        selector: 'CallExpression[callee.name="parseInt"]',
       },
     ],
   },

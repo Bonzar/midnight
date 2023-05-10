@@ -2,6 +2,10 @@
 @import "indents.global.css";
 @import "font.global.css";
 
+:root {
+  --border-radius: 5px;
+}
+
 html {
   font-size: 10px;
   height: 100%;
@@ -17,4 +21,8 @@ body {
 
 button {
   cursor: pointer;
+}
+
+*:focus {
+  outline: revert;
 }

@@ -6,7 +6,7 @@ import type {
 } from "../services/productMetaService";
 import { ApiError } from "../error/ApiError";
 import { productMetaService } from "../services/productMetaService";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateProductMetaBody = CreateProductMetaData;
 export type UpdateProductMetaBody = UpdateProductMetaData;
@@ -36,7 +36,7 @@ class ProductMetaController {
   > = async (req, res, next) => {
     try {
       const updatedProductMeta = await productMetaService.update(
-        parseInt(req.params.id),
+        parseAppInt(req.params.id),
         req.body
       );
 
@@ -57,7 +57,7 @@ class ProductMetaController {
     next
   ) => {
     try {
-      await productMetaService.delete(parseInt(req.params.id));
+      await productMetaService.delete(parseAppInt(req.params.id));
 
       res.status(200).end();
     } catch (error) {

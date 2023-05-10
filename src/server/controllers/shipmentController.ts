@@ -6,7 +6,7 @@ import type {
   UpdateShipmentTypeData,
 } from "../services/shipmentService";
 import { shipmentService } from "../services/shipmentService";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateShipmentTypeBody = CreateShipmentTypeData;
 export type UpdateShipmentTypeBody = UpdateShipmentTypeData;
@@ -54,7 +54,7 @@ class ShipmentController {
     void
   > = async (req, res, next) => {
     try {
-      const shipmentTypeId = parseInt(req.params.id);
+      const shipmentTypeId = parseAppInt(req.params.id);
 
       const shipmentType = await shipmentService.updateType(
         shipmentTypeId,
@@ -78,7 +78,7 @@ class ShipmentController {
     next
   ) => {
     try {
-      const shipmentTypeId = parseInt(req.params.id);
+      const shipmentTypeId = parseAppInt(req.params.id);
 
       await shipmentService.deleteType(shipmentTypeId);
 

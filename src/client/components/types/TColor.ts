@@ -9,11 +9,27 @@ export type TColor =
   | "grey37"
   | "black"
   | "tunicGreen"
+  | "tunicGreen-light"
   | "overgrown"
-  | "yellowMellow"
+  | "overgrown-light"
   | "beer"
-  | "peachFury"
+  | "beer-light"
   | "embarrassed"
-  | "illicitPink"
+  | "embarrassed-light"
   | "venusSlipperOrchid"
-  | "legendaryLavender";
+  | "venusSlipperOrchid-light"
+  | "yellowMellow"
+  | "yellowMellow-light"
+  | "peachFury"
+  | "peachFury-light"
+  | "illicitPink"
+  | "illicitPink-light"
+  | "legendaryLavender"
+  | "legendaryLavender-light";
+
+export type TLightColor<Colors = TColor> = Colors extends `${infer R}-light`
+  ? Colors
+  : never;
+
+export type TActiveColor<Colors = TLightColor> =
+  Colors extends `${infer R}-light` ? R : never;

@@ -1,10 +1,11 @@
 import nodemailer from "nodemailer";
 import * as process from "process";
+import { parseAppInt } from "../../helpers/parseAppInt";
 
 class MailService {
   transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT),
+    port: parseAppInt(process.env.SMTP_PORT),
     secure: true,
     pool: true,
     auth: {

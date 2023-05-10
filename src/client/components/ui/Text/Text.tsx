@@ -1,53 +1,49 @@
 import React from "react";
+import type { ElementType, PropsWithChildren } from "react";
 import styles from "./text.module.css";
-import type { ReactNode } from "react";
 import type { TColor } from "../../types/TColor";
-import type { PolymorphicComponent } from "../../types/PolymorphicComponent";
+import type { PolymorphicComponentProps } from "../../types/PolymorphicComponent";
+import { parseAppInt } from "../../../../helpers/parseAppInt";
 
 interface ITextProps {
-  children?: ReactNode;
-  color?: TColor;
-  size?: 0 | 1 | 2 | 3 | 4 | 5;
-  semibold?: boolean;
-  bold?: boolean;
+  textColor?: TColor;
+  textSize?: 0 | 1 | 2 | 3 | 4 | 5;
+  textWeight?: "thick" | "regular" | "semibold" | "bold";
 }
 
-type TextProps<E extends React.ElementType> = PolymorphicComponent<
-  E,
-  ITextProps
+export type TextProps<E extends ElementType> = PropsWithChildren<
+  PolymorphicComponentProps<E, ITextProps>
 >;
 
-export const Text = <E extends React.ElementType = "span">({
+export const Text = <E extends ElementType = "span">({
   as,
   children,
-  color = "black",
-  size,
-  semibold,
-  bold,
+  textSize,
+  textColor = "black",
+  textWeight = "regular",
   className,
   ...other
 }: TextProps<E>) => {
-  const Component = as || "span";
+  const Component = as ?? "span";
 
   // default font size
-  if (typeof size !== "number") {
-    size = 4;
+  if (typeof textSize !== "number") {
+    textSize = 4;
     // default heading font size
     if (
       typeof Component === "string" &&
       ["h1", "h2", "h3", "h4"].includes(Component)
     ) {
-      size = parseInt(Component[1]) as 1 | 2 | 3 | 4;
+      textSize = parseAppInt(Component[1]) as 1 | 2 | 3 | 4;
     }
   }
 
   const classes = [
     className,
     styles.text,
-    styles[`c-${color}`],
-    styles[`s-${size}`],
-    semibold && styles["w-semibold"],
-    bold && styles["w-bold"],
+    styles[`c-${textColor}`],
+    styles[`s-${textSize}`],
+    styles[`w-${textWeight}`],
   ]
     .filter(Boolean)
     .join(" ");

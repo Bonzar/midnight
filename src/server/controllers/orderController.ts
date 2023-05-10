@@ -6,7 +6,7 @@ import type {
   UpdateOrderData,
 } from "../services/orderService";
 import { orderService } from "../services/orderService";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 import type { OrderAttributes } from "../models/Order";
 import type { AllAsString } from "../../../types/types";
 
@@ -46,7 +46,7 @@ class OrderController {
     next
   ) => {
     try {
-      const orderId = parseInt(req.params.id);
+      const orderId = parseAppInt(req.params.id);
 
       const order = await orderService.getOne(orderId);
 
@@ -70,12 +70,12 @@ class OrderController {
     try {
       let limit;
       if (req.query.limit) {
-        limit = parseInt(req.query.limit);
+        limit = parseAppInt(req.query.limit);
       }
 
       let page;
       if (req.query.page) {
-        page = parseInt(req.query.page);
+        page = parseAppInt(req.query.page);
       }
 
       const orders = await orderService.getAll(
@@ -101,7 +101,7 @@ class OrderController {
     next
   ) => {
     try {
-      const orderId = parseInt(req.params.id);
+      const orderId = parseAppInt(req.params.id);
 
       const order = await orderService.update(orderId, req.body);
 
@@ -122,7 +122,7 @@ class OrderController {
     next
   ) => {
     try {
-      const orderId = parseInt(req.params.id);
+      const orderId = parseAppInt(req.params.id);
 
       await orderService.delete(orderId);
 

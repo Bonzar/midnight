@@ -8,7 +8,7 @@ import type {
 } from "../services/basketService";
 import { basketService } from "../services/basketService";
 import type { BasketCoupon } from "../models/BasketCoupon";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type GetBasketResponse = GetBasketResult;
 
@@ -23,7 +23,7 @@ class BasketController {
   getBasket: RequestHandler<{ id: string }, GetBasketResponse, void, void> =
     async (req, res, next) => {
       try {
-        const basketId = parseInt(req.params.id);
+        const basketId = parseAppInt(req.params.id);
 
         const basket = await basketService.getOneBasket(basketId);
 

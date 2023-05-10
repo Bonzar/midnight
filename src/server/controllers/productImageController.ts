@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import type { ProductImage } from "../models/ProductImage";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 import type {
   UpdateProductImageData,
   UpdateManyProductImageData,
@@ -37,11 +37,11 @@ class ProductImageController {
         imageFiles instanceof Array ? imageFiles : [imageFiles];
 
       const productId = req.body.productId
-        ? parseInt(req.body.productId)
+        ? parseAppInt(req.body.productId)
         : undefined;
 
       const startSortIndex = req.body.sort
-        ? parseInt(req.body.sort)
+        ? parseAppInt(req.body.sort)
         : undefined;
 
       // Parsing reqDescription field to string[]
@@ -114,7 +114,7 @@ class ProductImageController {
     void
   > = async (req, res, next) => {
     try {
-      const productImageId = parseInt(req.params.id);
+      const productImageId = parseAppInt(req.params.id);
 
       const updatedProductImage = await productImageService.update(
         productImageId,
@@ -158,7 +158,7 @@ class ProductImageController {
     next
   ) => {
     try {
-      const productImageId = parseInt(req.params.id);
+      const productImageId = parseAppInt(req.params.id);
 
       await productImageService.delete(productImageId);
 

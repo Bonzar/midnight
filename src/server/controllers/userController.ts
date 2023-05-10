@@ -8,20 +8,20 @@ import type {
 } from "../services/userService";
 import { userService } from "../services/userService";
 import type { Address } from "../models/Address";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 import { REFRESH_TOKEN_EXPIRES_DAYS } from "../../helpers/constants";
 import * as process from "process";
 
-type RegistrationUserBody = CreateUserData;
-type RegistrationUserResponse = UserAuthData;
+export type RegistrationUserBody = CreateUserData;
+export type RegistrationUserResponse = UserAuthData;
 
-type LoginUserBody = { email: string; password: string };
-type LoginUserResponse = UserAuthData;
+export type LoginUserBody = { email: string; password: string };
+export type LoginUserResponse = UserAuthData;
 
-type RefreshUserResponse = UserAuthData;
+export type RefreshUserResponse = UserAuthData;
 
-type CreateAddressBody = CreateAddressData;
-type UpdateAddressBody = UpdateAddressData;
+export type CreateAddressBody = CreateAddressData;
+export type UpdateAddressBody = UpdateAddressData;
 
 class UserController {
   #setRefreshCookie(res: Response, refreshToken: string) {
@@ -173,7 +173,7 @@ class UserController {
     void
   > = async (req, res, next) => {
     try {
-      const addressId = parseInt(req.params.id);
+      const addressId = parseAppInt(req.params.id);
 
       const address = await userService.updateAddress(addressId, req.body);
 
@@ -194,7 +194,7 @@ class UserController {
     next
   ) => {
     try {
-      const addressId = parseInt(req.params.id);
+      const addressId = parseAppInt(req.params.id);
 
       await userService.deleteAddress(addressId);
 

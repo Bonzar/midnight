@@ -1,7 +1,9 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { apiSlice } from "./apiSlice";
+import { userSliceReducer } from "./slices/userSlice";
 
 export const reducer = combineReducers({
+  user: userSliceReducer,
   [apiSlice.reducerPath]: apiSlice.reducer,
 });
 

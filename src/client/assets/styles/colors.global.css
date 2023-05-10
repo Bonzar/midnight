@@ -9,6 +9,16 @@
   --venusSlipperOrchid: #dc6aea;
   --legendaryLavender: #955cc9;
 
+  --tunicGreen-light: #00d40011;
+  --overgrown-light: #8cde0011;
+  --yellowMellow-light: #f2d10011;
+  --beer-light: #ffa90011;
+  --peachFury-light: #ff7f3211;
+  --embarrassed-light: #ff6ca111;
+  --illicitPink-light: #ff6cda11;
+  --venusSlipperOrchid-light: #dc6aea11;
+  --legendaryLavender-light: #955cc911;
+
   --white: hsl(0, 0%, 100%);
   --grey97: hsl(0, 0%, 97%);
   --grey92: hsl(0, 0%, 92%);
@@ -21,25 +31,25 @@
 
   /* Gradients */
   --gradient: linear-gradient(
-      45deg,
-      var(--tunicGreen),
-      var(--overgrown),
-      var(--yellowMellow),
-      var(--beer),
-      var(--peachFury),
-      var(--embarrassed),
-      var(--illicitPink),
-      var(--venusSlipperOrchid),
-      var(--legendaryLavender),
-      var(--legendaryLavender),
-      var(--venusSlipperOrchid),
-      var(--illicitPink),
-      var(--embarrassed),
-      var(--peachFury),
-      var(--beer),
-      var(--yellowMellow),
-      var(--overgrown),
-      var(--tunicGreen)
+    45deg,
+    var(--tunicGreen),
+    var(--overgrown),
+    var(--yellowMellow),
+    var(--beer),
+    var(--peachFury),
+    var(--embarrassed),
+    var(--illicitPink),
+    var(--venusSlipperOrchid),
+    var(--legendaryLavender),
+    var(--legendaryLavender),
+    var(--venusSlipperOrchid),
+    var(--illicitPink),
+    var(--embarrassed),
+    var(--peachFury),
+    var(--beer),
+    var(--yellowMellow),
+    var(--overgrown),
+    var(--tunicGreen)
   );
 
   --conicGradient: conic-gradient(

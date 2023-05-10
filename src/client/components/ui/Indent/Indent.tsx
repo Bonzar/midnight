@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./indent.module.css";
 
 type TIndentSize = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -9,9 +8,12 @@ type TIndentProps = {
 };
 
 export const Indent = ({ inline = false, size }: TIndentProps) => {
-  if (inline) {
-    return <span className={styles[`i-${size}`]}></span>;
-  }
+  const Component = inline ? "span" : "div";
+  const propName = inline ? "paddingLeft" : "paddingTop";
 
-  return <div className={styles[`b-${size}`]}></div>;
+  const style: React.CSSProperties = {
+    [propName]: `var(--indent-${size})`,
+  };
+
+  return <Component style={style}></Component>;
 };

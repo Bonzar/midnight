@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700;900&display=swap");
 
 :root {
   --font-size-0: 3.3rem;
@@ -43,12 +43,15 @@
 }
 
 :root {
+  --font-weight-thick: 300;
+  --font-spacing-thick: 0;
+
   --font-weight-regular: 500;
   --font-spacing-regular: 0.03rem;
 
   --font-weight-semibold: 700;
-  --letter-spacing-semibold: 0.04rem;
+  --font-spacing-semibold: 0.04rem;
 
   --font-weight-bold: 900;
-  --letter-spacing-bold: 0.07rem;
+  --font-spacing-bold: 0.07rem;
 }

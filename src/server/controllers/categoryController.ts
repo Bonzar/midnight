@@ -6,7 +6,7 @@ import type {
   UpdateCategoryData,
 } from "../services/categoryService";
 import { categoryService } from "../services/categoryService";
-import { parseInt } from "../../helpers/parseInt";
+import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateCategoryBody = CreateCategoryData;
 export type UpdateCategoryBody = UpdateCategoryData;
@@ -53,7 +53,7 @@ class CategoryController {
   update: RequestHandler<{ id: string }, Category, UpdateCategoryBody, void> =
     async (req, res, next) => {
       try {
-        const categoryId = parseInt(req.params.id);
+        const categoryId = parseAppInt(req.params.id);
 
         const updatedCategory = await categoryService.update(
           categoryId,
@@ -77,7 +77,7 @@ class CategoryController {
     next
   ) => {
     try {
-      const categoryId = parseInt(req.params.id);
+      const categoryId = parseAppInt(req.params.id);
 
       await categoryService.delete(categoryId);
 

@@ -1,13 +1,12 @@
 import type { AppStore } from "../store";
 import React from "react";
 import { createRoutesFromElements, Route } from "react-router-dom";
-import { App } from "../App";
-import { Main } from "../pages/Main";
+import { App, appLoader } from "../App";
+import { Login } from "../pages/Login/Login";
 
-// eslint-disable-next-line no-unused-vars
 export const getRoutes = (store: AppStore) =>
   createRoutesFromElements(
-    <Route path="/" element={<App />}>
-      <Route index element={<Main />} />
+    <Route path="/" loader={appLoader(store)} element={<App />}>
+      <Route index element={<Login />} />
     </Route>
   );
