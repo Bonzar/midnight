@@ -13,12 +13,12 @@ import { REFRESH_TOKEN_EXPIRES_DAYS } from "../../helpers/constants";
 import * as process from "process";
 
 export type RegistrationUserBody = CreateUserData;
-export type RegistrationUserResponse = UserAuthData;
+export type RegistrationUserResponse = Omit<UserAuthData, "refreshToken">;
 
 export type LoginUserBody = { email: string; password: string };
-export type LoginUserResponse = UserAuthData;
+export type LoginUserResponse = Omit<UserAuthData, "refreshToken">;
 
-export type RefreshUserResponse = UserAuthData;
+export type RefreshUserResponse = Omit<UserAuthData, "refreshToken">;
 
 export type CreateAddressBody = CreateAddressData;
 export type UpdateAddressBody = UpdateAddressData;
@@ -39,10 +39,13 @@ class UserController {
     void
   > = async (req, res, next) => {
     try {
-      const user = await userService.registration(req.body);
-      this.#setRefreshCookie(res, user.refreshToken);
+      const { refreshToken, ...userData } = await userService.registration(
+        req.body
+      );
 
-      res.status(200).json(user);
+      this.#setRefreshCookie(res, refreshToken);
+
+      res.status(200).json(userData);
     } catch (error) {
       next(
         ApiError.setDefaultMessage(
@@ -59,10 +62,13 @@ class UserController {
     next
   ) => {
     try {
-      const user = await userService.login(req.body.email, req.body.password);
-      this.#setRefreshCookie(res, user.refreshToken);
+      const { refreshToken, ...userData } = await userService.login(
+        req.body.email,
+        req.body.password
+      );
+      this.#setRefreshCookie(res, refreshToken);
 
-      res.status(200).json(user);
+      res.status(200).json(userData);
     } catch (error) {
       next(
         ApiError.setDefaultMessage(
@@ -96,11 +102,15 @@ class UserController {
     next
   ) => {
     try {
-      const { refreshToken } = req.cookies as { refreshToken: string };
-      const user = await userService.refresh(refreshToken);
-      this.#setRefreshCookie(res, user.refreshToken);
+      const { refreshToken: cookieRefreshToken } = req.cookies as {
+        refreshToken: string;
+      };
+      const { refreshToken, ...userData } = await userService.refresh(
+        cookieRefreshToken
+      );
+      this.#setRefreshCookie(res, refreshToken);
 
-      res.status(200).json(user);
+      res.status(200).json(userData);
     } catch (error) {
       next(
         ApiError.setDefaultMessage(

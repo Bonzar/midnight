@@ -7,9 +7,7 @@ export const apiSlice = createApi({
     credentials: "same-origin",
     prepareHeaders: (headers) => {
       // no localStorage on server => exit
-      if (import.meta.env.SSR) {
-        return;
-      }
+      if (import.meta.env.SSR) return;
 
       const accessToken = localStorage.getItem("token");
       if (accessToken) {

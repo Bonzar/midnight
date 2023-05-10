@@ -14,7 +14,7 @@ declare global {
       SMTP_PORT: string;
       SMTP_USER: string;
       SMTP_PASSWORD: string;
-      API_URL: string;
+      VITE_API_URL: string;
     }
   }
 

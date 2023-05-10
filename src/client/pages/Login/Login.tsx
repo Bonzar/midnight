@@ -1,7 +1,10 @@
 import type { ChangeEvent, FormEvent } from "react";
 import React, { useState } from "react";
 import styles from "./login.module.css";
-import { useLoginMutation } from "../../store/slices/authApiSlice";
+import {
+  useLoginMutation,
+  useLogoutMutation,
+} from "../../store/slices/authApiSlice";
 import { Indent } from "../../components/ui/Indent";
 import { Text } from "../../components/ui/Text";
 import { isApiError } from "../../utils/isApiError";
@@ -13,6 +16,7 @@ import { selectUser } from "../../store/slices/userSlice";
 
 export const Login = () => {
   const [login, loginData] = useLoginMutation();
+  const [logout, logoutData] = useLogoutMutation();
 
   const currentUser = useAppSelector(selectUser);
 
@@ -71,6 +75,14 @@ export const Login = () => {
         <div className={styles.buttons}>
           <Button color="illicitPink" disabled={loginData.isLoading}>
             Login
+          </Button>
+          <Button
+            type="button"
+            onClick={() => logout()}
+            color="yellowMellow"
+            disabled={logoutData.isLoading}
+          >
+            Logout
           </Button>
         </div>
       </form>

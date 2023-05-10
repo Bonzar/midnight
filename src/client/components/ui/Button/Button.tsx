@@ -11,8 +11,8 @@ interface IButtonProps {
 }
 
 type ButtonProps = ExtendableProps<
-  InheritableElementProps<"button", IButtonProps>,
-  TextProps<"button">
+  TextProps<"button">,
+  InheritableElementProps<"button", IButtonProps>
 >;
 
 export const Button = ({
