@@ -43,10 +43,6 @@ export class ApiError extends Error {
       processedErrors.push(...appErrorsArray);
     }
 
-    if (process.env.NODE_ENV !== "production") {
-      console.error(processedErrors);
-    }
-
     return processedErrors;
   }
 
