@@ -28,7 +28,7 @@ import type {
 import { WishlistProduct } from "./WishlistProduct";
 import type { NotUndefined } from "../../../types/types";
 
-export interface WishlistBaseAttributes {
+export interface WishlistAttributes {
   id: Wishlist["id"];
   userId: Wishlist["userId"];
 }
@@ -42,7 +42,7 @@ interface WishlistAssociationsAttributes {
 }
 
 export type WishlistCreationAttributes = Optional<
-  Omit<WishlistBaseAttributes, "id">,
+  Omit<WishlistAttributes, "id">,
   never
 > & {
   user?: Omit<UserCreationAttributes, "wishlist">;
@@ -55,7 +55,7 @@ export type WishlistCreationAttributes = Optional<
 
 @Table
 export class Wishlist extends Model<
-  WishlistBaseAttributes,
+  WishlistAttributes,
   WishlistCreationAttributes
 > {
   @PrimaryKey
@@ -79,9 +79,6 @@ export class Wishlist extends Model<
   wishlistProducts!: WishlistProduct[];
 }
 
-export type WishlistAttributes = WishlistBaseAttributes &
-  Partial<WishlistAssociationsAttributes>;
-
 export type WishlistAttributesWithAssociations<
   Associations extends keyof Omit<
     WishlistAssociationsAttributes,
@@ -98,5 +95,6 @@ export type WishlistAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Wishlist>>,
   NotUndefined<WishlistAttributes>,
-  NotUndefined<WishlistCreationAttributes>
+  NotUndefined<WishlistCreationAttributes>,
+  NotUndefined<WishlistAssociationsAttributes>
 >();

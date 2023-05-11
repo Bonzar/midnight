@@ -21,7 +21,7 @@ import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import type { NotUndefined } from "../../../types/types";
 
-interface OrderProductBaseAttributes {
+export interface OrderProductAttributes {
   id: OrderProduct["id"];
   quantity: OrderProduct["quantity"];
   salePrice: OrderProduct["salePrice"];
@@ -35,7 +35,7 @@ interface OrderProductAssociationsAttributes {
 }
 
 export type OrderProductCreationAttributes = Optional<
-  Omit<OrderProductBaseAttributes, "id">,
+  Omit<OrderProductAttributes, "id">,
   never
 > & {
   order?: OrderCreationAttributes;
@@ -44,7 +44,7 @@ export type OrderProductCreationAttributes = Optional<
 
 @Table
 export class OrderProduct extends Model<
-  OrderProductBaseAttributes,
+  OrderProductAttributes,
   OrderProductCreationAttributes
 > {
   @PrimaryKey
@@ -80,9 +80,6 @@ export class OrderProduct extends Model<
   product!: Product;
 }
 
-export type OrderProductAttributes = OrderProductBaseAttributes &
-  Partial<OrderProductAssociationsAttributes>;
-
 export type OrderProductAttributesWithAssociations<
   Associations extends keyof Omit<
     OrderProductAssociationsAttributes,
@@ -99,5 +96,6 @@ export type OrderProductAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<OrderProduct>>,
   NotUndefined<OrderProductAttributes>,
-  NotUndefined<OrderProductCreationAttributes>
+  NotUndefined<OrderProductCreationAttributes>,
+  NotUndefined<OrderProductAssociationsAttributes>
 >();

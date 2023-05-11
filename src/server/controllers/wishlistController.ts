@@ -3,9 +3,11 @@ import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import { wishlistService } from "../services/wishlistService";
 import { parseAppInt } from "../../helpers/parseAppInt";
-import type { WishlistProductAttributesWithAssociations } from "../models/WishlistProduct";
+import type {
+  WishlistProductAttributes,
+  WishlistProductAttributesWithAssociations,
+} from "../models/WishlistProduct";
 import type { ProductAttributesWithAssociations } from "../models/Product";
-import type { ProductImageAttributesWithAssociations } from "../models/ProductImage";
 
 export type GetWishlistResponse = WishlistAttributesWithAssociations<
   never,
@@ -13,18 +15,14 @@ export type GetWishlistResponse = WishlistAttributesWithAssociations<
     wishlistProducts: WishlistProductAttributesWithAssociations<
       never,
       {
-        product: ProductAttributesWithAssociations<
-          never,
-          { productImages: ProductImageAttributesWithAssociations<never>[] }
-        >;
+        product: ProductAttributesWithAssociations<"productImages">;
       }
     >[];
   }
 >;
 
 export type AddWishlistProductBody = { wishlistId: number; productId: number };
-export type AddWishlistProductResponse =
-  WishlistProductAttributesWithAssociations<never>;
+export type AddWishlistProductResponse = WishlistProductAttributes;
 
 export type DeleteWishlistProductBody = {
   wishlistId: number;

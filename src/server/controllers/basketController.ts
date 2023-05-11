@@ -1,17 +1,21 @@
 import { ApiError } from "../error/ApiError";
 import type { RequestHandler } from "express";
-import type { BasketProductAttributesWithAssociations } from "../models/BasketProduct";
+import type {
+  BasketProductAttributes,
+  BasketProductAttributesWithAssociations,
+} from "../models/BasketProduct";
 import type {
   AddBasketProductData,
   UpdateBasketProductData,
 } from "../services/basketService";
 import { basketService } from "../services/basketService";
-import type { BasketCouponAttributesWithAssociations } from "../models/BasketCoupon";
+import type {
+  BasketCouponAttributes,
+  BasketCouponAttributesWithAssociations,
+} from "../models/BasketCoupon";
 import { parseAppInt } from "../../helpers/parseAppInt";
 import type { BasketAttributesWithAssociations } from "../models/Basket";
-import type { CouponAttributesWithAssociations } from "../models/Coupon";
 import type { ProductAttributesWithAssociations } from "../models/Product";
-import type { ProductImageAttributesWithAssociations } from "../models/ProductImage";
 
 export type GetBasketResponse = {
   basket: BasketAttributesWithAssociations<
@@ -21,19 +25,11 @@ export type GetBasketResponse = {
         BasketProductAttributesWithAssociations<
           never,
           {
-            product: ProductAttributesWithAssociations<
-              never,
-              {
-                productImages: ProductImageAttributesWithAssociations<never>[];
-              }
-            >;
+            product: ProductAttributesWithAssociations<"productImages">;
           }
         >
       >;
-      basketCoupons: BasketCouponAttributesWithAssociations<
-        never,
-        { coupon: CouponAttributesWithAssociations<never> }
-      >[];
+      basketCoupons: BasketCouponAttributesWithAssociations<"coupon">[];
     }
   >;
   total: number;
@@ -41,18 +37,15 @@ export type GetBasketResponse = {
 };
 
 export type AddBasketProductBody = AddBasketProductData;
-export type AddBasketProductResponse =
-  BasketProductAttributesWithAssociations<never>;
+export type AddBasketProductResponse = BasketProductAttributes;
 
 export type UpdateBasketProductBody = UpdateBasketProductData;
-export type UpdateBasketProductResponse =
-  BasketProductAttributesWithAssociations<never>;
+export type UpdateBasketProductResponse = BasketProductAttributes;
 
 export type DeleteBasketProductBody = { basketId: number; productId: number };
 
 export type AddBasketCouponBody = { basketId: number; couponId: number };
-export type AddBasketCouponResponse =
-  BasketCouponAttributesWithAssociations<never>;
+export type AddBasketCouponResponse = BasketCouponAttributes;
 
 export type DeleteBasketCouponBody = { basketId: number; couponId: number };
 

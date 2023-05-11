@@ -6,22 +6,19 @@ import type {
 } from "../services/orderService";
 import { orderService } from "../services/orderService";
 import { parseAppInt } from "../../helpers/parseAppInt";
-import type {
-  OrderAttributes,
-  OrderAttributesWithAssociations,
-} from "../models/Order";
+import type { OrderAttributes } from "../models/Order";
 import type { AllAsString } from "../../../types/types";
 
 export type CreateOrderBody = CreateOrderData;
-export type CreateOrderResponse = OrderAttributesWithAssociations<never>;
+export type CreateOrderResponse = OrderAttributes;
 
-export type GetOneOrderResponse = OrderAttributesWithAssociations<never>;
+export type GetOneOrderResponse = OrderAttributes;
 
 export type UpdateOrderBody = UpdateOrderData;
-export type UpdateOrderResponse = OrderAttributesWithAssociations<never>;
+export type UpdateOrderResponse = OrderAttributes;
 
 export type GetAllOrdersResponse = {
-  rows: OrderAttributesWithAssociations<never>[];
+  rows: OrderAttributes[];
   count: number;
 };
 export type GetAllOrdersQuery = {

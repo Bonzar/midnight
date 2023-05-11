@@ -1,5 +1,8 @@
 import type { RequestHandler } from "express";
-import type { CategoryAttributesWithAssociations } from "../models/Category";
+import type {
+  CategoryAttributes,
+  CategoryAttributesWithAssociations,
+} from "../models/Category";
 import { ApiError } from "../error/ApiError";
 import type {
   CreateCategoryData,
@@ -14,12 +17,12 @@ type NestedChildCategories = CategoryAttributesWithAssociations<
 >;
 
 export type CreateCategoryBody = CreateCategoryData;
-export type CreateCategoryResponse = CategoryAttributesWithAssociations<never>;
+export type CreateCategoryResponse = CategoryAttributes;
 
 export type GetAllCategoriesResponse = NestedChildCategories[];
 
 export type UpdateCategoryBody = UpdateCategoryData;
-export type UpdateCategoryResponse = CategoryAttributesWithAssociations<never>;
+export type UpdateCategoryResponse = CategoryAttributes;
 
 class CategoryController {
   create: RequestHandler<

@@ -26,7 +26,7 @@ import { ShipmentType } from "./ShipmentType";
 import { DataTypes } from "sequelize";
 import type { NotUndefined } from "../../../types/types";
 
-interface ShipmentBaseAttributes {
+export interface ShipmentAttributes {
   id: Shipment["id"];
   address: Shipment["address"];
   shipmentTypeId: Shipment["shipmentTypeId"];
@@ -38,7 +38,7 @@ interface ShipmentAssociationsAttributes {
 }
 
 export type ShipmentCreationAttributes = Optional<
-  Omit<ShipmentBaseAttributes, "id">,
+  Omit<ShipmentAttributes, "id">,
   "address"
 > & {
   order?: Omit<OrderCreationAttributes, "shipmentId" | "shipment">;
@@ -47,7 +47,7 @@ export type ShipmentCreationAttributes = Optional<
 
 @Table
 export class Shipment extends Model<
-  ShipmentBaseAttributes,
+  ShipmentAttributes,
   ShipmentCreationAttributes
 > {
   @PrimaryKey
@@ -72,9 +72,6 @@ export class Shipment extends Model<
   shipmentType!: ShipmentType;
 }
 
-export type ShipmentAttributes = ShipmentBaseAttributes &
-  Partial<ShipmentAssociationsAttributes>;
-
 export type ShipmentAttributesWithAssociations<
   Associations extends keyof Omit<
     ShipmentAssociationsAttributes,
@@ -91,5 +88,6 @@ export type ShipmentAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Shipment>>,
   NotUndefined<ShipmentAttributes>,
-  NotUndefined<ShipmentCreationAttributes>
+  NotUndefined<ShipmentCreationAttributes>,
+  NotUndefined<ShipmentAssociationsAttributes>
 >();

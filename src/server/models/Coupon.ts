@@ -28,7 +28,7 @@ import { Order } from "./Order";
 import { DataTypes } from "sequelize";
 import type { NotUndefined } from "../../../types/types";
 
-interface CouponBaseAttributes {
+export interface CouponAttributes {
   id: Coupon["id"];
   key: Coupon["key"];
   value: Coupon["value"];
@@ -43,7 +43,7 @@ interface CouponAssociationsAttributes {
 }
 
 export type CouponCreationAttributes = Optional<
-  Omit<CouponBaseAttributes, "id">,
+  Omit<CouponAttributes, "id">,
   "type" | "expiresTime" | "expiresCount"
 > & {
   orders?: OrderCreationAttributes[];
@@ -51,10 +51,7 @@ export type CouponCreationAttributes = Optional<
 };
 
 @Table
-export class Coupon extends Model<
-  CouponBaseAttributes,
-  CouponCreationAttributes
-> {
+export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -63,7 +60,7 @@ export class Coupon extends Model<
   @AllowNull(false)
   @Unique
   @Column({
-    set(value: CouponBaseAttributes["key"]) {
+    set(value: CouponAttributes["key"]) {
       const currentInstance = <Coupon>this;
       currentInstance.setDataValue("key", value.toUpperCase());
     },
@@ -114,9 +111,6 @@ export class Coupon extends Model<
   orderCoupons!: OrderCoupon[];
 }
 
-export type CouponAttributes = CouponBaseAttributes &
-  Partial<CouponAssociationsAttributes>;
-
 export type CouponAttributesWithAssociations<
   Associations extends keyof Omit<
     CouponAssociationsAttributes,
@@ -133,5 +127,6 @@ export type CouponAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Coupon>>,
   NotUndefined<CouponAttributes>,
-  NotUndefined<CouponCreationAttributes>
+  NotUndefined<CouponCreationAttributes>,
+  NotUndefined<CouponAssociationsAttributes>
 >();

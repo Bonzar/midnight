@@ -20,7 +20,7 @@ import type { ProductCreationAttributes, ProductAttributes } from "./Product";
 import { Product } from "./Product";
 import type { NotUndefined } from "../../../types/types";
 
-interface ProductMetaBaseAttributes {
+export interface ProductMetaAttributes {
   id: ProductMeta["id"];
   title: ProductMeta["title"];
   description: ProductMeta["description"];
@@ -32,7 +32,7 @@ interface ProductMetaAssociationsAttributes {
 }
 
 export type ProductMetaCreationAttributes = Optional<
-  Omit<ProductMetaBaseAttributes, "id">,
+  Omit<ProductMetaAttributes, "id">,
   never
 > & {
   product?: ProductCreationAttributes;
@@ -40,7 +40,7 @@ export type ProductMetaCreationAttributes = Optional<
 
 @Table
 export class ProductMeta extends Model<
-  ProductMetaBaseAttributes,
+  ProductMetaAttributes,
   ProductMetaCreationAttributes
 > {
   @PrimaryKey
@@ -69,9 +69,6 @@ export class ProductMeta extends Model<
   product!: Product;
 }
 
-export type ProductMetaAttributes = ProductMetaBaseAttributes &
-  Partial<ProductMetaAssociationsAttributes>;
-
 export type ProductMetaAttributesWithAssociations<
   Associations extends keyof Omit<
     ProductMetaAssociationsAttributes,
@@ -88,5 +85,6 @@ export type ProductMetaAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<ProductMeta>>,
   NotUndefined<ProductMetaAttributes>,
-  NotUndefined<ProductMetaCreationAttributes>
+  NotUndefined<ProductMetaCreationAttributes>,
+  NotUndefined<ProductMetaAssociationsAttributes>
 >();

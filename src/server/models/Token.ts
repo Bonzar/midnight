@@ -19,7 +19,7 @@ import type {
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { NotUndefined } from "../../../types/types";
 
-interface TokenBaseAttributes {
+export interface TokenAttributes {
   id: Token["id"];
   refreshToken: Token["refreshToken"];
   userId: Token["userId"];
@@ -30,14 +30,14 @@ interface TokenAssociationsAttributes {
 }
 
 export type TokenCreationAttributes = Optional<
-  Omit<TokenBaseAttributes, "id">,
+  Omit<TokenAttributes, "id">,
   never
 > & {
   user?: UserCreationAttributes;
 };
 
 @Table
-export class Token extends Model<TokenBaseAttributes, TokenCreationAttributes> {
+export class Token extends Model<TokenAttributes, TokenCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -57,9 +57,6 @@ export class Token extends Model<TokenBaseAttributes, TokenCreationAttributes> {
   user!: User;
 }
 
-export type TokenAttributes = TokenBaseAttributes &
-  Partial<TokenAssociationsAttributes>;
-
 export type TokenAttributesWithAssociations<
   Associations extends keyof Omit<
     TokenAssociationsAttributes,
@@ -76,5 +73,6 @@ export type TokenAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Token>>,
   NotUndefined<TokenAttributes>,
-  NotUndefined<TokenCreationAttributes>
+  NotUndefined<TokenCreationAttributes>,
+  NotUndefined<TokenAssociationsAttributes>
 >();

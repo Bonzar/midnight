@@ -23,7 +23,7 @@ import { Product } from "./Product";
 import { DataTypes } from "sequelize";
 import type { NotUndefined } from "../../../types/types";
 
-interface CategoryBaseAttributes {
+export interface CategoryAttributes {
   id: Category["id"];
   name: Category["name"];
   parentCategoryId: Category["parentCategoryId"];
@@ -36,7 +36,7 @@ interface CategoryAssociationsAttributes {
 }
 
 export type CategoryCreationAttributes = Optional<
-  Omit<CategoryBaseAttributes, "id">,
+  Omit<CategoryAttributes, "id">,
   "parentCategoryId"
 > & {
   parentCategory?: CategoryCreationAttributes;
@@ -49,7 +49,7 @@ export type CategoryCreationAttributes = Optional<
 
 @Table
 export class Category extends Model<
-  CategoryBaseAttributes,
+  CategoryAttributes,
   CategoryCreationAttributes
 > {
   @PrimaryKey
@@ -98,9 +98,6 @@ export class Category extends Model<
   products!: Product[];
 }
 
-export type CategoryAttributes = CategoryBaseAttributes &
-  Partial<CategoryAssociationsAttributes>;
-
 export type CategoryAttributesWithAssociations<
   Associations extends keyof Omit<
     CategoryAssociationsAttributes,
@@ -117,5 +114,6 @@ export type CategoryAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Category>>,
   NotUndefined<CategoryAttributes>,
-  NotUndefined<CategoryCreationAttributes>
+  NotUndefined<CategoryCreationAttributes>,
+  NotUndefined<CategoryAssociationsAttributes>
 >();

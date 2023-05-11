@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { CouponAttributesWithAssociations } from "../models/Coupon";
+import type { CouponAttributes } from "../models/Coupon";
 import { ApiError } from "../error/ApiError";
 import type {
   CreateCouponData,
@@ -9,12 +9,12 @@ import { couponService } from "../services/couponService";
 import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateCouponBody = CreateCouponData;
-export type CreateCouponResponse = CouponAttributesWithAssociations<never>;
+export type CreateCouponResponse = CouponAttributes;
 
-export type GetAllCouponsResponse = CouponAttributesWithAssociations<never>[];
+export type GetAllCouponsResponse = CouponAttributes[];
 
 export type UpdateCouponBody = UpdateCouponData;
-export type UpdateCouponResponse = CouponAttributesWithAssociations<never>;
+export type UpdateCouponResponse = CouponAttributes;
 
 class CouponController {
   create: RequestHandler<void, CreateCouponResponse, CreateCouponBody, void> =

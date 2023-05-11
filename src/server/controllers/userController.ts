@@ -7,7 +7,7 @@ import type {
   UserAuthData,
 } from "../services/userService";
 import { userService } from "../services/userService";
-import type { AddressAttributesWithAssociations } from "../models/Address";
+import type { AddressAttributes } from "../models/Address";
 import { parseAppInt } from "../../helpers/parseAppInt";
 import { REFRESH_TOKEN_EXPIRES_DAYS } from "../../helpers/constants";
 import * as process from "process";
@@ -21,10 +21,10 @@ export type LoginUserResponse = Omit<UserAuthData, "refreshToken">;
 export type RefreshUserResponse = Omit<UserAuthData, "refreshToken">;
 
 export type CreateAddressBody = CreateAddressData;
-export type CreateAddressResponse = AddressAttributesWithAssociations<never>;
+export type CreateAddressResponse = AddressAttributes;
 
 export type UpdateAddressBody = UpdateAddressData;
-export type UpdateAddressResponse = AddressAttributesWithAssociations<never>;
+export type UpdateAddressResponse = AddressAttributes;
 
 class UserController {
   #setRefreshCookie(res: Response, refreshToken: string) {

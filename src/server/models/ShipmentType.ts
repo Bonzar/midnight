@@ -23,7 +23,7 @@ import type {
 import { Shipment } from "./Shipment";
 import type { NotUndefined } from "../../../types/types";
 
-interface ShipmentTypeBaseAttributes {
+export interface ShipmentTypeAttributes {
   id: ShipmentType["id"];
   code: ShipmentType["code"];
   price: ShipmentType["price"];
@@ -34,7 +34,7 @@ interface ShipmentTypeAssociationsAttributes {
 }
 
 export type ShipmentTypeCreationAttributes = Optional<
-  Omit<ShipmentTypeBaseAttributes, "id">,
+  Omit<ShipmentTypeAttributes, "id">,
   never
 > & {
   shipments?: Omit<
@@ -45,7 +45,7 @@ export type ShipmentTypeCreationAttributes = Optional<
 
 @Table
 export class ShipmentType extends Model<
-  ShipmentTypeBaseAttributes,
+  ShipmentTypeAttributes,
   ShipmentTypeCreationAttributes
 > {
   @PrimaryKey
@@ -57,7 +57,7 @@ export class ShipmentType extends Model<
   @NotEmpty
   @Unique
   @Column({
-    set(value: ShipmentTypeBaseAttributes["code"]) {
+    set(value: ShipmentTypeAttributes["code"]) {
       const currentInstance = <ShipmentType>this;
       currentInstance.setDataValue("code", value.toUpperCase());
     },
@@ -72,9 +72,6 @@ export class ShipmentType extends Model<
   @HasMany(() => Shipment)
   shipments!: Shipment[];
 }
-
-export type ShipmentTypeAttributes = ShipmentTypeBaseAttributes &
-  Partial<ShipmentTypeAssociationsAttributes>;
 
 export type ShipmentTypeAttributesWithAssociations<
   Associations extends keyof Omit<
@@ -92,5 +89,6 @@ export type ShipmentTypeAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<ShipmentType>>,
   NotUndefined<ShipmentTypeAttributes>,
-  NotUndefined<ShipmentTypeCreationAttributes>
+  NotUndefined<ShipmentTypeCreationAttributes>,
+  NotUndefined<ShipmentTypeAssociationsAttributes>
 >();

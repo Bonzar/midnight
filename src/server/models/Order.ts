@@ -42,7 +42,7 @@ import { Shipment } from "./Shipment";
 import { DataTypes } from "sequelize";
 import type { NotUndefined } from "../../../types/types";
 
-interface OrderBaseAttributes {
+export interface OrderAttributes {
   id: Order["id"];
   isPaid: Order["isPaid"];
   status: Order["status"];
@@ -63,7 +63,7 @@ interface OrderAssociationsAttributes {
 }
 
 export type OrderCreationAttributes = Optional<
-  Omit<OrderBaseAttributes, "id">,
+  Omit<OrderAttributes, "id">,
   "isPaid" | "status" | "note" | "shipDate"
 > & {
   user?: UserCreationAttributes;
@@ -75,7 +75,7 @@ export type OrderCreationAttributes = Optional<
 };
 
 @Table
-export class Order extends Model<OrderBaseAttributes, OrderCreationAttributes> {
+export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -133,9 +133,6 @@ export class Order extends Model<OrderBaseAttributes, OrderCreationAttributes> {
   orderCoupons!: OrderCoupon[];
 }
 
-export type OrderAttributes = OrderBaseAttributes &
-  Partial<OrderAssociationsAttributes>;
-
 export type OrderAttributesWithAssociations<
   Associations extends keyof Omit<
     OrderAssociationsAttributes,
@@ -152,5 +149,6 @@ export type OrderAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Order>>,
   NotUndefined<OrderAttributes>,
-  NotUndefined<OrderCreationAttributes>
+  NotUndefined<OrderCreationAttributes>,
+  NotUndefined<OrderAssociationsAttributes>
 >();

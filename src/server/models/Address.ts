@@ -21,7 +21,7 @@ import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import { DataTypes } from "sequelize";
 import type { NotUndefined } from "../../../types/types";
 
-interface AddressBaseAttributes {
+export interface AddressAttributes {
   id: Address["id"];
   country: Address["country"];
   city: Address["city"];
@@ -36,7 +36,7 @@ interface AddressAssociationsAttributes {
 }
 
 export type AddressCreationAttributes = Optional<
-  Omit<AddressBaseAttributes, "id">,
+  Omit<AddressAttributes, "id">,
   "flat"
 > & {
   user?: UserCreationAttributes;
@@ -44,7 +44,7 @@ export type AddressCreationAttributes = Optional<
 
 @Table
 export class Address extends Model<
-  AddressBaseAttributes,
+  AddressAttributes,
   AddressCreationAttributes
 > {
   @PrimaryKey
@@ -86,9 +86,6 @@ export class Address extends Model<
   user!: User;
 }
 
-export type AddressAttributes = AddressBaseAttributes &
-  Partial<AddressAssociationsAttributes>;
-
 export type AddressAttributesWithAssociations<
   Associations extends keyof Omit<
     AddressAssociationsAttributes,
@@ -105,5 +102,6 @@ export type AddressAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Address>>,
   NotUndefined<AddressAttributes>,
-  NotUndefined<AddressCreationAttributes>
+  NotUndefined<AddressCreationAttributes>,
+  NotUndefined<AddressAssociationsAttributes>
 >();

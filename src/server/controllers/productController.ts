@@ -7,31 +7,23 @@ import type {
 } from "../services/productService";
 import { productService } from "../services/productService";
 import type { AllAsString } from "../../../types/types";
-import type { ProductAttributesWithAssociations } from "../models/Product";
-import type { CategoryAttributesWithAssociations } from "../models/Category";
-import type { ProductImageAttributesWithAssociations } from "../models/ProductImage";
-import type { ProductMetaAttributesWithAssociations } from "../models/ProductMeta";
+import type {
+  ProductAttributes,
+  ProductAttributesWithAssociations,
+} from "../models/Product";
 
 export type CreateProductBody = CreateProductData;
-export type CreateProductResponse = ProductAttributesWithAssociations<never>;
+export type CreateProductResponse = ProductAttributes;
 
 export type UpdateProductBody = UpdateProductData;
-export type UpdateProductResponse = ProductAttributesWithAssociations<never>;
+export type UpdateProductResponse = ProductAttributes;
 
 export type GetProductResponse = ProductAttributesWithAssociations<
-  never,
-  {
-    category: CategoryAttributesWithAssociations<never>;
-    productImages: ProductImageAttributesWithAssociations<never>[];
-    productMetas: ProductMetaAttributesWithAssociations<never>[];
-  }
+  "category" | "productImages" | "productMetas"
 >;
 
 export type GetAllProductsResponse = {
-  rows: ProductAttributesWithAssociations<
-    never,
-    { productImages: ProductImageAttributesWithAssociations<never>[] }
-  >[];
+  rows: ProductAttributesWithAssociations<"productImages">[];
   count: number;
 };
 export type GetAllProductsQuery = {

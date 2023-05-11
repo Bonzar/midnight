@@ -21,7 +21,7 @@ import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import type { NotUndefined } from "../../../types/types";
 
-interface BasketProductBaseAttributes {
+export interface BasketProductAttributes {
   id: BasketProduct["id"];
   quantity: BasketProduct["quantity"];
   basketId: BasketProduct["basketId"];
@@ -34,7 +34,7 @@ interface BasketProductAssociationsAttributes {
 }
 
 export type BasketProductCreationAttributes = Optional<
-  Omit<BasketProductBaseAttributes, "id">,
+  Omit<BasketProductAttributes, "id">,
   never
 > & {
   basket?: BasketCreationAttributes;
@@ -43,7 +43,7 @@ export type BasketProductCreationAttributes = Optional<
 
 @Table
 export class BasketProduct extends Model<
-  BasketProductBaseAttributes,
+  BasketProductAttributes,
   BasketProductCreationAttributes
 > {
   @PrimaryKey
@@ -73,9 +73,6 @@ export class BasketProduct extends Model<
   product!: Product;
 }
 
-export type BasketProductAttributes = BasketProductBaseAttributes &
-  Partial<BasketProductAssociationsAttributes>;
-
 export type BasketProductAttributesWithAssociations<
   Associations extends keyof Omit<
     BasketProductAssociationsAttributes,
@@ -92,5 +89,6 @@ export type BasketProductAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<BasketProduct>>,
   NotUndefined<BasketProductAttributes>,
-  NotUndefined<BasketProductCreationAttributes>
+  NotUndefined<BasketProductCreationAttributes>,
+  NotUndefined<BasketProductAssociationsAttributes>
 >();

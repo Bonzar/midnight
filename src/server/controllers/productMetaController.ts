@@ -1,4 +1,4 @@
-import type { ProductMetaAttributesWithAssociations } from "../models/ProductMeta";
+import type { ProductMetaAttributes } from "../models/ProductMeta";
 import type { RequestHandler } from "express";
 import type {
   UpdateProductMetaData,
@@ -9,12 +9,10 @@ import { productMetaService } from "../services/productMetaService";
 import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateProductMetaBody = CreateProductMetaData;
-export type CreateProductMetaResponse =
-  ProductMetaAttributesWithAssociations<never>;
+export type CreateProductMetaResponse = ProductMetaAttributes;
 
 export type UpdateProductMetaBody = UpdateProductMetaData;
-export type UpdateProductMetaResponse =
-  ProductMetaAttributesWithAssociations<never>;
+export type UpdateProductMetaResponse = ProductMetaAttributes;
 
 class ProductMetaController {
   create: RequestHandler<

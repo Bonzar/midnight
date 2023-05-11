@@ -22,7 +22,7 @@ import { Product } from "./Product";
 import { DataTypes } from "sequelize";
 import type { NotUndefined } from "../../../types/types";
 
-interface ProductImageBaseAttributes {
+export interface ProductImageAttributes {
   id: ProductImage["id"];
   url: ProductImage["url"];
   sort: ProductImage["sort"];
@@ -35,7 +35,7 @@ interface ProductImageAssociationsAttributes {
 }
 
 export type ProductImageCreationAttributes = Optional<
-  Omit<ProductImageBaseAttributes, "id">,
+  Omit<ProductImageAttributes, "id">,
   never
 > & {
   product?: ProductCreationAttributes;
@@ -43,7 +43,7 @@ export type ProductImageCreationAttributes = Optional<
 
 @Table
 export class ProductImage extends Model<
-  ProductImageBaseAttributes,
+  ProductImageAttributes,
   ProductImageCreationAttributes
 > {
   @PrimaryKey
@@ -78,9 +78,6 @@ export class ProductImage extends Model<
   product!: Product;
 }
 
-export type ProductImageAttributes = ProductImageBaseAttributes &
-  Partial<ProductImageAssociationsAttributes>;
-
 export type ProductImageAttributesWithAssociations<
   Associations extends keyof Omit<
     ProductImageAssociationsAttributes,
@@ -97,5 +94,6 @@ export type ProductImageAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<ProductImage>>,
   NotUndefined<ProductImageAttributes>,
-  NotUndefined<ProductImageCreationAttributes>
+  NotUndefined<ProductImageCreationAttributes>,
+  NotUndefined<ProductImageAssociationsAttributes>
 >();

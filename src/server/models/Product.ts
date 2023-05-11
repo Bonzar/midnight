@@ -62,7 +62,7 @@ import type {
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { NotUndefined } from "../../../types/types";
 
-interface ProductBaseAttributes {
+export interface ProductAttributes {
   id: Product["id"];
   name: Product["name"];
   description: Product["description"];
@@ -87,7 +87,7 @@ export interface ProductAssociationsAttributes {
 }
 
 export type ProductCreationAttributes = Optional<
-  Omit<ProductBaseAttributes, "id">,
+  Omit<ProductAttributes, "id">,
   "description" | "discount" | "stock"
 > & {
   category?: CategoryCreationAttributes;
@@ -115,7 +115,7 @@ export type ProductCreationAttributes = Optional<
 
 @Table
 export class Product extends Model<
-  ProductBaseAttributes,
+  ProductAttributes,
   ProductCreationAttributes
 > {
   @PrimaryKey
@@ -185,9 +185,6 @@ export class Product extends Model<
   wishlistProducts!: WishlistProduct[];
 }
 
-export type ProductAttributes = ProductBaseAttributes &
-  Partial<ProductAssociationsAttributes>;
-
 export type ProductAttributesWithAssociations<
   Associations extends keyof Omit<
     ProductAssociationsAttributes,
@@ -204,5 +201,6 @@ export type ProductAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Product>>,
   NotUndefined<ProductAttributes>,
-  NotUndefined<ProductCreationAttributes>
+  NotUndefined<ProductCreationAttributes>,
+  NotUndefined<ProductAssociationsAttributes>
 >();

@@ -21,7 +21,7 @@ import type { CouponAttributes, CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
 import type { NotUndefined } from "../../../types/types";
 
-interface BasketCouponBaseAttributes {
+export interface BasketCouponAttributes {
   id: BasketCoupon["id"];
   basketId: BasketCoupon["basketId"];
   couponId: BasketCoupon["couponId"];
@@ -33,7 +33,7 @@ interface BasketCouponAssociationsAttributes {
 }
 
 export type BasketCouponCreationAttributes = Optional<
-  Omit<BasketCouponBaseAttributes, "id">,
+  Omit<BasketCouponAttributes, "id">,
   never
 > & {
   basket?: BasketCreationAttributes;
@@ -42,7 +42,7 @@ export type BasketCouponCreationAttributes = Optional<
 
 @Table
 export class BasketCoupon extends Model<
-  BasketCouponBaseAttributes,
+  BasketCouponAttributes,
   BasketCouponCreationAttributes
 > {
   @PrimaryKey
@@ -69,9 +69,6 @@ export class BasketCoupon extends Model<
   coupon!: Coupon;
 }
 
-export type BasketCouponAttributes = BasketCouponBaseAttributes &
-  Partial<BasketCouponAssociationsAttributes>;
-
 export type BasketCouponAttributesWithAssociations<
   Associations extends keyof Omit<
     BasketCouponAssociationsAttributes,
@@ -88,5 +85,6 @@ export type BasketCouponAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<BasketCoupon>>,
   NotUndefined<BasketCouponAttributes>,
-  NotUndefined<BasketCouponCreationAttributes>
+  NotUndefined<BasketCouponCreationAttributes>,
+  NotUndefined<BasketCouponAssociationsAttributes>
 >();

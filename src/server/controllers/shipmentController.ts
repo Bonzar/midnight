@@ -1,4 +1,4 @@
-import type { ShipmentTypeAttributesWithAssociations } from "../models/ShipmentType";
+import type { ShipmentTypeAttributes } from "../models/ShipmentType";
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import type {
@@ -9,15 +9,12 @@ import { shipmentService } from "../services/shipmentService";
 import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateShipmentTypeBody = CreateShipmentTypeData;
-export type CreateShipmentTypeResponse =
-  ShipmentTypeAttributesWithAssociations<never>;
+export type CreateShipmentTypeResponse = ShipmentTypeAttributes;
 
-export type GetAllShipmentTypesResponse =
-  ShipmentTypeAttributesWithAssociations<never>[];
+export type GetAllShipmentTypesResponse = ShipmentTypeAttributes[];
 
 export type UpdateShipmentTypeBody = UpdateShipmentTypeData;
-export type UpdateShipmentTypeResponse =
-  ShipmentTypeAttributesWithAssociations<never>;
+export type UpdateShipmentTypeResponse = ShipmentTypeAttributes;
 
 class ShipmentController {
   createType: RequestHandler<

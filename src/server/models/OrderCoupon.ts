@@ -21,7 +21,7 @@ import type { CouponCreationAttributes, CouponAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
 import type { NotUndefined } from "../../../types/types";
 
-interface OrderCouponBaseAttributes {
+export interface OrderCouponAttributes {
   id: OrderCoupon["id"];
   orderId: OrderCoupon["orderId"];
   couponId: OrderCoupon["couponId"];
@@ -33,7 +33,7 @@ interface OrderCouponAssociationsAttributes {
 }
 
 export type OrderCouponCreationAttributes = Optional<
-  Omit<OrderCouponBaseAttributes, "id">,
+  Omit<OrderCouponAttributes, "id">,
   never
 > &
   Partial<OrderCouponCreationAssociationAttributes>;
@@ -45,7 +45,7 @@ interface OrderCouponCreationAssociationAttributes {
 
 @Table
 export class OrderCoupon extends Model<
-  OrderCouponBaseAttributes,
+  OrderCouponAttributes,
   OrderCouponCreationAttributes
 > {
   @PrimaryKey
@@ -72,9 +72,6 @@ export class OrderCoupon extends Model<
   coupon!: Coupon;
 }
 
-export type OrderCouponAttributes = OrderCouponBaseAttributes &
-  Partial<OrderCouponAssociationsAttributes>;
-
 export type OrderCouponAttributesWithAssociations<
   Associations extends keyof Omit<
     OrderCouponAssociationsAttributes,
@@ -91,5 +88,6 @@ export type OrderCouponAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<OrderCoupon>>,
   NotUndefined<OrderCouponAttributes>,
-  NotUndefined<OrderCouponCreationAttributes>
+  NotUndefined<OrderCouponCreationAttributes>,
+  NotUndefined<OrderCouponAssociationsAttributes>
 >();

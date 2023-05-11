@@ -35,7 +35,7 @@ import type { TokenAttributes, TokenCreationAttributes } from "./Token";
 import { Token } from "./Token";
 import type { NotUndefined } from "../../../types/types";
 
-interface UserBaseAttributes {
+export interface UserAttributes {
   id: User["id"];
   firstName: User["firstName"];
   lastName: User["lastName"];
@@ -56,7 +56,7 @@ interface UserAssociationsAttributes {
 }
 
 export type UserCreationAttributes = Optional<
-  Omit<UserBaseAttributes, "id">,
+  Omit<UserAttributes, "id">,
   "isActivated" | "activationLink" | "role" | "lastName" | "middleName"
 > & {
   basket?: Omit<BasketCreationAttributes, "userId" | "user">;
@@ -67,7 +67,7 @@ export type UserCreationAttributes = Optional<
 };
 
 @Table
-export class User extends Model<UserBaseAttributes, UserCreationAttributes> {
+export class User extends Model<UserAttributes, UserCreationAttributes> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -146,9 +146,6 @@ export class User extends Model<UserBaseAttributes, UserCreationAttributes> {
   token?: Token;
 }
 
-export type UserAttributes = UserBaseAttributes &
-  Partial<UserAssociationsAttributes>;
-
 export type UserAttributesWithAssociations<
   Associations extends keyof Omit<
     UserAssociationsAttributes,
@@ -165,5 +162,6 @@ export type UserAttributesWithAssociations<
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<User>>,
   NotUndefined<UserAttributes>,
-  NotUndefined<UserCreationAttributes>
+  NotUndefined<UserCreationAttributes>,
+  NotUndefined<UserAssociationsAttributes>
 >();
