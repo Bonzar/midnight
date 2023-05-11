@@ -1,3 +1,4 @@
+//use `dist` because on build vite replace "@reduxjs/toolkit/query/react" with "s" (ಠ_ಠ)
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import * as process from "process";
 
