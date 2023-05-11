@@ -37,15 +37,18 @@ interface WishlistProductAssociationsAttributes {
 export type WishlistProductCreationAttributes = Optional<
   Omit<WishlistProductAttributes, "id">,
   never
-> & {
-  wishlist?: WishlistCreationAttributes;
-  product?: ProductCreationAttributes;
-};
+>;
+
+interface WishlistProductCreationAssociationsAttributes {
+  wishlist: WishlistCreationAttributes;
+  product: ProductCreationAttributes;
+}
 
 @Table
 export class WishlistProduct extends Model<
   WishlistProductAttributes,
-  WishlistProductCreationAttributes
+  WishlistProductCreationAttributes &
+    Partial<WishlistProductCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -86,5 +89,6 @@ exhaustiveModelCheck<
   NotUndefined<ModelAttr<WishlistProduct>>,
   NotUndefined<WishlistProductAttributes>,
   NotUndefined<WishlistProductCreationAttributes>,
-  NotUndefined<WishlistProductAssociationsAttributes>
+  NotUndefined<WishlistProductAssociationsAttributes>,
+  NotUndefined<WishlistProductCreationAssociationsAttributes>
 >();

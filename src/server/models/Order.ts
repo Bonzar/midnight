@@ -65,17 +65,22 @@ interface OrderAssociationsAttributes {
 export type OrderCreationAttributes = Optional<
   Omit<OrderAttributes, "id">,
   "isPaid" | "status" | "note" | "shipDate"
-> & {
-  user?: UserCreationAttributes;
-  shipment?: ShipmentCreationAttributes;
-  products?: ProductCreationAttributes[];
-  coupons?: CouponCreationAttributes[];
-  orderProducts?: Omit<OrderProductCreationAttributes, "orderId" | "order">[];
-  orderCoupons?: Omit<OrderCouponCreationAttributes, "orderId" | "order">[];
-};
+>;
+
+interface OrderCreationAssociationsAttributes {
+  user: UserCreationAttributes;
+  shipment: ShipmentCreationAttributes;
+  products: ProductCreationAttributes[];
+  coupons: CouponCreationAttributes[];
+  orderProducts: Omit<OrderProductCreationAttributes, "orderId" | "order">[];
+  orderCoupons: Omit<OrderCouponCreationAttributes, "orderId" | "order">[];
+}
 
 @Table
-export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
+export class Order extends Model<
+  OrderAttributes,
+  OrderCreationAttributes & Partial<OrderCreationAssociationsAttributes>
+> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -88,7 +93,10 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
 
   @AllowNull(false)
   @Default("NEW")
-  @Column
+  @Column({
+    type: DataTypes.ENUM,
+    values: ["NEW", "COLLECT", "SHIP", "COMPLETE"],
+  })
   status!: "NEW" | "COLLECT" | "SHIP" | "COMPLETE";
 
   @AllowNull(true)
@@ -133,15 +141,15 @@ export class Order extends Model<OrderAttributes, OrderCreationAttributes> {
   orderCoupons!: OrderCoupon[];
 }
 
-export type OrderAttributesWithAssociations<
+export type OrderCreationAttributesWithAssociations<
   Associations extends keyof Omit<
-    OrderAssociationsAttributes,
+    OrderCreationAssociationsAttributes,
     keyof NestedAssociate
   >,
-  NestedAssociate extends Partial<OrderAssociationsAttributes> = {}
+  NestedAssociate extends Partial<OrderCreationAssociationsAttributes> = {}
 > = ModelAttributesWithSelectedAssociations<
-  OrderAttributes,
-  OrderAssociationsAttributes,
+  OrderCreationAttributes,
+  OrderCreationAssociationsAttributes,
   Associations,
   NestedAssociate
 >;
@@ -150,5 +158,6 @@ exhaustiveModelCheck<
   NotUndefined<ModelAttr<Order>>,
   NotUndefined<OrderAttributes>,
   NotUndefined<OrderCreationAttributes>,
-  NotUndefined<OrderAssociationsAttributes>
+  NotUndefined<OrderAssociationsAttributes>,
+  NotUndefined<OrderCreationAssociationsAttributes>
 >();

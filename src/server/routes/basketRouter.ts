@@ -1,30 +1,29 @@
 import { Router } from "express";
 import { basketController } from "../controllers/basketController";
-import { authMiddleware } from "../middleware/authMiddleware";
 const basketRouter = Router();
 
 /**
  * Basket product
  */
 
-basketRouter.post("/product", authMiddleware, basketController.addProduct);
+basketRouter.post("/product", basketController.addProduct);
 
-basketRouter.patch("/product", authMiddleware, basketController.updateProduct);
+basketRouter.patch("/product", basketController.updateProduct);
 
-basketRouter.delete("/product", authMiddleware, basketController.deleteProduct);
+basketRouter.delete("/product", basketController.deleteProduct);
 
 /**
  * Basket coupon
  */
 
-basketRouter.post("/coupon", authMiddleware, basketController.addCoupon);
+basketRouter.post("/coupon", basketController.addCoupon);
 
-basketRouter.delete("/coupon", authMiddleware, basketController.deleteCoupon);
+basketRouter.delete("/coupon", basketController.deleteCoupon);
 
 /**
  * Basket itself
  */
 
-basketRouter.get("/:id", authMiddleware, basketController.getBasket);
+basketRouter.get("/", basketController.getBasket);
 
 export { basketRouter };

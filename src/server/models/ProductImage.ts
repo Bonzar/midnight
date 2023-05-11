@@ -12,10 +12,7 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type {
-  ModelAttr,
-  ModelAttributesWithSelectedAssociations,
-} from "../helpers/modelHelpers";
+import type { ModelAttr } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
@@ -37,14 +34,17 @@ interface ProductImageAssociationsAttributes {
 export type ProductImageCreationAttributes = Optional<
   Omit<ProductImageAttributes, "id">,
   never
-> & {
-  product?: ProductCreationAttributes;
-};
+>;
+
+interface ProductImageCreationAssociationsAttributes {
+  product: ProductCreationAttributes;
+}
 
 @Table
 export class ProductImage extends Model<
   ProductImageAttributes,
-  ProductImageCreationAttributes
+  ProductImageCreationAttributes &
+    Partial<ProductImageCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -78,22 +78,10 @@ export class ProductImage extends Model<
   product!: Product;
 }
 
-export type ProductImageAttributesWithAssociations<
-  Associations extends keyof Omit<
-    ProductImageAssociationsAttributes,
-    keyof NestedAssociate
-  >,
-  NestedAssociate extends Partial<ProductImageAssociationsAttributes> = {}
-> = ModelAttributesWithSelectedAssociations<
-  ProductImageAttributes,
-  ProductImageAssociationsAttributes,
-  Associations,
-  NestedAssociate
->;
-
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<ProductImage>>,
   NotUndefined<ProductImageAttributes>,
   NotUndefined<ProductImageCreationAttributes>,
-  NotUndefined<ProductImageAssociationsAttributes>
+  NotUndefined<ProductImageAssociationsAttributes>,
+  NotUndefined<ProductImageCreationAssociationsAttributes>
 >();

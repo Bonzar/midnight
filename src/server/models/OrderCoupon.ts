@@ -10,10 +10,7 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type {
-  ModelAttr,
-  ModelAttributesWithSelectedAssociations,
-} from "../helpers/modelHelpers";
+import type { ModelAttr } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
@@ -35,10 +32,9 @@ interface OrderCouponAssociationsAttributes {
 export type OrderCouponCreationAttributes = Optional<
   Omit<OrderCouponAttributes, "id">,
   never
-> &
-  Partial<OrderCouponCreationAssociationAttributes>;
+>;
 
-interface OrderCouponCreationAssociationAttributes {
+interface OrderCouponCreationAssociationsAttributes {
   order: OrderCreationAttributes;
   coupon: CouponCreationAttributes;
 }
@@ -46,7 +42,8 @@ interface OrderCouponCreationAssociationAttributes {
 @Table
 export class OrderCoupon extends Model<
   OrderCouponAttributes,
-  OrderCouponCreationAttributes
+  OrderCouponCreationAttributes &
+    Partial<OrderCouponCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -72,22 +69,10 @@ export class OrderCoupon extends Model<
   coupon!: Coupon;
 }
 
-export type OrderCouponAttributesWithAssociations<
-  Associations extends keyof Omit<
-    OrderCouponAssociationsAttributes,
-    keyof NestedAssociate
-  >,
-  NestedAssociate extends Partial<OrderCouponAssociationsAttributes> = {}
-> = ModelAttributesWithSelectedAssociations<
-  OrderCouponAttributes,
-  OrderCouponAssociationsAttributes,
-  Associations,
-  NestedAssociate
->;
-
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<OrderCoupon>>,
   NotUndefined<OrderCouponAttributes>,
   NotUndefined<OrderCouponCreationAttributes>,
-  NotUndefined<OrderCouponAssociationsAttributes>
+  NotUndefined<OrderCouponAssociationsAttributes>,
+  NotUndefined<OrderCouponCreationAssociationsAttributes>
 >();

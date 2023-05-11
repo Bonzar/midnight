@@ -10,7 +10,7 @@ orderRouter.get("/", authMiddleware, orderController.getAll);
 
 orderRouter.get("/:id", authMiddleware, orderController.get);
 
-orderRouter.patch("/:id", authMiddleware, orderController.update);
+orderRouter.patch("/:id", roleMiddleware("ADMIN"), orderController.update);
 
 orderRouter.delete("/:id", roleMiddleware("ADMIN"), orderController.delete);
 

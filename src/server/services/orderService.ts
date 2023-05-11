@@ -1,4 +1,8 @@
-import type { OrderAttributes, OrderCreationAttributes } from "../models/Order";
+import type {
+  OrderAttributes,
+  OrderCreationAttributes,
+  OrderCreationAttributesWithAssociations,
+} from "../models/Order";
 import { Order } from "../models/Order";
 import type { WhereOptions } from "sequelize";
 import {
@@ -11,21 +15,28 @@ import { OrderProduct } from "../models/OrderProduct";
 import { OrderCoupon } from "../models/OrderCoupon";
 import { sequelize } from "../database";
 import { productService } from "./productService";
-import type { NotUndefined } from "../../../types/types";
 import { ApiError } from "../error/ApiError";
+import { checkIdsPresent } from "../helpers/checkIdsPresent";
 
-export type CreateOrderData = Omit<OrderCreationAttributes, "total"> &
-  NotUndefined<
-    Pick<OrderCreationAttributes, "orderCoupons" | "orderProducts" | "shipment">
-  >;
+export type CreateOrderData = Omit<
+  OrderCreationAttributesWithAssociations<
+    "shipment" | "orderCoupons" | "orderProducts"
+  >,
+  "total" | "userId"
+>;
 
-export type UpdateOrderData = Partial<OrderCreationAttributes>;
+export type UpdateOrderData = Omit<
+  Partial<OrderCreationAttributes>,
+  "userId" | "total" | "isPaid" | "shipmentId"
+>;
 
 class OrderService {
-  async create(orderData: CreateOrderData) {
-    if (orderData.orderProducts.length === 0) {
+  async create(userId: number, orderData: CreateOrderData) {
+    if (!orderData.orderProducts || orderData.orderProducts.length === 0) {
       throw ApiError.badRequest("Заказ не может быть пустым");
     }
+
+    if (!orderData.orderCoupons) orderData.orderCoupons = [];
 
     const checkPromises = [
       // Check on coupons valid
@@ -76,7 +87,7 @@ class OrderService {
 
       // Create order + corresponding notes in OrderCoupon and OrderProduct
       return await Order.create(
-        { ...orderData, total },
+        { ...orderData, total, userId },
         {
           include: [
             { model: OrderCoupon, as: "orderCoupons" },
@@ -88,26 +99,27 @@ class OrderService {
     });
   }
 
-  async getOne(id: number) {
-    if (!id) {
-      throw ApiError.badRequest("Для получения заказа не был предоставлен ID");
-    }
+  public async getOneOrder(userId: number, orderId: number) {
+    this.checkIdsPresent(userId, orderId, "получения заказа");
 
-    const order = await Order.findOne({ where: { id } });
+    const order = await Order.findOne({ where: { id: orderId, userId } });
 
     if (!order) {
-      throw ApiError.badRequest(`Заказ с id - ${id} не найден`);
+      throw ApiError.badRequest(
+        `Заказ с id - ${orderId}, у пользователя с id - ${userId}, не найден`
+      );
     }
 
     return order;
   }
 
   async getAll(
+    userId: number,
     status?: OrderAttributes["status"],
     limit: number = DEFAULT_ITEMS_LIMIT,
     page: number = DEFAULT_ITEMS_PAGE
   ) {
-    const where: WhereOptions<OrderAttributes> = {};
+    const where: WhereOptions<OrderAttributes> = { userId };
     if (status) {
       where.status = status;
     }
@@ -121,19 +133,54 @@ class OrderService {
     });
   }
 
-  async update(id: number, updateData: UpdateOrderData) {
-    const order = await this.getOne(id);
+  async update(userId: number, orderId: number, updateData: UpdateOrderData) {
+    this.checkIdsPresent(userId, orderId, "обновления заказа");
+
+    // prevent update sensitive data
+    const {
+      userId: _userId,
+      total: _total,
+      isPaid: _isPaid,
+      shipmentId: _shipmentId,
+      ...safeUpdateData
+    } = updateData as typeof updateData &
+      Record<"userId" | "total" | "isPaid" | "shipmentId", never>;
+
+    const order = await this.getOneOrder(userId, orderId);
     if (order.isPaid) {
       throw ApiError.badRequest("Оплаченный заказ нельзя изменить");
     }
 
-    return order.update(updateData);
+    return await order.update(safeUpdateData);
   }
 
-  async delete(id: number) {
-    const order = await this.getOne(id);
+  async delete(userId: number, orderId: number) {
+    this.checkIdsPresent(userId, orderId, "удаления заказа");
 
-    return order.destroy();
+    const order = await this.getOneOrder(userId, orderId);
+
+    return await order.destroy();
+  }
+
+  private checkIdsPresent(
+    userId: number,
+    orderId: number,
+    messageAction: string
+  ) {
+    try {
+      checkIdsPresent(
+        [
+          { value: userId, whoseIdentifier: "пользователя" },
+          { value: orderId, whoseIdentifier: "заказа" },
+        ],
+        messageAction
+      );
+    } catch (error) {
+      throw ApiError.badRequest(
+        `При проверке идентификаторов для работы с заказами произошла ошибка`,
+        error
+      );
+    }
   }
 }
 

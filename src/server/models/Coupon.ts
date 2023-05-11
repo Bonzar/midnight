@@ -13,10 +13,7 @@ import {
   Is,
   HasMany,
 } from "sequelize-typescript";
-import type {
-  ModelAttr,
-  ModelAttributesWithSelectedAssociations,
-} from "../helpers/modelHelpers";
+import type { ModelAttr } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type {
   OrderCouponAttributes,
@@ -45,13 +42,18 @@ interface CouponAssociationsAttributes {
 export type CouponCreationAttributes = Optional<
   Omit<CouponAttributes, "id">,
   "type" | "expiresTime" | "expiresCount"
-> & {
-  orders?: OrderCreationAttributes[];
-  orderCoupons?: Omit<OrderCouponCreationAttributes, "couponId" | "coupon">[];
-};
+>;
+
+interface CouponCreationAssociationsAttributes {
+  orders: OrderCreationAttributes[];
+  orderCoupons: Omit<OrderCouponCreationAttributes, "couponId" | "coupon">[];
+}
 
 @Table
-export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
+export class Coupon extends Model<
+  CouponAttributes,
+  CouponCreationAttributes & Partial<CouponCreationAssociationsAttributes>
+> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -82,7 +84,7 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
 
   @AllowNull(false)
   @Default("PERCENTAGE")
-  @Column
+  @Column({ type: DataTypes.ENUM, values: ["AMOUNT", "PERCENTAGE"] })
   type!: "AMOUNT" | "PERCENTAGE";
 
   @AllowNull(true)
@@ -111,22 +113,10 @@ export class Coupon extends Model<CouponAttributes, CouponCreationAttributes> {
   orderCoupons!: OrderCoupon[];
 }
 
-export type CouponAttributesWithAssociations<
-  Associations extends keyof Omit<
-    CouponAssociationsAttributes,
-    keyof NestedAssociate
-  >,
-  NestedAssociate extends Partial<CouponAssociationsAttributes> = {}
-> = ModelAttributesWithSelectedAssociations<
-  CouponAttributes,
-  CouponAssociationsAttributes,
-  Associations,
-  NestedAssociate
->;
-
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Coupon>>,
   NotUndefined<CouponAttributes>,
   NotUndefined<CouponCreationAttributes>,
-  NotUndefined<CouponAssociationsAttributes>
+  NotUndefined<CouponAssociationsAttributes>,
+  NotUndefined<CouponCreationAssociationsAttributes>
 >();

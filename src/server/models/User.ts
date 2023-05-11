@@ -43,7 +43,6 @@ export interface UserAttributes {
   email: User["email"];
   password: User["password"];
   isActivated: User["isActivated"];
-  activationLink: User["activationLink"];
   role: User["role"];
 }
 
@@ -57,17 +56,22 @@ interface UserAssociationsAttributes {
 
 export type UserCreationAttributes = Optional<
   Omit<UserAttributes, "id">,
-  "isActivated" | "activationLink" | "role" | "lastName" | "middleName"
-> & {
-  basket?: Omit<BasketCreationAttributes, "userId" | "user">;
-  wishlist?: Omit<WishlistCreationAttributes, "userId" | "user">;
-  orders?: Omit<OrderCreationAttributes, "userId" | "user">[];
-  addresses?: Omit<AddressCreationAttributes, "userId" | "user">[];
-  token?: Omit<TokenCreationAttributes, "userId" | "user">;
-};
+  "isActivated" | "role" | "lastName" | "middleName"
+>;
+
+interface UserCreationAssociationsAttributes {
+  basket: Omit<BasketCreationAttributes, "userId" | "user">;
+  wishlist: Omit<WishlistCreationAttributes, "userId" | "user">;
+  orders: Omit<OrderCreationAttributes, "userId" | "user">[];
+  addresses: Omit<AddressCreationAttributes, "userId" | "user">[];
+  token: Omit<TokenCreationAttributes, "userId" | "user">;
+}
 
 @Table
-export class User extends Model<UserAttributes, UserCreationAttributes> {
+export class User extends Model<
+  UserAttributes,
+  UserCreationAttributes & Partial<UserCreationAssociationsAttributes>
+> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -117,17 +121,9 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @Column
   isActivated!: boolean;
 
-  //todo delete if unused OR remove default
-  @AllowNull(false)
-  // @Unique
-  @NotEmpty
-  @Default("123")
-  @Column
-  activationLink!: string;
-
   @AllowNull(false)
   @Default("USER")
-  @Column
+  @Column({ type: DataTypes.ENUM, values: ["USER", "ADMIN"] })
   role!: "USER" | "ADMIN";
 
   @HasMany(() => Address)
@@ -146,15 +142,15 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   token?: Token;
 }
 
-export type UserAttributesWithAssociations<
+export type UserCreationAttributesWithAssociations<
   Associations extends keyof Omit<
-    UserAssociationsAttributes,
+    UserCreationAssociationsAttributes,
     keyof NestedAssociate
   >,
-  NestedAssociate extends Partial<UserAssociationsAttributes> = {}
+  NestedAssociate extends Partial<UserCreationAssociationsAttributes> = {}
 > = ModelAttributesWithSelectedAssociations<
-  UserAttributes,
-  UserAssociationsAttributes,
+  UserCreationAttributes,
+  UserCreationAssociationsAttributes,
   Associations,
   NestedAssociate
 >;
@@ -163,5 +159,6 @@ exhaustiveModelCheck<
   NotUndefined<ModelAttr<User>>,
   NotUndefined<UserAttributes>,
   NotUndefined<UserCreationAttributes>,
-  NotUndefined<UserAssociationsAttributes>
+  NotUndefined<UserAssociationsAttributes>,
+  NotUndefined<UserCreationAssociationsAttributes>
 >();

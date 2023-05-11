@@ -1,147 +1,67 @@
-import type { Response, RequestHandler } from "express";
+import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import type {
   CreateAddressData,
-  CreateUserData,
   UpdateAddressData,
-  UserAuthData,
+  UpdateUserData,
 } from "../services/userService";
 import { userService } from "../services/userService";
 import type { AddressAttributes } from "../models/Address";
 import { parseAppInt } from "../../helpers/parseAppInt";
-import { REFRESH_TOKEN_EXPIRES_DAYS } from "../../helpers/constants";
-import * as process from "process";
+import type { UserAttributes } from "../models/User";
 
-export type RegistrationUserBody = CreateUserData;
-export type RegistrationUserResponse = Omit<UserAuthData, "refreshToken">;
+export type GetUserResponse = UserAttributes;
 
-export type LoginUserBody = { email: string; password: string };
-export type LoginUserResponse = Omit<UserAuthData, "refreshToken">;
-
-export type RefreshUserResponse = Omit<UserAuthData, "refreshToken">;
+export type UpdateUserBody = UpdateUserData;
+export type UpdateUserResponse = UserAttributes;
 
 export type CreateAddressBody = CreateAddressData;
 export type CreateAddressResponse = AddressAttributes;
+
+export type GetAddressResponse = AddressAttributes;
 
 export type UpdateAddressBody = UpdateAddressData;
 export type UpdateAddressResponse = AddressAttributes;
 
 class UserController {
-  #setRefreshCookie(res: Response, refreshToken: string) {
-    res.cookie("refreshToken", refreshToken, {
-      maxAge: REFRESH_TOKEN_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
-  }
-
-  registration: RequestHandler<
-    void,
-    RegistrationUserResponse,
-    RegistrationUserBody,
-    void
-  > = async (req, res, next) => {
-    try {
-      const { refreshToken, ...userData } = await userService.registration(
-        req.body
-      );
-
-      this.#setRefreshCookie(res, refreshToken);
-
-      res.status(200).json(userData);
-    } catch (error) {
-      next(
-        ApiError.setDefaultMessage(
-          "При регистрации пользователя произошла ошибка",
-          error
-        )
-      );
-    }
-  };
-
-  login: RequestHandler<void, LoginUserResponse, LoginUserBody, void> = async (
+  getUser: RequestHandler<void, GetUserResponse, void, void> = async (
     req,
     res,
     next
   ) => {
     try {
-      const { refreshToken, ...userData } = await userService.login(
-        req.body.email,
-        req.body.password
-      );
-      this.#setRefreshCookie(res, refreshToken);
+      const userId = req.user.id;
 
-      res.status(200).json(userData);
+      const user = await userService.getOneDetailedUser(userId);
+
+      res.status(200).json(user);
     } catch (error) {
       next(
         ApiError.setDefaultMessage(
-          "При входе в аккаунт произошла ошибка",
+          "При получении данных пользователя произошла ошибка",
           error
         )
       );
     }
   };
 
-  logout: RequestHandler<void, void, void, void> = async (req, res, next) => {
-    try {
-      const { refreshToken } = req.cookies as { refreshToken: string };
-      await userService.logout(refreshToken);
-      res.clearCookie("refreshToken");
+  updateUser: RequestHandler<void, UpdateUserResponse, UpdateUserBody, void> =
+    async (req, res, next) => {
+      try {
+        const userId = req.user.id;
 
-      res.status(200).end();
-    } catch (error) {
-      next(
-        ApiError.setDefaultMessage(
-          "При выходе из аккаунта произошла ошибка",
-          error
-        )
-      );
-    }
-  };
+        const user = await userService.updateUser(userId, req.body);
 
-  refresh: RequestHandler<void, RefreshUserResponse, void, void> = async (
-    req,
-    res,
-    next
-  ) => {
-    try {
-      const { refreshToken: cookieRefreshToken } = req.cookies as {
-        refreshToken: string;
-      };
-      const { refreshToken, ...userData } = await userService.refresh(
-        cookieRefreshToken
-      );
-      this.#setRefreshCookie(res, refreshToken);
-
-      res.status(200).json(userData);
-    } catch (error) {
-      next(
-        ApiError.setDefaultMessage(
-          "При обновлении токена произошла ошибка",
-          error
-        )
-      );
-    }
-  };
-
-  activate: RequestHandler<{ link: string }, void, void, void> = async (
-    req,
-    res,
-    next
-  ) => {
-    try {
-      await userService.activate(req.params.link);
-
-      res.redirect("/");
-    } catch (error) {
-      next(
-        ApiError.setDefaultMessage(
-          "При активации аккаунта произошла ошибка",
-          error
-        )
-      );
-    }
-  };
+        res.status(200).json(user);
+      } catch (error) {
+        next(
+          ApiError.setDefaultMessage(
+            "При обновлении данных пользователя произошла ошибка",
+            error
+          )
+        );
+      }
+    };
 
   createAddress: RequestHandler<
     void,
@@ -150,7 +70,9 @@ class UserController {
     void
   > = async (req, res, next) => {
     try {
-      const address = await userService.createAddress(req.body);
+      const userId = req.user.id;
+
+      const address = await userService.createAddress(userId, req.body);
 
       res.status(200).json(address);
     } catch (error) {
@@ -163,6 +85,25 @@ class UserController {
     }
   };
 
+  getAddress: RequestHandler<{ id: string }, GetAddressResponse, void, void> =
+    async (req, res, next) => {
+      try {
+        const userId = req.user.id;
+        const addressId = parseAppInt(req.params.id);
+
+        const address = await userService.getOneAddress(userId, addressId);
+
+        res.status(200).json(address);
+      } catch (error) {
+        next(
+          ApiError.setDefaultMessage(
+            "При получении адреса произошла ошибка",
+            error
+          )
+        );
+      }
+    };
+
   updateAddress: RequestHandler<
     { id: string },
     UpdateAddressResponse,
@@ -170,9 +111,14 @@ class UserController {
     void
   > = async (req, res, next) => {
     try {
+      const userId = req.user.id;
       const addressId = parseAppInt(req.params.id);
 
-      const address = await userService.updateAddress(addressId, req.body);
+      const address = await userService.updateAddress(
+        userId,
+        addressId,
+        req.body
+      );
 
       res.status(200).json(address);
     } catch (error) {
@@ -191,9 +137,10 @@ class UserController {
     next
   ) => {
     try {
+      const userId = req.user.id;
       const addressId = parseAppInt(req.params.id);
 
-      await userService.deleteAddress(addressId);
+      await userService.deleteAddress(userId, addressId);
 
       res.status(200).end();
     } catch (error) {

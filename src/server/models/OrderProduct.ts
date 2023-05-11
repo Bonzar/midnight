@@ -10,10 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import type {
-  ModelAttr,
-  ModelAttributesWithSelectedAssociations,
-} from "../helpers/modelHelpers";
+import type { ModelAttr } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { OrderCreationAttributes, OrderAttributes } from "./Order";
 import { Order } from "./Order";
@@ -37,15 +34,18 @@ interface OrderProductAssociationsAttributes {
 export type OrderProductCreationAttributes = Optional<
   Omit<OrderProductAttributes, "id">,
   never
-> & {
-  order?: OrderCreationAttributes;
-  product?: ProductCreationAttributes;
-};
+>;
+
+interface OrderProductCreationAssociationsAttributes {
+  order: OrderCreationAttributes;
+  product: ProductCreationAttributes;
+}
 
 @Table
 export class OrderProduct extends Model<
   OrderProductAttributes,
-  OrderProductCreationAttributes
+  OrderProductCreationAttributes &
+    Partial<OrderProductCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -80,22 +80,10 @@ export class OrderProduct extends Model<
   product!: Product;
 }
 
-export type OrderProductAttributesWithAssociations<
-  Associations extends keyof Omit<
-    OrderProductAssociationsAttributes,
-    keyof NestedAssociate
-  >,
-  NestedAssociate extends Partial<OrderProductAssociationsAttributes> = {}
-> = ModelAttributesWithSelectedAssociations<
-  OrderProductAttributes,
-  OrderProductAssociationsAttributes,
-  Associations,
-  NestedAssociate
->;
-
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<OrderProduct>>,
   NotUndefined<OrderProductAttributes>,
   NotUndefined<OrderProductCreationAttributes>,
-  NotUndefined<OrderProductAssociationsAttributes>
+  NotUndefined<OrderProductAssociationsAttributes>,
+  NotUndefined<OrderProductCreationAssociationsAttributes>
 >();

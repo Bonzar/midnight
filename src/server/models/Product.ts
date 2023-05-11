@@ -72,7 +72,7 @@ export interface ProductAttributes {
   categoryId: Product["categoryId"];
 }
 
-export interface ProductAssociationsAttributes {
+interface ProductAssociationsAttributes {
   category: CategoryAttributes;
   productImages: ProductImageAttributes[];
   productMetas: ProductMetaAttributes[];
@@ -89,34 +89,36 @@ export interface ProductAssociationsAttributes {
 export type ProductCreationAttributes = Optional<
   Omit<ProductAttributes, "id">,
   "description" | "discount" | "stock"
-> & {
-  category?: CategoryCreationAttributes;
-  productImages?: Omit<
+>;
+
+interface ProductCreationAssociationsAttributes {
+  category: CategoryCreationAttributes;
+  productImages: Omit<
     ProductImageCreationAttributes,
     "productId" | "product"
   >[];
-  productMetas?: Omit<ProductMetaCreationAttributes, "productId" | "product">[];
-  orders?: OrderCreationAttributes[];
-  baskets?: BasketCreationAttributes[];
-  wishlist?: WishlistCreationAttributes[];
-  orderProducts?: Omit<
+  productMetas: Omit<ProductMetaCreationAttributes, "productId" | "product">[];
+  orders: OrderCreationAttributes[];
+  baskets: BasketCreationAttributes[];
+  wishlist: WishlistCreationAttributes[];
+  orderProducts: Omit<
     OrderProductCreationAttributes,
     "productId" | "product"
   >[];
-  wishlistProducts?: Omit<
+  wishlistProducts: Omit<
     WishlistProductCreationAttributes,
     "productId" | "product"
   >[];
-  basketProducts?: Omit<
+  basketProducts: Omit<
     BasketProductCreationAttributes,
     "productId" | "product"
   >[];
-};
+}
 
 @Table
 export class Product extends Model<
   ProductAttributes,
-  ProductCreationAttributes
+  ProductCreationAttributes & Partial<ProductCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -202,5 +204,6 @@ exhaustiveModelCheck<
   NotUndefined<ModelAttr<Product>>,
   NotUndefined<ProductAttributes>,
   NotUndefined<ProductCreationAttributes>,
-  NotUndefined<ProductAssociationsAttributes>
+  NotUndefined<ProductAssociationsAttributes>,
+  NotUndefined<ProductCreationAssociationsAttributes>
 >();

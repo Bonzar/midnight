@@ -35,15 +35,18 @@ interface BasketCouponAssociationsAttributes {
 export type BasketCouponCreationAttributes = Optional<
   Omit<BasketCouponAttributes, "id">,
   never
-> & {
-  basket?: BasketCreationAttributes;
-  coupon?: CouponCreationAttributes;
-};
+>;
+
+interface BasketCouponCreationAssociationsAttributes {
+  basket: BasketCreationAttributes;
+  coupon: CouponCreationAttributes;
+}
 
 @Table
 export class BasketCoupon extends Model<
   BasketCouponAttributes,
-  BasketCouponCreationAttributes
+  BasketCouponCreationAttributes &
+    Partial<BasketCouponCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -86,5 +89,6 @@ exhaustiveModelCheck<
   NotUndefined<ModelAttr<BasketCoupon>>,
   NotUndefined<BasketCouponAttributes>,
   NotUndefined<BasketCouponCreationAttributes>,
-  NotUndefined<BasketCouponAssociationsAttributes>
+  NotUndefined<BasketCouponAssociationsAttributes>,
+  NotUndefined<BasketCouponCreationAssociationsAttributes>
 >();

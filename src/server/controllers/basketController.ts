@@ -13,7 +13,6 @@ import type {
   BasketCouponAttributes,
   BasketCouponAttributesWithAssociations,
 } from "../models/BasketCoupon";
-import { parseAppInt } from "../../helpers/parseAppInt";
 import type { BasketAttributesWithAssociations } from "../models/Basket";
 import type { ProductAttributesWithAssociations } from "../models/Product";
 
@@ -50,23 +49,26 @@ export type AddBasketCouponResponse = BasketCouponAttributes;
 export type DeleteBasketCouponBody = { basketId: number; couponId: number };
 
 class BasketController {
-  getBasket: RequestHandler<{ id: string }, GetBasketResponse, void, void> =
-    async (req, res, next) => {
-      try {
-        const basketId = parseAppInt(req.params.id);
+  getBasket: RequestHandler<void, GetBasketResponse, void, void> = async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const userId = req.user.id;
 
-        const basket = await basketService.getOneBasket(basketId);
+      const basket = await basketService.getOneDetailedBasket(userId);
 
-        res.status(200).json(basket);
-      } catch (error) {
-        next(
-          ApiError.setDefaultMessage(
-            "При получении корзины произошла ошибка",
-            error
-          )
-        );
-      }
-    };
+      res.status(200).json(basket);
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          "При получении корзины произошла ошибка",
+          error
+        )
+      );
+    }
+  };
 
   addProduct: RequestHandler<
     void,
@@ -75,7 +77,12 @@ class BasketController {
     void
   > = async (req, res, next) => {
     try {
-      const basketProductNote = await basketService.addProduct(req.body);
+      const userId = req.user.id;
+
+      const basketProductNote = await basketService.addProduct(
+        userId,
+        req.body
+      );
 
       res.status(200).json(basketProductNote);
     } catch (error) {
@@ -95,7 +102,12 @@ class BasketController {
     void
   > = async (req, res, next) => {
     try {
-      const basketProductNote = await basketService.updateProduct(req.body);
+      const userId = req.user.id;
+
+      const basketProductNote = await basketService.updateProduct(
+        userId,
+        req.body
+      );
 
       res.status(200).json(basketProductNote);
     } catch (error) {
@@ -111,10 +123,9 @@ class BasketController {
   deleteProduct: RequestHandler<void, void, DeleteBasketProductBody, void> =
     async (req, res, next) => {
       try {
-        await basketService.deleteProduct(
-          req.body.basketId,
-          req.body.productId
-        );
+        const userId = req.user.id;
+
+        await basketService.deleteProduct(userId, req.body.productId);
 
         res.status(200).end();
       } catch (error) {
@@ -134,8 +145,10 @@ class BasketController {
     void
   > = async (req, res, next) => {
     try {
+      const userId = req.user.id;
+
       const basketCouponNote = await basketService.addCoupon(
-        req.body.basketId,
+        userId,
         req.body.couponId
       );
 
@@ -153,7 +166,9 @@ class BasketController {
   deleteCoupon: RequestHandler<void, void, DeleteBasketCouponBody, void> =
     async (req, res, next) => {
       try {
-        await basketService.deleteCoupon(req.body.basketId, req.body.couponId);
+        const userId = req.user.id;
+
+        await basketService.deleteCoupon(userId, req.body.couponId);
 
         res.status(200).end();
       } catch (error) {

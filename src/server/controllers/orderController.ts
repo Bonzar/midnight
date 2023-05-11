@@ -31,7 +31,9 @@ class OrderController {
   create: RequestHandler<void, CreateOrderResponse, CreateOrderBody, void> =
     async (req, res, next) => {
       try {
-        const order = await orderService.create(req.body);
+        const userId = req.user.id;
+
+        const order = await orderService.create(userId, req.body);
 
         res.status(200).json(order);
       } catch (error) {
@@ -50,9 +52,10 @@ class OrderController {
     next
   ) => {
     try {
+      const userId = req.user.id;
       const orderId = parseAppInt(req.params.id);
 
-      const order = await orderService.getOne(orderId);
+      const order = await orderService.getOneOrder(userId, orderId);
 
       res.status(200).json(order);
     } catch (error) {
@@ -72,6 +75,8 @@ class OrderController {
     AllAsString<GetAllOrdersQuery>
   > = async (req, res, next) => {
     try {
+      const userId = req.user.id;
+
       let limit;
       if (req.query.limit) {
         limit = parseAppInt(req.query.limit);
@@ -83,6 +88,7 @@ class OrderController {
       }
 
       const orders = await orderService.getAll(
+        userId,
         req.query.status as OrderAttributes["status"],
         limit,
         page
@@ -106,9 +112,10 @@ class OrderController {
     void
   > = async (req, res, next) => {
     try {
+      const userId = req.user.id;
       const orderId = parseAppInt(req.params.id);
 
-      const order = await orderService.update(orderId, req.body);
+      const order = await orderService.update(userId, orderId, req.body);
 
       res.status(200).json(order);
     } catch (error) {
@@ -127,9 +134,10 @@ class OrderController {
     next
   ) => {
     try {
+      const userId = req.user.id;
       const orderId = parseAppInt(req.params.id);
 
-      await orderService.delete(orderId);
+      await orderService.delete(userId, orderId);
 
       res.status(200).end();
     } catch (error) {

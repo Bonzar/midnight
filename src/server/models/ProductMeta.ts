@@ -11,10 +11,7 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type {
-  ModelAttr,
-  ModelAttributesWithSelectedAssociations,
-} from "../helpers/modelHelpers";
+import type { ModelAttr } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { ProductCreationAttributes, ProductAttributes } from "./Product";
 import { Product } from "./Product";
@@ -34,14 +31,17 @@ interface ProductMetaAssociationsAttributes {
 export type ProductMetaCreationAttributes = Optional<
   Omit<ProductMetaAttributes, "id">,
   never
-> & {
-  product?: ProductCreationAttributes;
-};
+>;
+
+interface ProductMetaCreationAssociationsAttributes {
+  product: ProductCreationAttributes;
+}
 
 @Table
 export class ProductMeta extends Model<
   ProductMetaAttributes,
-  ProductMetaCreationAttributes
+  ProductMetaCreationAttributes &
+    Partial<ProductMetaCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -69,22 +69,10 @@ export class ProductMeta extends Model<
   product!: Product;
 }
 
-export type ProductMetaAttributesWithAssociations<
-  Associations extends keyof Omit<
-    ProductMetaAssociationsAttributes,
-    keyof NestedAssociate
-  >,
-  NestedAssociate extends Partial<ProductMetaAssociationsAttributes> = {}
-> = ModelAttributesWithSelectedAssociations<
-  ProductMetaAttributes,
-  ProductMetaAssociationsAttributes,
-  Associations,
-  NestedAssociate
->;
-
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<ProductMeta>>,
   NotUndefined<ProductMetaAttributes>,
   NotUndefined<ProductMetaCreationAttributes>,
-  NotUndefined<ProductMetaAssociationsAttributes>
+  NotUndefined<ProductMetaAssociationsAttributes>,
+  NotUndefined<ProductMetaCreationAssociationsAttributes>
 >();

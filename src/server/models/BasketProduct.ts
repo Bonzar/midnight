@@ -36,15 +36,18 @@ interface BasketProductAssociationsAttributes {
 export type BasketProductCreationAttributes = Optional<
   Omit<BasketProductAttributes, "id">,
   never
-> & {
-  basket?: BasketCreationAttributes;
-  product?: ProductCreationAttributes;
-};
+>;
+
+interface BasketProductCreationAssociationsAttributes {
+  basket: BasketCreationAttributes;
+  product: ProductCreationAttributes;
+}
 
 @Table
 export class BasketProduct extends Model<
   BasketProductAttributes,
-  BasketProductCreationAttributes
+  BasketProductCreationAttributes &
+    Partial<BasketProductCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -90,5 +93,6 @@ exhaustiveModelCheck<
   NotUndefined<ModelAttr<BasketProduct>>,
   NotUndefined<BasketProductAttributes>,
   NotUndefined<BasketProductCreationAttributes>,
-  NotUndefined<BasketProductAssociationsAttributes>
+  NotUndefined<BasketProductAssociationsAttributes>,
+  NotUndefined<BasketProductCreationAssociationsAttributes>
 >();

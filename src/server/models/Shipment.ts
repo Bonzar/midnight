@@ -11,10 +11,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import type {
-  ModelAttr,
-  ModelAttributesWithSelectedAssociations,
-} from "../helpers/modelHelpers";
+import type { ModelAttr } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
@@ -40,15 +37,17 @@ interface ShipmentAssociationsAttributes {
 export type ShipmentCreationAttributes = Optional<
   Omit<ShipmentAttributes, "id">,
   "address"
-> & {
-  order?: Omit<OrderCreationAttributes, "shipmentId" | "shipment">;
-  shipmentType?: ShipmentTypeCreationAttributes;
-};
+>;
+
+interface ShipmentCreationAssociationsAttributes {
+  order: Omit<OrderCreationAttributes, "shipmentId" | "shipment">;
+  shipmentType: ShipmentTypeCreationAttributes;
+}
 
 @Table
 export class Shipment extends Model<
   ShipmentAttributes,
-  ShipmentCreationAttributes
+  ShipmentCreationAttributes & Partial<ShipmentCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -72,22 +71,10 @@ export class Shipment extends Model<
   shipmentType!: ShipmentType;
 }
 
-export type ShipmentAttributesWithAssociations<
-  Associations extends keyof Omit<
-    ShipmentAssociationsAttributes,
-    keyof NestedAssociate
-  >,
-  NestedAssociate extends Partial<ShipmentAssociationsAttributes> = {}
-> = ModelAttributesWithSelectedAssociations<
-  ShipmentAttributes,
-  ShipmentAssociationsAttributes,
-  Associations,
-  NestedAssociate
->;
-
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Shipment>>,
   NotUndefined<ShipmentAttributes>,
   NotUndefined<ShipmentCreationAttributes>,
-  NotUndefined<ShipmentAssociationsAttributes>
+  NotUndefined<ShipmentAssociationsAttributes>,
+  NotUndefined<ShipmentCreationAssociationsAttributes>
 >();

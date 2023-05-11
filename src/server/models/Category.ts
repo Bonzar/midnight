@@ -38,19 +38,21 @@ interface CategoryAssociationsAttributes {
 export type CategoryCreationAttributes = Optional<
   Omit<CategoryAttributes, "id">,
   "parentCategoryId"
-> & {
-  parentCategory?: CategoryCreationAttributes;
-  childCategories?: Omit<
+>;
+
+interface CategoryCreationAssociationsAttributes {
+  parentCategory: CategoryCreationAttributes;
+  childCategories: Omit<
     CategoryCreationAttributes,
     "parentCategoryId" | "parentCategory"
   >[];
-  products?: Omit<ProductCreationAttributes, "categoryId" | "category">[];
-};
+  products: Omit<ProductCreationAttributes, "categoryId" | "category">[];
+}
 
 @Table
 export class Category extends Model<
   CategoryAttributes,
-  CategoryCreationAttributes
+  CategoryCreationAttributes & Partial<CategoryCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -115,5 +117,6 @@ exhaustiveModelCheck<
   NotUndefined<ModelAttr<Category>>,
   NotUndefined<CategoryAttributes>,
   NotUndefined<CategoryCreationAttributes>,
-  NotUndefined<CategoryAssociationsAttributes>
+  NotUndefined<CategoryAssociationsAttributes>,
+  NotUndefined<CategoryCreationAssociationsAttributes>
 >();

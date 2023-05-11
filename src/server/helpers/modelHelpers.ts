@@ -19,10 +19,17 @@ export type ModelCheckType<T> = {
 
 // Check keys equals and fields containing array equals
 export const exhaustiveModelCheck = <
-  ModelAttr extends ModelCheckType<Attr> & ModelCheckType<AssocAttr>,
+  ModelAttr extends ModelCheckType<Attr> &
+    ModelCheckType<AssocAttr> &
+    ModelCheckType<CreationAttr> &
+    ModelCheckType<CreationAssocAttr>,
   Attr extends Omit<ModelCheckType<ModelAttr>, keyof AssocAttr>,
-  CreationAttr extends ModelCheckType<Omit<ModelAttr, "id">>,
-  AssocAttr extends Omit<ModelCheckType<ModelAttr>, keyof Attr>
+  CreationAttr extends Omit<ModelCheckType<ModelAttr>, keyof AssocAttr | "id">,
+  AssocAttr extends Omit<ModelCheckType<ModelAttr>, keyof Attr>,
+  CreationAssocAttr extends Omit<
+    ModelCheckType<ModelAttr>,
+    keyof CreationAttr | "id"
+  >
 >() => {};
 
 export type ModelAttributesWithSelectedAssociations<

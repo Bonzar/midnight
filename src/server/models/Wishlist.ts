@@ -44,19 +44,21 @@ interface WishlistAssociationsAttributes {
 export type WishlistCreationAttributes = Optional<
   Omit<WishlistAttributes, "id">,
   never
-> & {
-  user?: Omit<UserCreationAttributes, "wishlist">;
-  products?: ProductCreationAttributes[];
-  wishlistProducts?: Omit<
+>;
+
+interface WishlistCreationAssociationsAttributes {
+  user: Omit<UserCreationAttributes, "wishlist">;
+  products: ProductCreationAttributes[];
+  wishlistProducts: Omit<
     WishlistProductCreationAttributes,
     "wishlistId" | "wishlist"
   >[];
-};
+}
 
 @Table
 export class Wishlist extends Model<
   WishlistAttributes,
-  WishlistCreationAttributes
+  WishlistCreationAttributes & Partial<WishlistCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -96,5 +98,6 @@ exhaustiveModelCheck<
   NotUndefined<ModelAttr<Wishlist>>,
   NotUndefined<WishlistAttributes>,
   NotUndefined<WishlistCreationAttributes>,
-  NotUndefined<WishlistAssociationsAttributes>
+  NotUndefined<WishlistAssociationsAttributes>,
+  NotUndefined<WishlistCreationAssociationsAttributes>
 >();

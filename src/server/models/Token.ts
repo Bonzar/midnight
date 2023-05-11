@@ -12,10 +12,7 @@ import {
 import type { Optional } from "sequelize";
 import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
-import type {
-  ModelAttr,
-  ModelAttributesWithSelectedAssociations,
-} from "../helpers/modelHelpers";
+import type { ModelAttr } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { NotUndefined } from "../../../types/types";
 
@@ -32,12 +29,17 @@ interface TokenAssociationsAttributes {
 export type TokenCreationAttributes = Optional<
   Omit<TokenAttributes, "id">,
   never
-> & {
-  user?: UserCreationAttributes;
-};
+>;
+
+interface TokenCreationAssociationsAttributes {
+  user: UserCreationAttributes;
+}
 
 @Table
-export class Token extends Model<TokenAttributes, TokenCreationAttributes> {
+export class Token extends Model<
+  TokenAttributes,
+  TokenCreationAttributes & Partial<TokenCreationAssociationsAttributes>
+> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -57,22 +59,10 @@ export class Token extends Model<TokenAttributes, TokenCreationAttributes> {
   user!: User;
 }
 
-export type TokenAttributesWithAssociations<
-  Associations extends keyof Omit<
-    TokenAssociationsAttributes,
-    keyof NestedAssociate
-  >,
-  NestedAssociate extends Partial<TokenAssociationsAttributes> = {}
-> = ModelAttributesWithSelectedAssociations<
-  TokenAttributes,
-  TokenAssociationsAttributes,
-  Associations,
-  NestedAssociate
->;
-
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Token>>,
   NotUndefined<TokenAttributes>,
   NotUndefined<TokenCreationAttributes>,
-  NotUndefined<TokenAssociationsAttributes>
+  NotUndefined<TokenAssociationsAttributes>,
+  NotUndefined<TokenCreationAssociationsAttributes>
 >();

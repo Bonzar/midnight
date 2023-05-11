@@ -13,10 +13,7 @@ import {
 import type { Optional } from "sequelize";
 import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
-import type {
-  ModelAttr,
-  ModelAttributesWithSelectedAssociations,
-} from "../helpers/modelHelpers";
+import type { ModelAttr } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import { DataTypes } from "sequelize";
 import type { NotUndefined } from "../../../types/types";
@@ -38,14 +35,16 @@ interface AddressAssociationsAttributes {
 export type AddressCreationAttributes = Optional<
   Omit<AddressAttributes, "id">,
   "flat"
-> & {
-  user?: UserCreationAttributes;
-};
+>;
+
+interface AddressCreationAssociationsAttributes {
+  user: UserCreationAttributes;
+}
 
 @Table
 export class Address extends Model<
   AddressAttributes,
-  AddressCreationAttributes
+  AddressCreationAttributes & Partial<AddressCreationAssociationsAttributes>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -86,22 +85,10 @@ export class Address extends Model<
   user!: User;
 }
 
-export type AddressAttributesWithAssociations<
-  Associations extends keyof Omit<
-    AddressAssociationsAttributes,
-    keyof NestedAssociate
-  >,
-  NestedAssociate extends Partial<AddressAssociationsAttributes> = {}
-> = ModelAttributesWithSelectedAssociations<
-  AddressAttributes,
-  AddressAssociationsAttributes,
-  Associations,
-  NestedAssociate
->;
-
 exhaustiveModelCheck<
   NotUndefined<ModelAttr<Address>>,
   NotUndefined<AddressAttributes>,
   NotUndefined<AddressCreationAttributes>,
-  NotUndefined<AddressAssociationsAttributes>
+  NotUndefined<AddressAssociationsAttributes>,
+  NotUndefined<AddressCreationAssociationsAttributes>
 >();

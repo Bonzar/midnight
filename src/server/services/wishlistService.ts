@@ -3,34 +3,36 @@ import { Wishlist } from "../models/Wishlist";
 import { Product } from "../models/Product";
 import { ProductImage } from "../models/ProductImage";
 import { ApiError } from "../error/ApiError";
+import { sequelize } from "../database";
 
 class WishlistService {
-  private checkIdsPresent(
-    wishlistId: number,
-    productId: number,
-    messageAction: string
-  ) {
-    if (typeof productId === "undefined" || typeof wishlistId === "undefined") {
+  private async getOneWishlist(userId: number) {
+    if (!userId) {
       throw ApiError.badRequest(
-        `Для ${messageAction} не был предоставлен ID: ${[
-          typeof productId === "undefined" && "товара",
-          typeof wishlistId === "undefined" && "списка желаний",
-        ]
-          .filter(Boolean)
-          .join(", ")}`
+        "Для получения списка желаний не был предоставлен ID пользователя"
       );
     }
+
+    const wishlist = await Wishlist.findOne({ where: { userId } });
+
+    if (!wishlist) {
+      throw ApiError.badRequest(
+        `Список желаний с id пользователя - ${userId} не найден`
+      );
+    }
+
+    return wishlist;
   }
 
-  async getOneWishlist(id: number) {
-    if (!id) {
+  public async getOneDetailedWishlist(userId: number) {
+    if (!userId) {
       throw ApiError.badRequest(
-        "Для получения списка желаний не был предоставлен ID"
+        "Для получения списка желаний не был предоставлен ID пользователя"
       );
     }
 
     const wishlist = await Wishlist.findOne({
-      where: { id },
+      where: { userId },
       include: [
         {
           model: WishlistProduct,
@@ -47,28 +49,47 @@ class WishlistService {
     });
 
     if (!wishlist) {
-      throw ApiError.badRequest(`Список желаний с id - ${id} не найден`);
+      throw ApiError.badRequest(
+        `Список желаний с id пользователя - ${userId} не найден`
+      );
     }
 
     return wishlist;
   }
 
-  async addProduct(wishlistId: number, productId: number) {
-    this.checkIdsPresent(
-      wishlistId,
-      productId,
-      "добавления товара в список желаний"
-    );
+  public async addProduct(userId: number, productId: number) {
+    if (typeof productId === "undefined" || typeof userId === "undefined") {
+      throw ApiError.badRequest(
+        `Для добавления товара в список желаний не был предоставлен ID: ${[
+          typeof productId === "undefined" && "товара",
+          typeof userId === "undefined" && "пользователя",
+        ]
+          .filter(Boolean)
+          .join(", ")}`
+      );
+    }
 
-    return await WishlistProduct.create({ wishlistId, productId });
+    return await sequelize.transaction(async () => {
+      const wishlist = await this.getOneWishlist(userId);
+
+      return await WishlistProduct.create({
+        wishlistId: wishlist.id,
+        productId,
+      });
+    });
   }
 
-  async getOneProduct(wishlistId: number, productId: number) {
-    this.checkIdsPresent(
-      wishlistId,
-      productId,
-      "получения товара из списка желаний"
-    );
+  private async getOneProduct(wishlistId: number, productId: number) {
+    if (typeof productId === "undefined" || typeof wishlistId === "undefined") {
+      throw ApiError.badRequest(
+        `Для получения товара из списка желаний не был предоставлен ID: ${[
+          typeof productId === "undefined" && "товара",
+          typeof wishlistId === "undefined" && "списка желаний",
+        ]
+          .filter(Boolean)
+          .join(", ")}`
+      );
+    }
 
     const wishlistProductNote = await WishlistProduct.findOne({
       where: { productId, wishlistId },
@@ -83,10 +104,17 @@ class WishlistService {
     return wishlistProductNote;
   }
 
-  async deleteProduct(wishlistId: number, productId: number) {
-    const wishlistProductNote = await this.getOneProduct(wishlistId, productId);
+  public async deleteProduct(userId: number, productId: number) {
+    return await sequelize.transaction(async () => {
+      const wishlist = await this.getOneWishlist(userId);
 
-    return await wishlistProductNote.destroy();
+      const wishlistProductNote = await this.getOneProduct(
+        wishlist.id,
+        productId
+      );
+
+      return await wishlistProductNote.destroy();
+    });
   }
 }
 

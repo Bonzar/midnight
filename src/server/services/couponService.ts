@@ -104,6 +104,10 @@ class CouponService {
       }
     }
 
+    if (total < 0) {
+      total = 0;
+    }
+
     return total;
   }
 }
