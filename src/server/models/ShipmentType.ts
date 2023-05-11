@@ -11,13 +11,17 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type {
   ShipmentAttributes,
   ShipmentCreationAttributes,
 } from "./Shipment";
 import { Shipment } from "./Shipment";
+import type { NotUndefined } from "../../../types/types";
 
 interface ShipmentTypeBaseAttributes {
   id: ShipmentType["id"];
@@ -26,7 +30,7 @@ interface ShipmentTypeBaseAttributes {
 }
 
 interface ShipmentTypeAssociationsAttributes {
-  shipments: ShipmentAttributes;
+  shipments: ShipmentAttributes[];
 }
 
 export type ShipmentTypeCreationAttributes = Optional<
@@ -36,7 +40,7 @@ export type ShipmentTypeCreationAttributes = Optional<
   shipments?: Omit<
     ShipmentCreationAttributes,
     "shipmentTypeId" | "shipmentType"
-  >;
+  >[];
 };
 
 @Table
@@ -72,9 +76,21 @@ export class ShipmentType extends Model<
 export type ShipmentTypeAttributes = ShipmentTypeBaseAttributes &
   Partial<ShipmentTypeAssociationsAttributes>;
 
-keysCheck<ModelKeys<ShipmentType>, keyof ShipmentTypeAttributes>();
-keysCheck<ShipmentTypeAttributes, keyof ModelKeys<ShipmentType>>();
-keysCheck<
-  ShipmentTypeCreationAttributes,
-  keyof Omit<ModelKeys<ShipmentType>, "id">
+export type ShipmentTypeAttributesWithAssociations<
+  Associations extends keyof Omit<
+    ShipmentTypeAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<ShipmentTypeAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  ShipmentTypeAttributes,
+  ShipmentTypeAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<ShipmentType>>,
+  NotUndefined<ShipmentTypeAttributes>,
+  NotUndefined<ShipmentTypeCreationAttributes>
 >();

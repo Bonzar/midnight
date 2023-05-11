@@ -13,8 +13,11 @@ import {
   Is,
   HasMany,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type {
   OrderCouponAttributes,
   OrderCouponCreationAttributes,
@@ -23,6 +26,7 @@ import { OrderCoupon } from "./OrderCoupon";
 import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import { DataTypes } from "sequelize";
+import type { NotUndefined } from "../../../types/types";
 
 interface CouponBaseAttributes {
   id: Coupon["id"];
@@ -33,8 +37,8 @@ interface CouponBaseAttributes {
   expiresCount: Coupon["expiresCount"];
 }
 
-interface CouponAssociationAttributes {
-  orders: OrderAttributes[];
+interface CouponAssociationsAttributes {
+  orders: Array<OrderAttributes & { OrderCoupon: OrderCouponAttributes }>;
   orderCoupons: OrderCouponAttributes[];
 }
 
@@ -111,8 +115,23 @@ export class Coupon extends Model<
 }
 
 export type CouponAttributes = CouponBaseAttributes &
-  Partial<CouponAssociationAttributes>;
+  Partial<CouponAssociationsAttributes>;
 
-keysCheck<ModelKeys<Coupon>, keyof CouponAttributes>();
-keysCheck<CouponAttributes, keyof ModelKeys<Coupon>>();
-keysCheck<CouponCreationAttributes, keyof Omit<ModelKeys<Coupon>, "id">>();
+export type CouponAttributesWithAssociations<
+  Associations extends keyof Omit<
+    CouponAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<CouponAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  CouponAttributes,
+  CouponAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<Coupon>>,
+  NotUndefined<CouponAttributes>,
+  NotUndefined<CouponCreationAttributes>
+>();

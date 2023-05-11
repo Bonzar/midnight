@@ -12,8 +12,11 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { UserCreationAttributes, UserAttributes } from "./User";
 import { User } from "./User";
 import type { ProductCreationAttributes, ProductAttributes } from "./Product";
@@ -30,17 +33,20 @@ import type {
   BasketCouponCreationAttributes,
 } from "./BasketCoupon";
 import { BasketCoupon } from "./BasketCoupon";
+import type { NotUndefined } from "../../../types/types";
 
 interface BasketBaseAttributes {
   id: Basket["id"];
   userId: Basket["userId"];
 }
 
-interface BasketAssociationsAttributes {
+export interface BasketAssociationsAttributes {
   user: UserAttributes;
-  products: ProductAttributes[];
+  products: Array<
+    ProductAttributes & { BasketProduct: BasketProductAttributes }
+  >;
   basketProducts: BasketProductAttributes[];
-  coupons: CouponAttributes[];
+  coupons: Array<CouponAttributes & { BasketCoupon: BasketCouponAttributes }>;
   basketCoupons: BasketCouponAttributes[];
 }
 
@@ -93,6 +99,21 @@ export class Basket extends Model<
 export type BasketAttributes = BasketBaseAttributes &
   Partial<BasketAssociationsAttributes>;
 
-keysCheck<ModelKeys<Basket>, keyof BasketAttributes>();
-keysCheck<BasketAttributes, keyof ModelKeys<Basket>>();
-keysCheck<BasketCreationAttributes, keyof Omit<ModelKeys<Basket>, "id">>();
+export type BasketAttributesWithAssociations<
+  Associations extends keyof Omit<
+    BasketAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<BasketAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  BasketAttributes,
+  BasketAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<Basket>>,
+  NotUndefined<BasketAttributes>,
+  NotUndefined<BasketCreationAttributes>
+>();

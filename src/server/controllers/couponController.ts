@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { Coupon } from "../models/Coupon";
+import type { CouponAttributesWithAssociations } from "../models/Coupon";
 import { ApiError } from "../error/ApiError";
 import type {
   CreateCouponData,
@@ -9,29 +9,31 @@ import { couponService } from "../services/couponService";
 import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateCouponBody = CreateCouponData;
+export type CreateCouponResponse = CouponAttributesWithAssociations<never>;
+
+export type GetAllCouponsResponse = CouponAttributesWithAssociations<never>[];
+
 export type UpdateCouponBody = UpdateCouponData;
+export type UpdateCouponResponse = CouponAttributesWithAssociations<never>;
 
 class CouponController {
-  create: RequestHandler<void, Coupon, CreateCouponBody, void> = async (
-    req,
-    res,
-    next
-  ) => {
-    try {
-      const coupon = await couponService.create(req.body);
+  create: RequestHandler<void, CreateCouponResponse, CreateCouponBody, void> =
+    async (req, res, next) => {
+      try {
+        const coupon = await couponService.create(req.body);
 
-      res.status(200).json(coupon);
-    } catch (error) {
-      next(
-        ApiError.setDefaultMessage(
-          "При создании промокода произошла ошибка",
-          error
-        )
-      );
-    }
-  };
+        res.status(200).json(coupon);
+      } catch (error) {
+        next(
+          ApiError.setDefaultMessage(
+            "При создании промокода произошла ошибка",
+            error
+          )
+        );
+      }
+    };
 
-  getAll: RequestHandler<void, Coupon[], void, void> = async (
+  getAll: RequestHandler<void, GetAllCouponsResponse, void, void> = async (
     req,
     res,
     next
@@ -50,23 +52,27 @@ class CouponController {
     }
   };
 
-  update: RequestHandler<{ id: string }, Coupon, UpdateCouponBody, void> =
-    async (req, res, next) => {
-      try {
-        const couponId = parseAppInt(req.params.id);
+  update: RequestHandler<
+    { id: string },
+    UpdateCouponResponse,
+    UpdateCouponBody,
+    void
+  > = async (req, res, next) => {
+    try {
+      const couponId = parseAppInt(req.params.id);
 
-        const coupon = await couponService.update(couponId, req.body);
+      const coupon = await couponService.update(couponId, req.body);
 
-        res.status(200).json(coupon);
-      } catch (error) {
-        next(
-          ApiError.setDefaultMessage(
-            `При обновлении промокода с id - ${req.params.id} произошла ошибка`,
-            error
-          )
-        );
-      }
-    };
+      res.status(200).json(coupon);
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          `При обновлении промокода с id - ${req.params.id} произошла ошибка`,
+          error
+        )
+      );
+    }
+  };
 
   delete: RequestHandler<{ id: string }, void, void, void> = async (
     req,

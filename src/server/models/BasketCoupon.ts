@@ -10,12 +10,16 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { BasketAttributes, BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
 import type { CouponAttributes, CouponCreationAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
+import type { NotUndefined } from "../../../types/types";
 
 interface BasketCouponBaseAttributes {
   id: BasketCoupon["id"];
@@ -68,9 +72,21 @@ export class BasketCoupon extends Model<
 export type BasketCouponAttributes = BasketCouponBaseAttributes &
   Partial<BasketCouponAssociationsAttributes>;
 
-keysCheck<ModelKeys<BasketCoupon>, keyof BasketCouponAttributes>();
-keysCheck<BasketCouponAttributes, keyof ModelKeys<BasketCoupon>>();
-keysCheck<
-  BasketCouponCreationAttributes,
-  keyof Omit<ModelKeys<BasketCoupon>, "id">
+export type BasketCouponAttributesWithAssociations<
+  Associations extends keyof Omit<
+    BasketCouponAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<BasketCouponAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  BasketCouponAttributes,
+  BasketCouponAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<BasketCoupon>>,
+  NotUndefined<BasketCouponAttributes>,
+  NotUndefined<BasketCouponCreationAttributes>
 >();

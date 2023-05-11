@@ -1,6 +1,5 @@
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
-import type { Product } from "../models/Product";
 import { parseAppInt } from "../../helpers/parseAppInt";
 import type {
   CreateProductData,
@@ -8,12 +7,33 @@ import type {
 } from "../services/productService";
 import { productService } from "../services/productService";
 import type { AllAsString } from "../../../types/types";
+import type { ProductAttributesWithAssociations } from "../models/Product";
+import type { CategoryAttributesWithAssociations } from "../models/Category";
+import type { ProductImageAttributesWithAssociations } from "../models/ProductImage";
+import type { ProductMetaAttributesWithAssociations } from "../models/ProductMeta";
 
 export type CreateProductBody = CreateProductData;
+export type CreateProductResponse = ProductAttributesWithAssociations<never>;
 
 export type UpdateProductBody = UpdateProductData;
+export type UpdateProductResponse = ProductAttributesWithAssociations<never>;
 
-export type GetAllProductsResponse = { rows: Product[]; count: number };
+export type GetProductResponse = ProductAttributesWithAssociations<
+  never,
+  {
+    category: CategoryAttributesWithAssociations<never>;
+    productImages: ProductImageAttributesWithAssociations<never>[];
+    productMetas: ProductMetaAttributesWithAssociations<never>[];
+  }
+>;
+
+export type GetAllProductsResponse = {
+  rows: ProductAttributesWithAssociations<
+    never,
+    { productImages: ProductImageAttributesWithAssociations<never>[] }
+  >[];
+  count: number;
+};
 export type GetAllProductsQuery = {
   categoryId?: number;
   limit?: number;
@@ -21,26 +41,23 @@ export type GetAllProductsQuery = {
 };
 
 class ProductController {
-  create: RequestHandler<void, Product, CreateProductBody, void> = async (
-    req,
-    res,
-    next
-  ) => {
-    try {
-      const newProduct = await productService.create(req.body);
+  create: RequestHandler<void, CreateProductResponse, CreateProductBody, void> =
+    async (req, res, next) => {
+      try {
+        const newProduct = await productService.create(req.body);
 
-      return res.json(newProduct);
-    } catch (error) {
-      next(
-        ApiError.setDefaultMessage(
-          "При создании товара произошла ошибка",
-          error
-        )
-      );
-    }
-  };
+        return res.json(newProduct);
+      } catch (error) {
+        next(
+          ApiError.setDefaultMessage(
+            "При создании товара произошла ошибка",
+            error
+          )
+        );
+      }
+    };
 
-  get: RequestHandler<{ id: string }, Product, void, void> = async (
+  get: RequestHandler<{ id: string }, GetProductResponse, void, void> = async (
     req,
     res,
     next
@@ -96,23 +113,27 @@ class ProductController {
     }
   };
 
-  update: RequestHandler<{ id: string }, Product, UpdateProductBody, void> =
-    async (req, res, next) => {
-      try {
-        const productId = parseAppInt(req.params.id);
+  update: RequestHandler<
+    { id: string },
+    UpdateProductResponse,
+    UpdateProductBody,
+    void
+  > = async (req, res, next) => {
+    try {
+      const productId = parseAppInt(req.params.id);
 
-        const updatedProduct = await productService.update(productId, req.body);
+      const updatedProduct = await productService.update(productId, req.body);
 
-        return res.json(updatedProduct);
-      } catch (error) {
-        next(
-          ApiError.setDefaultMessage(
-            `При обновлении товара с id - ${req.params.id} произошла ошибка`,
-            error
-          )
-        );
-      }
-    };
+      return res.json(updatedProduct);
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          `При обновлении товара с id - ${req.params.id} произошла ошибка`,
+          error
+        )
+      );
+    }
+  };
 
   delete: RequestHandler<{ id: string }, void, void, void> = async (
     req,

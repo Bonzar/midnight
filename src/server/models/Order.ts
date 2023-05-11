@@ -13,8 +13,11 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
 import type {
@@ -37,6 +40,7 @@ import type {
 } from "./Shipment";
 import { Shipment } from "./Shipment";
 import { DataTypes } from "sequelize";
+import type { NotUndefined } from "../../../types/types";
 
 interface OrderBaseAttributes {
   id: Order["id"];
@@ -49,11 +53,11 @@ interface OrderBaseAttributes {
   userId: Order["userId"];
 }
 
-interface OrderAssociationAttributes {
+interface OrderAssociationsAttributes {
   user: UserAttributes;
   shipment: ShipmentAttributes;
-  products: Array<ProductAttributes & OrderProductAttributes>;
-  coupons: CouponAttributes[];
+  products: Array<ProductAttributes & { OrderProduct: OrderProductAttributes }>;
+  coupons: Array<CouponAttributes & { OrderCoupon: OrderCouponAttributes }>;
   orderProducts: OrderProductAttributes[];
   orderCoupons: OrderCouponAttributes[];
 }
@@ -64,7 +68,7 @@ export type OrderCreationAttributes = Optional<
 > & {
   user?: UserCreationAttributes;
   shipment?: ShipmentCreationAttributes;
-  products?: Array<ProductCreationAttributes & OrderProductCreationAttributes>;
+  products?: ProductCreationAttributes[];
   coupons?: CouponCreationAttributes[];
   orderProducts?: Omit<OrderProductCreationAttributes, "orderId" | "order">[];
   orderCoupons?: Omit<OrderCouponCreationAttributes, "orderId" | "order">[];
@@ -98,8 +102,7 @@ export class Order extends Model<OrderBaseAttributes, OrderCreationAttributes> {
   @AllowNull(false)
   @Min(0)
   @Column
-  // calculate when order create
-  total!: number;
+  total!: number; // calculating on order create
 
   @AllowNull(false)
   @ForeignKey(() => User)
@@ -131,8 +134,23 @@ export class Order extends Model<OrderBaseAttributes, OrderCreationAttributes> {
 }
 
 export type OrderAttributes = OrderBaseAttributes &
-  Partial<OrderAssociationAttributes>;
+  Partial<OrderAssociationsAttributes>;
 
-keysCheck<ModelKeys<Order>, keyof OrderAttributes>();
-keysCheck<OrderAttributes, keyof ModelKeys<Order>>();
-keysCheck<OrderCreationAttributes, keyof Omit<ModelKeys<Order>, "id">>();
+export type OrderAttributesWithAssociations<
+  Associations extends keyof Omit<
+    OrderAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<OrderAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  OrderAttributes,
+  OrderAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<Order>>,
+  NotUndefined<OrderAttributes>,
+  NotUndefined<OrderCreationAttributes>
+>();

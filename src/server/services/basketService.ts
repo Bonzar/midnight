@@ -8,19 +8,13 @@ import { Coupon } from "../models/Coupon";
 import { ProductImage } from "../models/ProductImage";
 import { ApiError } from "../error/ApiError";
 
-export type GetBasketResult = {
-  basket: Basket;
-  total: number;
-  subtotal: number;
-};
-
 export type AddBasketProductData = BasketProductCreationAttributes;
 
 export type UpdateBasketProductData = Partial<BasketProductCreationAttributes> &
   Pick<BasketProductCreationAttributes, "basketId" | "productId">;
 
 class BasketService {
-  async getOneBasket(id: number): Promise<GetBasketResult> {
+  async getOneBasket(id: number) {
     if (!id) {
       throw ApiError.badRequest("Для получения корзины не был предоставлен ID");
     }

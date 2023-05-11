@@ -12,8 +12,12 @@ import {
 import type { Optional } from "sequelize";
 import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
+import type { NotUndefined } from "../../../types/types";
 
 interface TokenBaseAttributes {
   id: Token["id"];
@@ -56,6 +60,21 @@ export class Token extends Model<TokenBaseAttributes, TokenCreationAttributes> {
 export type TokenAttributes = TokenBaseAttributes &
   Partial<TokenAssociationsAttributes>;
 
-keysCheck<ModelKeys<Token>, keyof TokenAttributes>();
-keysCheck<TokenAttributes, keyof ModelKeys<Token>>();
-keysCheck<TokenCreationAttributes, keyof Omit<ModelKeys<Token>, "id">>();
+export type TokenAttributesWithAssociations<
+  Associations extends keyof Omit<
+    TokenAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<TokenAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  TokenAttributes,
+  TokenAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<Token>>,
+  NotUndefined<TokenAttributes>,
+  NotUndefined<TokenCreationAttributes>
+>();

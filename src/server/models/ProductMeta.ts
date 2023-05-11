@@ -11,10 +11,14 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { ProductCreationAttributes, ProductAttributes } from "./Product";
 import { Product } from "./Product";
+import type { NotUndefined } from "../../../types/types";
 
 interface ProductMetaBaseAttributes {
   id: ProductMeta["id"];
@@ -23,7 +27,7 @@ interface ProductMetaBaseAttributes {
   productId: ProductMeta["productId"];
 }
 
-interface ProductMetaAssociationAttributes {
+interface ProductMetaAssociationsAttributes {
   product: ProductAttributes;
 }
 
@@ -66,11 +70,23 @@ export class ProductMeta extends Model<
 }
 
 export type ProductMetaAttributes = ProductMetaBaseAttributes &
-  Partial<ProductMetaAssociationAttributes>;
+  Partial<ProductMetaAssociationsAttributes>;
 
-keysCheck<ModelKeys<ProductMeta>, keyof ProductMetaAttributes>();
-keysCheck<ProductMetaAttributes, keyof ModelKeys<ProductMeta>>();
-keysCheck<
-  ProductMetaCreationAttributes,
-  keyof Omit<ModelKeys<ProductMeta>, "id">
+export type ProductMetaAttributesWithAssociations<
+  Associations extends keyof Omit<
+    ProductMetaAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<ProductMetaAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  ProductMetaAttributes,
+  ProductMetaAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<ProductMeta>>,
+  NotUndefined<ProductMetaAttributes>,
+  NotUndefined<ProductMetaCreationAttributes>
 >();

@@ -1,6 +1,6 @@
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
-import type { ProductImage } from "../models/ProductImage";
+import type { ProductImageAttributesWithAssociations } from "../models/ProductImage";
 import { parseAppInt } from "../../helpers/parseAppInt";
 import type {
   UpdateProductImageData,
@@ -16,14 +16,21 @@ export interface CreateProductImageFormDataBody {
   sort?: number;
   description: string[];
 }
+export type CreateProductImageResponse =
+  ProductImageAttributesWithAssociations<never>[];
 
 export type UpdateProductImageBody = UpdateProductImageData;
+export type UpdateProductImageResponse =
+  ProductImageAttributesWithAssociations<never>;
+
 export type UpdateManyProductImageBody = UpdateManyProductImageData;
+export type UpdateManyProductImageResponse =
+  ProductImageAttributesWithAssociations<never>[];
 
 class ProductImageController {
   create: RequestHandler<
     void,
-    ProductImage[],
+    CreateProductImageResponse,
     AllAsString<CreateProductImageFormDataBody>,
     void
   > = async (req, res, next) => {
@@ -109,7 +116,7 @@ class ProductImageController {
 
   update: RequestHandler<
     { id: string },
-    ProductImage,
+    UpdateProductImageResponse,
     UpdateProductImageBody,
     void
   > = async (req, res, next) => {
@@ -134,7 +141,7 @@ class ProductImageController {
 
   updateMany: RequestHandler<
     void,
-    ProductImage[],
+    UpdateManyProductImageResponse,
     UpdateManyProductImageBody,
     void
   > = async (req, res, next) => {

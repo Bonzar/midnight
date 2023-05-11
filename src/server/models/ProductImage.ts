@@ -12,11 +12,15 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import { DataTypes } from "sequelize";
+import type { NotUndefined } from "../../../types/types";
 
 interface ProductImageBaseAttributes {
   id: ProductImage["id"];
@@ -26,7 +30,7 @@ interface ProductImageBaseAttributes {
   productId: ProductImage["productId"];
 }
 
-interface ProductImageAssociationAttributes {
+interface ProductImageAssociationsAttributes {
   product: ProductAttributes;
 }
 
@@ -75,11 +79,23 @@ export class ProductImage extends Model<
 }
 
 export type ProductImageAttributes = ProductImageBaseAttributes &
-  Partial<ProductImageAssociationAttributes>;
+  Partial<ProductImageAssociationsAttributes>;
 
-keysCheck<ModelKeys<ProductImage>, keyof ProductImageAttributes>();
-keysCheck<ProductImageAttributes, keyof ModelKeys<ProductImage>>();
-keysCheck<
-  ProductImageCreationAttributes,
-  keyof Omit<ModelKeys<ProductImage>, "id">
+export type ProductImageAttributesWithAssociations<
+  Associations extends keyof Omit<
+    ProductImageAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<ProductImageAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  ProductImageAttributes,
+  ProductImageAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<ProductImage>>,
+  NotUndefined<ProductImageAttributes>,
+  NotUndefined<ProductImageCreationAttributes>
 >();

@@ -10,12 +10,16 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { BasketAttributes, BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
 import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
+import type { NotUndefined } from "../../../types/types";
 
 interface BasketProductBaseAttributes {
   id: BasketProduct["id"];
@@ -72,9 +76,21 @@ export class BasketProduct extends Model<
 export type BasketProductAttributes = BasketProductBaseAttributes &
   Partial<BasketProductAssociationsAttributes>;
 
-keysCheck<ModelKeys<BasketProduct>, keyof BasketProductAttributes>();
-keysCheck<BasketProductAttributes, keyof ModelKeys<BasketProduct>>();
-keysCheck<
-  BasketProductCreationAttributes,
-  keyof Omit<ModelKeys<BasketProduct>, "id">
+export type BasketProductAttributesWithAssociations<
+  Associations extends keyof Omit<
+    BasketProductAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<BasketProductAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  BasketProductAttributes,
+  BasketProductAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<BasketProduct>>,
+  NotUndefined<BasketProductAttributes>,
+  NotUndefined<BasketProductCreationAttributes>
 >();

@@ -11,8 +11,11 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import type {
@@ -21,6 +24,7 @@ import type {
 } from "./ShipmentType";
 import { ShipmentType } from "./ShipmentType";
 import { DataTypes } from "sequelize";
+import type { NotUndefined } from "../../../types/types";
 
 interface ShipmentBaseAttributes {
   id: Shipment["id"];
@@ -71,6 +75,21 @@ export class Shipment extends Model<
 export type ShipmentAttributes = ShipmentBaseAttributes &
   Partial<ShipmentAssociationsAttributes>;
 
-keysCheck<ModelKeys<Shipment>, keyof ShipmentAttributes>();
-keysCheck<ShipmentAttributes, keyof ModelKeys<Shipment>>();
-keysCheck<ShipmentCreationAttributes, keyof Omit<ModelKeys<Shipment>, "id">>();
+export type ShipmentAttributesWithAssociations<
+  Associations extends keyof Omit<
+    ShipmentAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<ShipmentAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  ShipmentAttributes,
+  ShipmentAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<Shipment>>,
+  NotUndefined<ShipmentAttributes>,
+  NotUndefined<ShipmentCreationAttributes>
+>();

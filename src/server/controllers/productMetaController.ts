@@ -1,4 +1,4 @@
-import type { ProductMeta } from "../models/ProductMeta";
+import type { ProductMetaAttributesWithAssociations } from "../models/ProductMeta";
 import type { RequestHandler } from "express";
 import type {
   UpdateProductMetaData,
@@ -9,28 +9,37 @@ import { productMetaService } from "../services/productMetaService";
 import { parseAppInt } from "../../helpers/parseAppInt";
 
 export type CreateProductMetaBody = CreateProductMetaData;
+export type CreateProductMetaResponse =
+  ProductMetaAttributesWithAssociations<never>;
+
 export type UpdateProductMetaBody = UpdateProductMetaData;
+export type UpdateProductMetaResponse =
+  ProductMetaAttributesWithAssociations<never>;
 
 class ProductMetaController {
-  create: RequestHandler<void, ProductMeta, CreateProductMetaBody, void> =
-    async (req, res, next) => {
-      try {
-        const productMeta = await productMetaService.create(req.body);
+  create: RequestHandler<
+    void,
+    CreateProductMetaResponse,
+    CreateProductMetaBody,
+    void
+  > = async (req, res, next) => {
+    try {
+      const productMeta = await productMetaService.create(req.body);
 
-        res.status(200).json(productMeta);
-      } catch (error) {
-        next(
-          ApiError.setDefaultMessage(
-            "При создании товара произошла ошибка",
-            error
-          )
-        );
-      }
-    };
+      res.status(200).json(productMeta);
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          "При создании товара произошла ошибка",
+          error
+        )
+      );
+    }
+  };
 
   update: RequestHandler<
     { id: string },
-    ProductMeta,
+    UpdateProductMetaResponse,
     UpdateProductMetaBody,
     void
   > = async (req, res, next) => {

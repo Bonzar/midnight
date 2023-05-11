@@ -13,9 +13,13 @@ import {
 import type { Optional } from "sequelize";
 import type { UserAttributes, UserCreationAttributes } from "./User";
 import { User } from "./User";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import { DataTypes } from "sequelize";
+import type { NotUndefined } from "../../../types/types";
 
 interface AddressBaseAttributes {
   id: Address["id"];
@@ -85,6 +89,21 @@ export class Address extends Model<
 export type AddressAttributes = AddressBaseAttributes &
   Partial<AddressAssociationsAttributes>;
 
-keysCheck<ModelKeys<Address>, keyof AddressAttributes>();
-keysCheck<AddressAttributes, keyof ModelKeys<Address>>();
-keysCheck<AddressCreationAttributes, keyof Omit<ModelKeys<Address>, "id">>();
+export type AddressAttributesWithAssociations<
+  Associations extends keyof Omit<
+    AddressAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<AddressAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  AddressAttributes,
+  AddressAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<Address>>,
+  NotUndefined<AddressAttributes>,
+  NotUndefined<AddressCreationAttributes>
+>();

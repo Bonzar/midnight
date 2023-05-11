@@ -55,8 +55,12 @@ import type {
 } from "./WishlistProduct";
 import { WishlistProduct } from "./WishlistProduct";
 import { DataTypes } from "sequelize";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
+import type { NotUndefined } from "../../../types/types";
 
 interface ProductBaseAttributes {
   id: Product["id"];
@@ -68,13 +72,15 @@ interface ProductBaseAttributes {
   categoryId: Product["categoryId"];
 }
 
-interface ProductAssociationsAttributes {
+export interface ProductAssociationsAttributes {
   category: CategoryAttributes;
   productImages: ProductImageAttributes[];
   productMetas: ProductMetaAttributes[];
-  orders: OrderAttributes[];
-  baskets: BasketAttributes[];
-  wishlist: WishlistAttributes;
+  orders: Array<OrderAttributes & { OrderProduct: OrderProductAttributes }>;
+  baskets: Array<BasketAttributes & { BasketProduct: BasketProductAttributes }>;
+  wishlist: Array<
+    WishlistAttributes & { WishlistProduct: WishlistProductAttributes }
+  >;
   orderProducts: OrderProductAttributes[];
   wishlistProducts: WishlistProductAttributes[];
   basketProducts: BasketProductAttributes[];
@@ -92,7 +98,7 @@ export type ProductCreationAttributes = Optional<
   productMetas?: Omit<ProductMetaCreationAttributes, "productId" | "product">[];
   orders?: OrderCreationAttributes[];
   baskets?: BasketCreationAttributes[];
-  wishlist?: WishlistCreationAttributes;
+  wishlist?: WishlistCreationAttributes[];
   orderProducts?: Omit<
     OrderProductCreationAttributes,
     "productId" | "product"
@@ -173,7 +179,7 @@ export class Product extends Model<
   basketProducts!: BasketProduct[];
 
   @BelongsToMany(() => Wishlist, () => WishlistProduct)
-  wishlist!: Array<Basket & { WishlistProduct: WishlistProduct }>;
+  wishlist!: Array<Wishlist & { WishlistProduct: WishlistProduct }>;
 
   @HasMany(() => WishlistProduct)
   wishlistProducts!: WishlistProduct[];
@@ -182,6 +188,21 @@ export class Product extends Model<
 export type ProductAttributes = ProductBaseAttributes &
   Partial<ProductAssociationsAttributes>;
 
-keysCheck<ModelKeys<Product>, keyof ProductAttributes>();
-keysCheck<ProductAttributes, keyof ModelKeys<Product>>();
-keysCheck<ProductCreationAttributes, keyof Omit<ModelKeys<Product>, "id">>();
+export type ProductAttributesWithAssociations<
+  Associations extends keyof Omit<
+    ProductAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<ProductAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  ProductAttributes,
+  ProductAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<Product>>,
+  NotUndefined<ProductAttributes>,
+  NotUndefined<ProductCreationAttributes>
+>();

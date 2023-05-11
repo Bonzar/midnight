@@ -1,22 +1,59 @@
 import { ApiError } from "../error/ApiError";
 import type { RequestHandler } from "express";
-import type { BasketProduct } from "../models/BasketProduct";
+import type { BasketProductAttributesWithAssociations } from "../models/BasketProduct";
 import type {
   AddBasketProductData,
-  GetBasketResult,
   UpdateBasketProductData,
 } from "../services/basketService";
 import { basketService } from "../services/basketService";
-import type { BasketCoupon } from "../models/BasketCoupon";
+import type { BasketCouponAttributesWithAssociations } from "../models/BasketCoupon";
 import { parseAppInt } from "../../helpers/parseAppInt";
+import type { BasketAttributesWithAssociations } from "../models/Basket";
+import type { CouponAttributesWithAssociations } from "../models/Coupon";
+import type { ProductAttributesWithAssociations } from "../models/Product";
+import type { ProductImageAttributesWithAssociations } from "../models/ProductImage";
 
-export type GetBasketResponse = GetBasketResult;
+export type GetBasketResponse = {
+  basket: BasketAttributesWithAssociations<
+    never,
+    {
+      basketProducts: Array<
+        BasketProductAttributesWithAssociations<
+          never,
+          {
+            product: ProductAttributesWithAssociations<
+              never,
+              {
+                productImages: ProductImageAttributesWithAssociations<never>[];
+              }
+            >;
+          }
+        >
+      >;
+      basketCoupons: BasketCouponAttributesWithAssociations<
+        never,
+        { coupon: CouponAttributesWithAssociations<never> }
+      >[];
+    }
+  >;
+  total: number;
+  subtotal: number;
+};
 
 export type AddBasketProductBody = AddBasketProductData;
+export type AddBasketProductResponse =
+  BasketProductAttributesWithAssociations<never>;
+
 export type UpdateBasketProductBody = UpdateBasketProductData;
+export type UpdateBasketProductResponse =
+  BasketProductAttributesWithAssociations<never>;
+
 export type DeleteBasketProductBody = { basketId: number; productId: number };
 
 export type AddBasketCouponBody = { basketId: number; couponId: number };
+export type AddBasketCouponResponse =
+  BasketCouponAttributesWithAssociations<never>;
+
 export type DeleteBasketCouponBody = { basketId: number; couponId: number };
 
 class BasketController {
@@ -38,25 +75,29 @@ class BasketController {
       }
     };
 
-  addProduct: RequestHandler<void, BasketProduct, AddBasketProductBody, void> =
-    async (req, res, next) => {
-      try {
-        const basketProductNote = await basketService.addProduct(req.body);
+  addProduct: RequestHandler<
+    void,
+    AddBasketProductResponse,
+    AddBasketProductBody,
+    void
+  > = async (req, res, next) => {
+    try {
+      const basketProductNote = await basketService.addProduct(req.body);
 
-        res.status(200).json(basketProductNote);
-      } catch (error) {
-        next(
-          ApiError.setDefaultMessage(
-            "При добавлении товара в корзину произошла ошибка",
-            error
-          )
-        );
-      }
-    };
+      res.status(200).json(basketProductNote);
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          "При добавлении товара в корзину произошла ошибка",
+          error
+        )
+      );
+    }
+  };
 
   updateProduct: RequestHandler<
     void,
-    BasketProduct,
+    UpdateBasketProductResponse,
     UpdateBasketProductBody,
     void
   > = async (req, res, next) => {
@@ -93,24 +134,28 @@ class BasketController {
       }
     };
 
-  addCoupon: RequestHandler<void, BasketCoupon, AddBasketCouponBody, void> =
-    async (req, res, next) => {
-      try {
-        const basketCouponNote = await basketService.addCoupon(
-          req.body.basketId,
-          req.body.couponId
-        );
+  addCoupon: RequestHandler<
+    void,
+    AddBasketCouponResponse,
+    AddBasketCouponBody,
+    void
+  > = async (req, res, next) => {
+    try {
+      const basketCouponNote = await basketService.addCoupon(
+        req.body.basketId,
+        req.body.couponId
+      );
 
-        res.status(200).json(basketCouponNote);
-      } catch (error) {
-        next(
-          ApiError.setDefaultMessage(
-            "При применении промокода к корзине произошла ошибка",
-            error
-          )
-        );
-      }
-    };
+      res.status(200).json(basketCouponNote);
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          "При применении промокода к корзине произошла ошибка",
+          error
+        )
+      );
+    }
+  };
 
   deleteCoupon: RequestHandler<void, void, DeleteBasketCouponBody, void> =
     async (req, res, next) => {

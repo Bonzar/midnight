@@ -13,8 +13,11 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import { Address } from "./Address";
 import type { AddressCreationAttributes, AddressAttributes } from "./Address";
 import { Basket } from "./Basket";
@@ -30,6 +33,7 @@ import { DataTypes } from "sequelize";
 import bcrypt from "bcrypt";
 import type { TokenAttributes, TokenCreationAttributes } from "./Token";
 import { Token } from "./Token";
+import type { NotUndefined } from "../../../types/types";
 
 interface UserBaseAttributes {
   id: User["id"];
@@ -46,8 +50,8 @@ interface UserBaseAttributes {
 interface UserAssociationsAttributes {
   basket: BasketAttributes;
   wishlist: WishlistAttributes;
-  orders: OrderAttributes;
-  addresses: AddressAttributes;
+  orders: OrderAttributes[];
+  addresses: AddressAttributes[];
   token: TokenAttributes;
 }
 
@@ -145,6 +149,21 @@ export class User extends Model<UserBaseAttributes, UserCreationAttributes> {
 export type UserAttributes = UserBaseAttributes &
   Partial<UserAssociationsAttributes>;
 
-keysCheck<ModelKeys<User>, keyof UserAttributes>();
-keysCheck<UserAttributes, keyof ModelKeys<User>>();
-keysCheck<UserCreationAttributes, keyof Omit<ModelKeys<User>, "id">>();
+export type UserAttributesWithAssociations<
+  Associations extends keyof Omit<
+    UserAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<UserAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  UserAttributes,
+  UserAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<User>>,
+  NotUndefined<UserAttributes>,
+  NotUndefined<UserCreationAttributes>
+>();

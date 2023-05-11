@@ -10,12 +10,16 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { OrderCreationAttributes, OrderAttributes } from "./Order";
 import { Order } from "./Order";
 import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
+import type { NotUndefined } from "../../../types/types";
 
 interface OrderProductBaseAttributes {
   id: OrderProduct["id"];
@@ -25,7 +29,7 @@ interface OrderProductBaseAttributes {
   productId: OrderProduct["productId"];
 }
 
-interface OrderProductAssociationAttributes {
+interface OrderProductAssociationsAttributes {
   order: OrderAttributes;
   product: ProductAttributes;
 }
@@ -77,11 +81,23 @@ export class OrderProduct extends Model<
 }
 
 export type OrderProductAttributes = OrderProductBaseAttributes &
-  Partial<OrderProductAssociationAttributes>;
+  Partial<OrderProductAssociationsAttributes>;
 
-keysCheck<ModelKeys<OrderProduct>, keyof OrderProductAttributes>();
-keysCheck<OrderProductAttributes, keyof ModelKeys<OrderProduct>>();
-keysCheck<
-  OrderProductCreationAttributes,
-  keyof Omit<ModelKeys<OrderProduct>, "id">
+export type OrderProductAttributesWithAssociations<
+  Associations extends keyof Omit<
+    OrderProductAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<OrderProductAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  OrderProductAttributes,
+  OrderProductAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<OrderProduct>>,
+  NotUndefined<OrderProductAttributes>,
+  NotUndefined<OrderProductCreationAttributes>
 >();

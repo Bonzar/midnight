@@ -1,41 +1,58 @@
-import type { Wishlist } from "../models/Wishlist";
+import type { WishlistAttributesWithAssociations } from "../models/Wishlist";
 import type { RequestHandler } from "express";
 import { ApiError } from "../error/ApiError";
 import { wishlistService } from "../services/wishlistService";
 import { parseAppInt } from "../../helpers/parseAppInt";
-import type { WishlistProduct } from "../models/WishlistProduct";
+import type { WishlistProductAttributesWithAssociations } from "../models/WishlistProduct";
+import type { ProductAttributesWithAssociations } from "../models/Product";
+import type { ProductImageAttributesWithAssociations } from "../models/ProductImage";
+
+export type GetWishlistResponse = WishlistAttributesWithAssociations<
+  never,
+  {
+    wishlistProducts: WishlistProductAttributesWithAssociations<
+      never,
+      {
+        product: ProductAttributesWithAssociations<
+          never,
+          { productImages: ProductImageAttributesWithAssociations<never>[] }
+        >;
+      }
+    >[];
+  }
+>;
 
 export type AddWishlistProductBody = { wishlistId: number; productId: number };
+export type AddWishlistProductResponse =
+  WishlistProductAttributesWithAssociations<never>;
+
 export type DeleteWishlistProductBody = {
   wishlistId: number;
   productId: number;
 };
 
 class WishlistController {
-  getWishlist: RequestHandler<{ id: string }, Wishlist, void, void> = async (
-    req,
-    res,
-    next
-  ) => {
-    try {
-      const wishlistId = parseAppInt(req.params.id);
+  getWishlist: RequestHandler<{ id: string }, GetWishlistResponse, void, void> =
+    async (req, res, next) => {
+      try {
+        const wishlistId = parseAppInt(req.params.id);
 
-      const wishlist = await wishlistService.getOneWishlist(wishlistId);
+        const wishlist = await wishlistService.getOneWishlist(wishlistId);
 
-      res.status(200).json(wishlist);
-    } catch (error) {
-      next(
-        ApiError.setDefaultMessage(
-          "При получении списка желаний произошла ошибка",
-          error
-        )
-      );
-    }
-  };
+        res.status(200).json(wishlist);
+      } catch (error) {
+        next(
+          ApiError.setDefaultMessage(
+            "При получении списка желаний произошла ошибка",
+            error
+          )
+        );
+      }
+    };
 
   addProduct: RequestHandler<
     void,
-    WishlistProduct,
+    AddWishlistProductResponse,
     AddWishlistProductBody,
     void
   > = async (req, res, next) => {

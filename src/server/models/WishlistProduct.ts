@@ -9,8 +9,11 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type {
   WishlistAttributes,
   WishlistCreationAttributes,
@@ -18,6 +21,7 @@ import type {
 import { Wishlist } from "./Wishlist";
 import type { ProductCreationAttributes, ProductAttributes } from "./Product";
 import { Product } from "./Product";
+import type { NotUndefined } from "../../../types/types";
 
 interface WishlistProductBaseAttributes {
   id: WishlistProduct["id"];
@@ -68,9 +72,21 @@ export class WishlistProduct extends Model<
 export type WishlistProductAttributes = WishlistProductBaseAttributes &
   Partial<WishlistProductAssociationsAttributes>;
 
-keysCheck<ModelKeys<WishlistProduct>, keyof WishlistProductAttributes>();
-keysCheck<WishlistProductAttributes, keyof ModelKeys<WishlistProduct>>();
-keysCheck<
-  WishlistProductCreationAttributes,
-  keyof Omit<ModelKeys<WishlistProduct>, "id">
+export type WishlistProductAttributesWithAssociations<
+  Associations extends keyof Omit<
+    WishlistProductAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<WishlistProductAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  WishlistProductAttributes,
+  WishlistProductAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<WishlistProduct>>,
+  NotUndefined<WishlistProductAttributes>,
+  NotUndefined<WishlistProductCreationAttributes>
 >();

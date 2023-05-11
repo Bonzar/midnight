@@ -13,11 +13,15 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { ProductAttributes, ProductCreationAttributes } from "./Product";
 import { Product } from "./Product";
 import { DataTypes } from "sequelize";
+import type { NotUndefined } from "../../../types/types";
 
 interface CategoryBaseAttributes {
   id: Category["id"];
@@ -25,7 +29,7 @@ interface CategoryBaseAttributes {
   parentCategoryId: Category["parentCategoryId"];
 }
 
-interface CategoryAssociationAttributes {
+interface CategoryAssociationsAttributes {
   parentCategory: CategoryAttributes;
   childCategories: CategoryAttributes[];
   products: ProductAttributes[];
@@ -95,8 +99,23 @@ export class Category extends Model<
 }
 
 export type CategoryAttributes = CategoryBaseAttributes &
-  Partial<CategoryAssociationAttributes>;
+  Partial<CategoryAssociationsAttributes>;
 
-keysCheck<ModelKeys<Category>, keyof CategoryAttributes>();
-keysCheck<CategoryAttributes, keyof ModelKeys<Category>>();
-keysCheck<CategoryCreationAttributes, keyof Omit<ModelKeys<Category>, "id">>();
+export type CategoryAttributesWithAssociations<
+  Associations extends keyof Omit<
+    CategoryAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<CategoryAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  CategoryAttributes,
+  CategoryAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<Category>>,
+  NotUndefined<CategoryAttributes>,
+  NotUndefined<CategoryCreationAttributes>
+>();

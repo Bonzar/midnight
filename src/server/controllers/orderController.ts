@@ -1,5 +1,4 @@
 import type { RequestHandler } from "express";
-import type { Order } from "../models/Order";
 import { ApiError } from "../error/ApiError";
 import type {
   CreateOrderData,
@@ -7,13 +6,24 @@ import type {
 } from "../services/orderService";
 import { orderService } from "../services/orderService";
 import { parseAppInt } from "../../helpers/parseAppInt";
-import type { OrderAttributes } from "../models/Order";
+import type {
+  OrderAttributes,
+  OrderAttributesWithAssociations,
+} from "../models/Order";
 import type { AllAsString } from "../../../types/types";
 
 export type CreateOrderBody = CreateOrderData;
-export type UpdateOrderBody = UpdateOrderData;
+export type CreateOrderResponse = OrderAttributesWithAssociations<never>;
 
-export type GetAllOrdersResponse = { rows: Order[]; count: number };
+export type GetOneOrderResponse = OrderAttributesWithAssociations<never>;
+
+export type UpdateOrderBody = UpdateOrderData;
+export type UpdateOrderResponse = OrderAttributesWithAssociations<never>;
+
+export type GetAllOrdersResponse = {
+  rows: OrderAttributesWithAssociations<never>[];
+  count: number;
+};
 export type GetAllOrdersQuery = {
   status?: OrderAttributes["status"];
   limit?: number;
@@ -21,26 +31,23 @@ export type GetAllOrdersQuery = {
 };
 
 class OrderController {
-  create: RequestHandler<void, Order, CreateOrderBody, void> = async (
-    req,
-    res,
-    next
-  ) => {
-    try {
-      const order = await orderService.create(req.body);
+  create: RequestHandler<void, CreateOrderResponse, CreateOrderBody, void> =
+    async (req, res, next) => {
+      try {
+        const order = await orderService.create(req.body);
 
-      res.status(200).json(order);
-    } catch (error) {
-      next(
-        ApiError.setDefaultMessage(
-          "При создании заказа произошла ошибка",
-          error
-        )
-      );
-    }
-  };
+        res.status(200).json(order);
+      } catch (error) {
+        next(
+          ApiError.setDefaultMessage(
+            "При создании заказа произошла ошибка",
+            error
+          )
+        );
+      }
+    };
 
-  get: RequestHandler<{ id: string }, Order, void, void> = async (
+  get: RequestHandler<{ id: string }, GetOneOrderResponse, void, void> = async (
     req,
     res,
     next
@@ -95,11 +102,12 @@ class OrderController {
     }
   };
 
-  update: RequestHandler<{ id: string }, Order, UpdateOrderBody, void> = async (
-    req,
-    res,
-    next
-  ) => {
+  update: RequestHandler<
+    { id: string },
+    UpdateOrderResponse,
+    UpdateOrderBody,
+    void
+  > = async (req, res, next) => {
     try {
       const orderId = parseAppInt(req.params.id);
 

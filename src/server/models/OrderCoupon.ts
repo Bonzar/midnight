@@ -10,12 +10,16 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
-import type { ModelKeys } from "../helpers/exhaustiveModelCheck";
-import { keysCheck } from "../helpers/exhaustiveModelCheck";
+import type {
+  ModelAttr,
+  ModelAttributesWithSelectedAssociations,
+} from "../helpers/modelHelpers";
+import { exhaustiveModelCheck } from "../helpers/modelHelpers";
 import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
 import type { CouponCreationAttributes, CouponAttributes } from "./Coupon";
 import { Coupon } from "./Coupon";
+import type { NotUndefined } from "../../../types/types";
 
 interface OrderCouponBaseAttributes {
   id: OrderCoupon["id"];
@@ -23,7 +27,7 @@ interface OrderCouponBaseAttributes {
   couponId: OrderCoupon["couponId"];
 }
 
-interface OrderCouponAssociationAttributes {
+interface OrderCouponAssociationsAttributes {
   order: OrderAttributes;
   coupon: CouponAttributes;
 }
@@ -31,10 +35,13 @@ interface OrderCouponAssociationAttributes {
 export type OrderCouponCreationAttributes = Optional<
   Omit<OrderCouponBaseAttributes, "id">,
   never
-> & {
-  order?: OrderCreationAttributes;
-  coupon?: CouponCreationAttributes;
-};
+> &
+  Partial<OrderCouponCreationAssociationAttributes>;
+
+interface OrderCouponCreationAssociationAttributes {
+  order: OrderCreationAttributes;
+  coupon: CouponCreationAttributes;
+}
 
 @Table
 export class OrderCoupon extends Model<
@@ -66,11 +73,23 @@ export class OrderCoupon extends Model<
 }
 
 export type OrderCouponAttributes = OrderCouponBaseAttributes &
-  Partial<OrderCouponAssociationAttributes>;
+  Partial<OrderCouponAssociationsAttributes>;
 
-keysCheck<ModelKeys<OrderCoupon>, keyof OrderCouponAttributes>();
-keysCheck<OrderCouponAttributes, keyof ModelKeys<OrderCoupon>>();
-keysCheck<
-  OrderCouponCreationAttributes,
-  keyof Omit<ModelKeys<OrderCoupon>, "id">
+export type OrderCouponAttributesWithAssociations<
+  Associations extends keyof Omit<
+    OrderCouponAssociationsAttributes,
+    keyof NestedAssociate
+  >,
+  NestedAssociate extends Partial<OrderCouponAssociationsAttributes> = {}
+> = ModelAttributesWithSelectedAssociations<
+  OrderCouponAttributes,
+  OrderCouponAssociationsAttributes,
+  Associations,
+  NestedAssociate
+>;
+
+exhaustiveModelCheck<
+  NotUndefined<ModelAttr<OrderCoupon>>,
+  NotUndefined<OrderCouponAttributes>,
+  NotUndefined<OrderCouponCreationAttributes>
 >();

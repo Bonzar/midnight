@@ -7,7 +7,7 @@ import type {
   UserAuthData,
 } from "../services/userService";
 import { userService } from "../services/userService";
-import type { Address } from "../models/Address";
+import type { AddressAttributesWithAssociations } from "../models/Address";
 import { parseAppInt } from "../../helpers/parseAppInt";
 import { REFRESH_TOKEN_EXPIRES_DAYS } from "../../helpers/constants";
 import * as process from "process";
@@ -21,7 +21,10 @@ export type LoginUserResponse = Omit<UserAuthData, "refreshToken">;
 export type RefreshUserResponse = Omit<UserAuthData, "refreshToken">;
 
 export type CreateAddressBody = CreateAddressData;
+export type CreateAddressResponse = AddressAttributesWithAssociations<never>;
+
 export type UpdateAddressBody = UpdateAddressData;
+export type UpdateAddressResponse = AddressAttributesWithAssociations<never>;
 
 class UserController {
   #setRefreshCookie(res: Response, refreshToken: string) {
@@ -140,45 +143,29 @@ class UserController {
     }
   };
 
-  // todo delete
-  // check: RequestHandler<
-  //   void,
-  //   { accessToken: string; refreshToken: string },
-  //   void,
-  //   void
-  // > = async (req, res, next) => {
-  //   try {
-  //     const tokens = tokenService.generateTokens(req.user);
-  //     res.status(200).json(tokens);
-  //   } catch (error) {
-  //     next(
-  //       ApiError.setDefaultMessage(
-  //         "При получении токенов произошла ошибка",
-  //         error
-  //       )
-  //     );
-  //   }
-  // };
+  createAddress: RequestHandler<
+    void,
+    CreateAddressResponse,
+    CreateAddressBody,
+    void
+  > = async (req, res, next) => {
+    try {
+      const address = await userService.createAddress(req.body);
 
-  createAddress: RequestHandler<void, Address, CreateAddressBody, void> =
-    async (req, res, next) => {
-      try {
-        const address = await userService.createAddress(req.body);
-
-        res.status(200).json(address);
-      } catch (error) {
-        next(
-          ApiError.setDefaultMessage(
-            "При создании адреса произошла ошибка",
-            error
-          )
-        );
-      }
-    };
+      res.status(200).json(address);
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          "При создании адреса произошла ошибка",
+          error
+        )
+      );
+    }
+  };
 
   updateAddress: RequestHandler<
     { id: string },
-    Address,
+    UpdateAddressResponse,
     UpdateAddressBody,
     void
   > = async (req, res, next) => {

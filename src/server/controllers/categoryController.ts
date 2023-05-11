@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { Category } from "../models/Category";
+import type { CategoryAttributesWithAssociations } from "../models/Category";
 import { ApiError } from "../error/ApiError";
 import type {
   CreateCategoryData,
@@ -8,15 +8,26 @@ import type {
 import { categoryService } from "../services/categoryService";
 import { parseAppInt } from "../../helpers/parseAppInt";
 
+type NestedChildCategories = CategoryAttributesWithAssociations<
+  never,
+  { childCategories: NestedChildCategories[] }
+>;
+
 export type CreateCategoryBody = CreateCategoryData;
+export type CreateCategoryResponse = CategoryAttributesWithAssociations<never>;
+
+export type GetAllCategoriesResponse = NestedChildCategories[];
+
 export type UpdateCategoryBody = UpdateCategoryData;
+export type UpdateCategoryResponse = CategoryAttributesWithAssociations<never>;
 
 class CategoryController {
-  create: RequestHandler<void, Category, CreateCategoryBody, void> = async (
-    req,
-    res,
-    next
-  ) => {
+  create: RequestHandler<
+    void,
+    CreateCategoryResponse,
+    CreateCategoryBody,
+    void
+  > = async (req, res, next) => {
     try {
       const category = await categoryService.create(req.body);
 
@@ -31,7 +42,7 @@ class CategoryController {
     }
   };
 
-  getAll: RequestHandler<void, Category[], void, void> = async (
+  getAll: RequestHandler<void, GetAllCategoriesResponse, void, void> = async (
     req,
     res,
     next
@@ -50,26 +61,30 @@ class CategoryController {
     }
   };
 
-  update: RequestHandler<{ id: string }, Category, UpdateCategoryBody, void> =
-    async (req, res, next) => {
-      try {
-        const categoryId = parseAppInt(req.params.id);
+  update: RequestHandler<
+    { id: string },
+    UpdateCategoryResponse,
+    UpdateCategoryBody,
+    void
+  > = async (req, res, next) => {
+    try {
+      const categoryId = parseAppInt(req.params.id);
 
-        const updatedCategory = await categoryService.update(
-          categoryId,
-          req.body
-        );
+      const updatedCategory = await categoryService.update(
+        categoryId,
+        req.body
+      );
 
-        res.status(200).json(updatedCategory);
-      } catch (error) {
-        next(
-          ApiError.setDefaultMessage(
-            `При обновлении категории с id - ${req.params.id} произошла ошибка`,
-            error
-          )
-        );
-      }
-    };
+      res.status(200).json(updatedCategory);
+    } catch (error) {
+      next(
+        ApiError.setDefaultMessage(
+          `При обновлении категории с id - ${req.params.id} произошла ошибка`,
+          error
+        )
+      );
+    }
+  };
 
   delete: RequestHandler<{ id: string }, void, void, void> = async (
     req,
