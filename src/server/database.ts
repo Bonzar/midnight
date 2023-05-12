@@ -14,5 +14,6 @@ export const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     dialect: "mysql",
     models: [__dirname + "/models/*"],
+    logging: false,
   }
 );

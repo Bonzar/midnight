@@ -27,7 +27,27 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(
+        authApiSlice.endpoints.registration.matchFulfilled,
+        (state, { payload }) => {
+          if (!import.meta.env.SSR) {
+            localStorage.setItem("token", payload.accessToken);
+          }
+          state.data = payload.user;
+          state.isAuth = true;
+        }
+      )
+      .addMatcher(
         authApiSlice.endpoints.login.matchFulfilled,
+        (state, { payload }) => {
+          if (!import.meta.env.SSR) {
+            localStorage.setItem("token", payload.accessToken);
+          }
+          state.data = payload.user;
+          state.isAuth = true;
+        }
+      )
+      .addMatcher(
+        authApiSlice.endpoints.reLogin.matchFulfilled,
         (state, { payload }) => {
           if (!import.meta.env.SSR) {
             localStorage.setItem("token", payload.accessToken);
@@ -43,17 +63,7 @@ const userSlice = createSlice({
         return {
           isAuth: false,
         };
-      })
-      .addMatcher(
-        authApiSlice.endpoints.reLogin.matchFulfilled,
-        (state, { payload }) => {
-          if (!import.meta.env.SSR) {
-            localStorage.setItem("token", payload.accessToken);
-          }
-          state.data = payload.user;
-          state.isAuth = true;
-        }
-      );
+      });
   },
 });
 

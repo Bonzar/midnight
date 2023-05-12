@@ -3,10 +3,18 @@ import type {
   LoginUserBody,
   LoginUserResponse,
   RefreshUserResponse,
+  RegistrationUserBody,
+  RegistrationUserResponse,
 } from "../../../server/controllers/authController";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
+    registration: build.mutation<
+      RegistrationUserResponse,
+      RegistrationUserBody
+    >({
+      query: (body) => ({ url: "user/registration", method: "POST", body }),
+    }),
     login: build.mutation<LoginUserResponse, LoginUserBody>({
       query: (body) => ({ url: "user/login", method: "POST", body }),
     }),
@@ -19,5 +27,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useReLoginQuery, useLogoutMutation } =
-  authApiSlice;
+export const {
+  useLoginMutation,
+  useReLoginQuery,
+  useLogoutMutation,
+  useRegistrationMutation,
+} = authApiSlice;
