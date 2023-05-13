@@ -1,19 +1,33 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./apiSlice";
-import { userSliceReducer } from "./slices/userSlice";
-
-export const reducer = combineReducers({
-  user: userSliceReducer,
-  [apiSlice.reducerPath]: apiSlice.reducer,
-});
+import reducer from "./reducer";
 
 export const createStore = (preloadedState?: object) => {
-  return configureStore({
+  const store = configureStore({
     reducer,
     preloadedState,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(apiSlice.middleware),
   });
+
+  if (import.meta.hot) {
+    import.meta.hot.accept(["./reducer.ts", "./apiSlice.ts"], ([mod]) => {
+      if (!mod) return;
+      store.replaceReducer(combineReducers(mod.default as typeof reducer));
+    });
+    // import.meta.hot.accept("./apiSlice.ts", (mod) => {
+    //   if (!mod) return;
+    //   const newApiSlice = mod.default as typeof apiSlice;
+    //   store.replaceReducer(
+    //     combineReducers({
+    //       ...reducer,
+    //       [newApiSlice.reducerPath]: newApiSlice.reducer,
+    //     })
+    //   );
+    // });
+  }
+
+  return store;
 };
 
 export type AppStore = ReturnType<typeof createStore>;

@@ -1,8 +1,9 @@
 import type { AppStore } from "../store";
 import React from "react";
 import { createRoutesFromElements, Route } from "react-router-dom";
-import { App, appLoader } from "../App";
+import { App } from "../App";
 import { Login } from "../pages/Login/Login";
+import { appLoader } from "../AppLoader";
 
 export const getRoutes = (store: AppStore) =>
   createRoutesFromElements(

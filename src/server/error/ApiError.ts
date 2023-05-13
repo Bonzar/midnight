@@ -77,4 +77,8 @@ export class ApiError extends Error {
       this.#processErrors(errors)
     );
   }
+
+  static notFound(errors: unknown | unknown[] = []) {
+    return new ApiError(404, "Не найдено", this.#processErrors(errors));
+  }
 }

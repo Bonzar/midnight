@@ -13,12 +13,15 @@ import { Input } from "../../components/ui/Input";
 import { Label } from "../../components/ui/Label";
 import { useAppSelector } from "../../store/hooks";
 import { selectUser } from "../../store/slices/userSlice";
+import { useGetProductsQuery } from "../../store/slices/productsApiSlice";
 
 export const Login = () => {
   const [login, loginData] = useLoginMutation();
   const [logout, logoutData] = useLogoutMutation();
 
   const currentUser = useAppSelector(selectUser);
+
+  const { data } = useGetProductsQuery();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -96,6 +99,7 @@ export const Login = () => {
           </Text>
         </>
       )}
+      {JSON.stringify(data)}
     </div>
   );
 };

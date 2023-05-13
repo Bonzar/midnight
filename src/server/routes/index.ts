@@ -9,6 +9,7 @@ import { productRouter } from "./productRouter";
 import { basketRouter } from "./basketRouter";
 import { shipmentRouter } from "./shipmentRouter";
 import { wishlistRouter } from "./wishlistRouter";
+import { ApiError } from "../error/ApiError";
 
 const router = Router();
 
@@ -21,6 +22,6 @@ router.use("/basket", authMiddleware, basketRouter);
 router.use("/wishlist", authMiddleware, wishlistRouter);
 router.use("/shipment", shipmentRouter);
 
-router.use("/*", (req, res) => res.status(404).end());
+router.use("/*", (req, res, next) => next(ApiError.notFound()));
 
 export { router };
