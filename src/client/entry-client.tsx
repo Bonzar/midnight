@@ -13,7 +13,7 @@ const store = createStore(
 );
 delete window.__PRELOADED_STATE__; // Allow the passed state to be garbage-collected
 
-const FullApp = ({ routes }: { routes: RouteObject[] }) => (
+const getFullApp = (routes: RouteObject[]) => (
   <React.StrictMode>
     <ReduxProvider store={store}>
       <RouterProvider router={createBrowserRouter(routes)} />
@@ -28,7 +28,7 @@ if (import.meta.env.DEV && import.meta.hot) {
 
   // function that will render updated app
   const renderApp = (routes: RouteObject[]) => {
-    reactRoot.render(<FullApp routes={routes} />);
+    reactRoot.render(getFullApp(routes));
   };
 
   // get routes with passing callback for rerender on hmr change accept
@@ -38,5 +38,5 @@ if (import.meta.env.DEV && import.meta.hot) {
   renderApp(routes);
 } else {
   // render without (only router) HMR
-  hydrateRoot(container!, <FullApp routes={getRoutes(store)} />);
+  hydrateRoot(container!, getFullApp(getRoutes(store)));
 }
