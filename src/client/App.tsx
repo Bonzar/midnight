@@ -6,7 +6,8 @@ import { Outlet } from "react-router-dom";
 import { useReLoginQuery } from "./store/slices/authApiSlice";
 
 export const App = () => {
-  useReLoginQuery();
+  const isNoToken = import.meta.env.SSR || !localStorage.getItem("token");
+  useReLoginQuery(undefined, { skip: isNoToken });
 
   return (
     <Layout>

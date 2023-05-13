@@ -10,7 +10,7 @@ import {
 import type { StaticHandlerContext } from "react-router-dom/server";
 import { createStore } from "../client/store";
 import { Provider as ReduxProvider } from "react-redux";
-import { getRoutes } from "../client/routes";
+import { getRoutes } from "../client/routes/getRoutes";
 import type {
   Request as ExpressRequest,
   Response as ExpressResponse,

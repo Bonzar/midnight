@@ -1,13 +1,14 @@
-import type { AppStore } from "../store";
 import React from "react";
-import { createRoutesFromElements, Route } from "react-router-dom";
+import type { AppStore } from "../store";
 import { App } from "../App";
-import { Login } from "../pages/Login/Login";
 import { appLoader } from "../AppLoader";
+import { Login } from "../pages/Login/Login";
+import { createRoutesFromElements, Route } from "react-router-dom";
 
-export const getRoutes = (store: AppStore) =>
+export const routes = (store: AppStore) =>
   createRoutesFromElements(
     <Route path="/" loader={appLoader(store)} element={<App />}>
       <Route index element={<Login />} />
+      <Route path="login" element={<Login />} />
     </Route>
   );
