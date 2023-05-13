@@ -21,9 +21,9 @@
     "target": "ES2017",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "isolatedModules": true,
+    "isolatedModules": true
   },
-  "include": ["src/**/*", "types/*", "server.ts", "node_modules/vite/types/*"],
+  "include": ["src/**/*", "types/*", "server.ts"],
   "ts-node": {
     "transpileOnly": true,
     "compilerOptions": {
