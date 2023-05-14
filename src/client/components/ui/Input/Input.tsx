@@ -1,11 +1,13 @@
-import React from "react";
 import type { ElementType } from "react";
+import React from "react";
 import styles from "./input.module.css";
-import type { InheritableElementProps } from "../../types/PolymorphicComponent";
+import type {
+  ExtendableProps,
+  InheritableElementProps,
+} from "../../types/PolymorphicComponent";
 import type { TActiveColor } from "../../types/TColor";
 import type { TextProps } from "../Text";
 import { Text } from "../Text";
-import type { ExtendableProps } from "../../types/PolymorphicComponent";
 
 interface IInputProps {
   inputColor?: TActiveColor;
@@ -50,6 +52,7 @@ export const Input = ({
   const inputStyles = style ?? {};
   if (inputColor) {
     inputStyles.borderColor = `var(--${inputColor})`;
+    inputStyles.backgroundColor = `var(--${inputColor}-light)`;
   }
 
   return (

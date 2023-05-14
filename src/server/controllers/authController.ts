@@ -1,8 +1,8 @@
-import type { Response, RequestHandler } from "express";
+import type { RequestHandler, Response } from "express";
 import { ApiError } from "../error/ApiError";
+import type { CreateUserData, UserAuthData } from "../services/authService";
 import { authService } from "../services/authService";
 import { REFRESH_TOKEN_EXPIRES_DAYS } from "../../helpers/constants";
-import type { CreateUserData, UserAuthData } from "../services/authService";
 
 export type RegistrationUserBody = CreateUserData;
 export type RegistrationUserResponse = Omit<UserAuthData, "refreshToken">;
@@ -101,6 +101,15 @@ class AuthController {
 
       res.status(200).json(userData);
     } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        res.clearCookie("refreshToken", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+        });
+
+        return next(error);
+      }
+
       next(
         ApiError.setDefaultMessage(
           "При обновлении токена произошла ошибка",

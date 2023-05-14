@@ -56,7 +56,7 @@ export const Profile = () => {
         Аккаунт активирован?: {currentUser.data?.isActivated ? "Да" : "Нет"}
       </Text>
       <Indent size={3} />
-      <Button color="illicitPink" onClick={handleLogout}>
+      <Button btnColor="illicitPink" onClick={handleLogout}>
         Выйти
       </Button>
     </>

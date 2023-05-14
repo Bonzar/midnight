@@ -1,13 +1,15 @@
 import React from "react";
 import type { TActiveColor } from "../../types/TColor";
-import type { InheritableElementProps } from "../../types/PolymorphicComponent";
+import type {
+  ExtendableProps,
+  InheritableElementProps,
+} from "../../types/PolymorphicComponent";
 import buttonStyles from "./button.module.css";
 import type { TextProps } from "../Text";
 import { Text } from "../Text";
-import type { ExtendableProps } from "../../types/PolymorphicComponent";
 
 interface IButtonProps {
-  color: TActiveColor;
+  btnColor: TActiveColor;
 }
 
 type ButtonProps = ExtendableProps<
@@ -16,7 +18,7 @@ type ButtonProps = ExtendableProps<
 >;
 
 export const Button = ({
-  color,
+  btnColor,
   className,
   children,
   style,
@@ -24,8 +26,8 @@ export const Button = ({
 }: ButtonProps) => {
   const btnStyles = {
     ...style,
-    [`--primary-color`]: `var(--${color})`,
-    [`--secondary-color`]: `var(--${color}-light)`,
+    [`--primary-color`]: `var(--${btnColor})`,
+    [`--secondary-color`]: `var(--${btnColor}-light)`,
   } as React.CSSProperties;
 
   return (

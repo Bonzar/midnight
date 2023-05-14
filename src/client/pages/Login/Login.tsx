@@ -14,6 +14,7 @@ import { Label } from "../../components/ui/Label";
 import { useNavigate } from "react-router-dom";
 import { preventDefault } from "../../utils/react/preventDefault";
 import { useReLogin } from "../../hooks/useReLogin";
+import { Card } from "../../components/ui/Card";
 
 export const Login = () => {
   const { isSuccess, isLoading } = useReLogin();
@@ -60,7 +61,10 @@ export const Login = () => {
   }
 
   return (
-    <div className={styles.authBlock}>
+    <Card
+      className={styles.authBlock}
+      cardColor={isLoginPage ? "venusSlipperOrchid" : "tunicGreen"}
+    >
       <Text as="h1">{isLoginPage ? "Вход в аккаунт" : "Регистрация"}</Text>
       <form onSubmit={preventDefault(handleSubmit)}>
         <Label htmlFor="login-email" className={styles.loginLabel}>
@@ -76,7 +80,7 @@ export const Login = () => {
           type="email"
           placeholder="Введите email"
           autoComplete="email"
-          inputColor="embarrassed"
+          inputColor={isLoginPage ? "tunicGreen" : "venusSlipperOrchid"}
           className={styles.loginInput}
         />
         <Indent size={3} />
@@ -93,7 +97,7 @@ export const Login = () => {
           type="password"
           placeholder="Введите пароль"
           autoComplete="password"
-          inputColor="embarrassed"
+          inputColor={isLoginPage ? "tunicGreen" : "venusSlipperOrchid"}
           className={styles.loginInput}
         />
         <Indent size={4} />
@@ -103,7 +107,7 @@ export const Login = () => {
               Нет аккаунта,{" "}
               <Text
                 className={styles.haveAccountTextChangeBtn}
-                textColor="embarrassed"
+                textColor="tunicGreen"
                 onClick={() => setIsLoginPage(!isLoginPage)}
               >
                 зарегистрируйтесь
@@ -114,7 +118,7 @@ export const Login = () => {
               Есть аккаунт,{" "}
               <Text
                 className={styles.haveAccountTextChangeBtn}
-                textColor="embarrassed"
+                textColor="venusSlipperOrchid"
                 onClick={() => setIsLoginPage(!isLoginPage)}
               >
                 войдите
@@ -124,7 +128,7 @@ export const Login = () => {
           {isLoginPage ? (
             <Button
               type="submit"
-              color="illicitPink"
+              btnColor="tunicGreen"
               disabled={loginData.isLoading}
             >
               Войти
@@ -132,7 +136,7 @@ export const Login = () => {
           ) : (
             <Button
               type="submit"
-              color="yellowMellow"
+              btnColor="venusSlipperOrchid"
               disabled={registrationData.isLoading}
             >
               Зарегистрироваться
@@ -160,6 +164,6 @@ export const Login = () => {
           </Text>
         </>
       )}
-    </div>
+    </Card>
   );
 };

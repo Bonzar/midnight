@@ -56,6 +56,14 @@ const userSlice = createSlice({
           state.isAuth = true;
         }
       )
+      .addMatcher(
+        authApiSlice.endpoints.reLogin.matchRejected,
+        (state, { payload }) => {
+          if (!import.meta.env.SSR && payload?.status === 401) {
+            localStorage.removeItem("token");
+          }
+        }
+      )
       .addMatcher(authApiSlice.endpoints.logout.matchFulfilled, () => {
         if (!import.meta.env.SSR) {
           localStorage.removeItem("token");

@@ -1,8 +1,8 @@
 .input {
   padding: var(--indent-1) var(--indent-3);
   border-radius: var(--border-radius);
-  border: 1px solid var(--grey52);
-  background-color: hsl(0, 0%, 100%, 33%);
+  border: 1px solid var(--grey65);
+  background: var(--grey97) linear-gradient(hsl(0, 0%, 100%,70%), hsl(0, 0%, 100%,70%));
 }
 
 .input::placeholder {

@@ -30,8 +30,5 @@ export const List = ({ list }: IListProps) => {
   );
 };
 
-export type ListItemWithoutKey<C extends ElementType> = Omit<
-  ListItemProps<C>,
-  "as" | "key"
-> &
+export type ListItem<C extends ElementType> = Omit<ListItemProps<C>, "as"> &
   Required<Pick<ListItemProps<C>, "as">>;

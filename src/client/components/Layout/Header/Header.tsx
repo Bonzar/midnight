@@ -6,7 +6,7 @@ import { LayoutContainer } from "../LayoutContainer";
 import { Text } from "../../ui/Text";
 import { useAppSelector } from "../../../store/hooks";
 import { selectUser } from "../../../store/slices/userSlice";
-import type { ListItemWithoutKey } from "../../ui/List";
+import type { ListItem } from "../../ui/List";
 import { List } from "../../ui/List";
 import { Indent } from "../../ui/Indent";
 import { intersperse, mergeLeft } from "ramda";
@@ -48,16 +48,15 @@ export function Header() {
   ].map(mergeLeft({ as: NavLink }));
 
   const linksWithIndents = intersperse<
-    ListItemWithoutKey<typeof NavLink> | ListItemWithoutKey<typeof Indent>
+    Omit<ListItem<typeof NavLink>, "key"> | Omit<ListItem<typeof Indent>, "key">
   >(indent, links);
 
   const linksWithKeys = linksWithIndents.map((item, index, array) => {
     const key =
       "to" in item
         ? item.to.toString()
-        : (
-            array[index - 1] as ListItemWithoutKey<typeof NavLink>
-          ).to.toString() + "-indent";
+        : (array[index - 1] as ListItem<typeof NavLink>).to.toString() +
+          "-indent";
 
     return { ...item, key };
   });

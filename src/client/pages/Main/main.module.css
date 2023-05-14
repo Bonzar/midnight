@@ -1,3 +1,32 @@
 .main {
  text-align: center;
 }
+
+.productsList {
+ display: grid;
+ grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+ gap: var(--indent-5);
+}
+
+.productCard {
+ display: grid;
+ text-align: center;
+ height: 100%;
+ padding: var(--indent-5);
+}
+
+@media (--tablet-viewport) {
+  padding: var(--indent-4);
+}
+
+.priceBlock {
+ align-self: end;
+ display: flex;
+ flex-flow: row wrap;
+ justify-content: space-between;
+ align-items: center;
+}
+
+.priceBlock > * {
+ color: inherit;
+}

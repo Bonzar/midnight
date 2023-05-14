@@ -9,17 +9,11 @@ export const productsApiSlice = apiSlice.injectEndpoints({
     getProducts: build.query<GetAllProductsResponse, void>({
       query: () => "product",
     }),
-    getProduct: build.query<GetProductResponse, number>({
+    getDetailedProduct: build.query<GetProductResponse, number>({
       query: (id) => `product/${id}`,
-    }),
-    getAllProducts: build.mutation<GetAllProductsResponse, void>({
-      query: () => "product",
     }),
   }),
 });
 
-export const {
-  useGetProductsQuery,
-  useGetAllProductsMutation,
-  useGetProductQuery,
-} = productsApiSlice;
+export const { useGetProductsQuery, useGetDetailedProductQuery } =
+  productsApiSlice;
