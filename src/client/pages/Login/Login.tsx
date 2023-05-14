@@ -22,7 +22,7 @@ export const Login = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("../profile", { replace: true });
+      navigate("/profile", { replace: true });
     }
   }, [navigate, isSuccess]);
 
@@ -45,7 +45,7 @@ export const Login = () => {
           addresses: [],
         }).unwrap();
       }
-      navigate("/profile");
+      navigate("/");
     } catch {
       /* show error from data */
     }
