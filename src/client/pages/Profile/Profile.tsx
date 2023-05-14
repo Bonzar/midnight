@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useAppSelector } from "../../store/hooks";
 import { selectUser } from "../../store/slices/userSlice";
 import { Text } from "../../components/ui/Text";
@@ -9,17 +9,20 @@ import { useLogoutMutation } from "../../store/slices/authApiSlice";
 import { useReLogin } from "../../hooks/useReLogin";
 
 export const Profile = () => {
-  const { isLoading } = useReLogin();
-  const currentUser = useAppSelector(selectUser);
-  const [logout] = useLogoutMutation();
+  const { isLoading, isUninitialized } = useReLogin();
   const navigate = useNavigate();
 
-  if (isLoading) {
-    return (
-      <Text as="div" textSize={0}>
-        Загрузка...
-      </Text>
-    );
+  useEffect(() => {
+    if (isUninitialized) {
+      navigate("../login", { replace: true });
+    }
+  }, [navigate, isUninitialized]);
+
+  const currentUser = useAppSelector(selectUser);
+  const [logout] = useLogoutMutation();
+
+  if (isUninitialized || isLoading) {
+    return null;
   }
 
   if (!currentUser.isAuth) {
