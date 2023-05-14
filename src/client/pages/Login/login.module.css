@@ -17,6 +17,28 @@
 .buttons {
   display: flex;
   flex-flow: row wrap;
-  justify-content: flex-start;
+  justify-content: flex-end;
   gap: var(--indent-3);
+  align-items: center;
 }
+
+.haveAccountText {
+  margin-right: auto;
+}
+
+.haveAccountTextChangeBtn {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (pointer: fine) {
+  .haveAccountTextChangeBtn {
+    text-decoration: initial;
+  }
+
+  .haveAccountTextChangeBtn:hover {
+    text-decoration: underline;
+  }
+}
+
+

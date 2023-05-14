@@ -14,13 +14,15 @@ class MailService {
     },
   });
 
-  async sendActivationMail(toEmail: string, linkId: string) {
-    const url = `${process.env.API_URL}/api/user/activate/${linkId}`;
+  async sendActivationMail(toEmail: string, activationLink: string) {
+    const encodedLink = encodeURIComponent(activationLink);
+
+    const url = `${process.env.VITE_API_URL}/api/user/activate/${encodedLink}`;
 
     await this.transporter.sendMail({
       from: process.env.SMTP_USER,
       to: toEmail,
-      subject: "Активация аккаунта на " + process.env.API_URL,
+      subject: "Активация аккаунта на " + process.env.VITE_API_URL,
       html: `
         <div>
           <h1>Для активации аккаунта перейдите по ссылке</h1>

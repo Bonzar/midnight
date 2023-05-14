@@ -95,12 +95,14 @@ class AuthService {
     return await tokenService.removeToken(refreshToken);
   }
 
-  public async activate(activationLink: string) {
-    if (!activationLink) {
+  public async activate(encodedActivationLink: string) {
+    if (!encodedActivationLink) {
       throw ApiError.badRequest(
         "Для активации аккаунта не была предоставлена ссылка активации"
       );
     }
+
+    const activationLink = decodeURIComponent(encodedActivationLink);
 
     const user = await User.findOne({ where: { password: activationLink } });
 
