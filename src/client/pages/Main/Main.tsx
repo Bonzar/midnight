@@ -33,10 +33,10 @@ export const Main = () => {
   return (
     <div className={styles.productsList}>
       {products.rows.map((product) => (
-        <Link to={`${product.id}`} key={product.id}>
+        <Link to={`products/${product.id}`} key={product.id}>
           <Card cardColor="venusSlipperOrchid" className={styles.productCard}>
             <img
-              src={"static/productImages/" + product.productImages[0].url}
+              src={"/static/productImages/" + product.productImages[0].url}
               alt={product.productImages[0].description}
             />
             <Indent size={3} />

@@ -1,0 +1,74 @@
+import React from "react";
+import styles from "./product.module.css";
+import { Text } from "../../components/ui/Text";
+import { useParams } from "react-router-dom";
+import { useGetDetailedProductQuery } from "../../store/slices/productsApiSlice";
+import { parseAppInt } from "../../../helpers/parseAppInt";
+import { Indent } from "../../components/ui/Indent";
+import { Button } from "../../components/ui/Button";
+import { preventDefault } from "../../utils/react/preventDefault";
+import { stopPropagation } from "../../utils/react/stopPropagation";
+import { Card } from "../../components/ui/Card";
+import { isApiError } from "../../utils/isApiError";
+
+export const Product = () => {
+  const { id: paramsId } = useParams<"id">();
+  const id = paramsId ? parseAppInt(paramsId) : null;
+
+  const { data, isSuccess, isLoading, isError, error } =
+    useGetDetailedProductQuery(id ?? 0, {
+      skip: !id,
+    });
+
+  if (isError) {
+    if (isApiError(error)) {
+      return <Text>{error.data.message}</Text>;
+    }
+
+    return <Text>Ошибка</Text>;
+  }
+
+  if (isLoading) {
+    return <Text>Загрузка</Text>;
+  }
+
+  if (!isSuccess) {
+    return <Text>Не получилось</Text>;
+  }
+
+  const product = data;
+
+  return (
+    <>
+      <Card cardColor="venusSlipperOrchid">
+        {product.productImages.length > 0 &&
+          product.productImages.map((image) => (
+            <>
+              <img
+                src={"/static/productImages/" + image.url}
+                alt={image.description}
+              />
+              <Indent size={3} />
+            </>
+          ))}
+
+        <Text as="h2" textSize={4} textWeight="bold">
+          {product.name}
+        </Text>
+        <Indent size={3} />
+
+        <Button
+          btnColor="tunicGreen"
+          textSize={4}
+          onClick={preventDefault(stopPropagation(() => {}))}
+        >
+          <div className={styles.priceBlock}>
+            <Text>В корзину</Text>
+            <Indent size={3} inline />
+            <Text>{product.price}₽</Text>
+          </div>
+        </Button>
+      </Card>
+    </>
+  );
+};
