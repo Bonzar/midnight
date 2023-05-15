@@ -44,7 +44,7 @@ export const Profile = () => {
       await logout();
       navigate("/");
     } catch {
-      /* show error from data */
+      /* show error from hook */
     }
   };
 

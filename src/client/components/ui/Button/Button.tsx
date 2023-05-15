@@ -26,14 +26,14 @@ export const Button = ({
 }: ButtonProps) => {
   const btnStyles = {
     ...style,
-    [`--primary-color`]: `var(--${btnColor})`,
-    [`--secondary-color`]: `var(--${btnColor}-light)`,
+    [`--btn-primary-color`]: `var(--${btnColor})`,
+    [`--btn-secondary-color`]: `var(--${btnColor}-light)`,
   } as React.CSSProperties;
 
   return (
     <Text
       as="button"
-      className={buttonStyles.button}
+      className={[className, buttonStyles.button].filter(Boolean).join(" ")}
       style={btnStyles}
       {...other}
     >

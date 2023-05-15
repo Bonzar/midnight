@@ -1,16 +1,16 @@
 .button {
-  --primary-color: var(--grey52);
-  --secondary-color: var(--grey85);
+  --btn-primary-color: var(--grey52);
+  --btn-secondary-color: var(--grey85);
   padding: var(--indent-1) var(--indent-3);
-  border: 1px solid var(--primary-color);
+  border: 1px solid var(--btn-primary-color);
   border-radius: var(--border-radius);
-  background-color: var(--secondary-color);
+  background-color: var(--btn-secondary-color);
   transition: background-color cubic-bezier(0.18, 0.89, 0.32, 1.28) 1ms,
     color cubic-bezier(0.18, 0.89, 0.32, 1.28) 1ms;
 }
 
 .button:hover {
-  background-color: var(--primary-color);
+  background-color: var(--btn-primary-color);
   color: var(--white);
 }
 

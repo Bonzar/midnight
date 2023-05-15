@@ -1,0 +1,20 @@
+.priceBlock {
+  align-self: end;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.priceBlock > * {
+  color: inherit;
+}
+
+.divider {
+  margin-left: auto;
+}
+
+.priceBlockBtn:hover .divider {
+  background-color: var(--white);
+}

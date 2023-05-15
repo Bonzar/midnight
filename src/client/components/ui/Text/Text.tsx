@@ -1,13 +1,14 @@
-import React from "react";
 import type { ElementType, PropsWithChildren } from "react";
+import React from "react";
 import styles from "./text.module.css";
 import type { TColor } from "../../types/TColor";
+import type { TTextSize } from "../../types/TTextSize";
 import type { PolymorphicComponentProps } from "../../types/PolymorphicComponent";
 import { parseAppInt } from "../../../../helpers/parseAppInt";
 
 interface ITextProps {
   textColor?: TColor;
-  textSize?: 0 | 1 | 2 | 3 | 4 | 5;
+  textSize?: TTextSize;
   textWeight?: "thick" | "regular" | "semibold" | "bold";
 }
 

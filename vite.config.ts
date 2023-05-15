@@ -20,7 +20,7 @@ export default defineConfig({
     minify: false,
   },
   root: "",
-  base: "",
+  base: "/",
   // @ts-ignore
   test,
 });

@@ -1,0 +1,16 @@
+.divider {
+  --divider-color: var(--black);
+  background-color: var(--divider-color);
+}
+
+.row {
+  display: block;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+.column {
+  display: inline-block;
+  height: 100%;
+  transform: translateX(-50%);
+}

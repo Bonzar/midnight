@@ -9,10 +9,10 @@ type TIndentProps = {
 
 export const Indent = ({ inline = false, size }: TIndentProps) => {
   const Component = inline ? "span" : "div";
-  const propName = inline ? "paddingLeft" : "paddingTop";
+  const paddingDirection = inline ? "paddingLeft" : "paddingTop";
 
   const style: React.CSSProperties = {
-    [propName]: `var(--indent-${size})`,
+    [paddingDirection]: `var(--indent-${size})`,
   };
 
   return <Component style={style}></Component>;
