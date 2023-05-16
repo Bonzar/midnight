@@ -22,7 +22,7 @@ export const Main = () => {
   }
 
   if (!isSuccess) {
-    if (isError && isApiError(error)) {
+    if (isError && "data" in error && isApiError(error.data)) {
       return <Text>{error.data.message}</Text>;
     }
     return <Text>Ошибка</Text>;

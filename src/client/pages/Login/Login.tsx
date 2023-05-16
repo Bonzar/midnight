@@ -7,7 +7,6 @@ import {
 } from "../../store/slices/authApiSlice";
 import { Indent } from "../../components/ui/Indent";
 import { Text } from "../../components/ui/Text";
-import { isApiError } from "../../utils/isApiError";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Label } from "../../components/ui/Label";
@@ -27,8 +26,9 @@ export const Login = () => {
     }
   }, [navigate, isSuccess]);
 
-  const [login, loginData] = useLoginMutation();
-  const [registration, registrationData] = useRegistrationMutation();
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+  const [registration, { isLoading: isRegistrationLoading }] =
+    useRegistrationMutation();
 
   const [isLoginPage, setIsLoginPage] = useState(true);
   const [email, setEmail] = useState("");
@@ -129,7 +129,7 @@ export const Login = () => {
             <Button
               type="submit"
               btnColor="tunicGreen"
-              disabled={loginData.isLoading}
+              disabled={isLoginLoading}
             >
               Войти
             </Button>
@@ -137,33 +137,13 @@ export const Login = () => {
             <Button
               type="submit"
               btnColor="venusSlipperOrchid"
-              disabled={registrationData.isLoading}
+              disabled={isRegistrationLoading}
             >
               Зарегистрироваться
             </Button>
           )}
         </div>
       </form>
-      {isLoginPage && loginData.isError && (
-        <>
-          <Indent size={3} />
-          <Text>
-            {loginData.isError &&
-              isApiError(loginData.error) &&
-              loginData.error.data.message}
-          </Text>
-        </>
-      )}
-      {!isLoginPage && registrationData.isError && (
-        <>
-          <Indent size={3} />
-          <Text>
-            {registrationData.isError &&
-              isApiError(registrationData.error) &&
-              registrationData.error.data.message}
-          </Text>
-        </>
-      )}
     </Card>
   );
 };

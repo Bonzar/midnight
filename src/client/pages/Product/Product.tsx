@@ -19,7 +19,7 @@ export const Product = () => {
     });
 
   if (isError) {
-    if (isApiError(error)) {
+    if ("data" in error && isApiError(error.data)) {
       return <Text>{error.data.message}</Text>;
     }
 

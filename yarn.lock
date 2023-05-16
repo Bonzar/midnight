@@ -4500,6 +4500,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"izitoast@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "izitoast@npm:1.4.0"
+  checksum: 08fe9d0e195c4485fb19d09262274b2626f29dfe502e14b5cc253e6cc403d7ce128b3b69579d7cfd573aa58f2badb9669bd9e774db7dea90561979c8c34aeed9
+  languageName: node
+  linkType: hard
+
 "jest-diff@npm:^29.5.0":
   version: 29.5.0
   resolution: "jest-diff@npm:29.5.0"
@@ -5000,6 +5007,7 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     express: 4.18.2
     express-fileupload: ^1.4.0
+    izitoast: ^1.4.0
     jsdom: ^21.1.1
     jsonwebtoken: ^9.0.0
     mysql2: ^3.2.4

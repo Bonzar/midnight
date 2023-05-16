@@ -33,6 +33,7 @@
     "dotenv": "^16.0.3",
     "express": "4.18.2",
     "express-fileupload": "^1.4.0",
+    "izitoast": "^1.4.0",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^3.2.4",
     "node-fetch": "2",
