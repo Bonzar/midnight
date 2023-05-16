@@ -6,17 +6,29 @@ import { stopPropagation } from "../../utils/react/stopPropagation";
 import { Text } from "../ui/Text";
 import { Indent } from "../ui/Indent";
 import { Divider } from "../ui/Divider";
+import { useAddBasketProductMutation } from "../../store/slices/basketApiSlice";
 
 interface IAddToCardButtonProps {
   price: number;
+  productId: number;
 }
 
-export const AddToCardButton = ({ price }: IAddToCardButtonProps) => {
+export const AddToCardButton = ({
+  price,
+  productId,
+}: IAddToCardButtonProps) => {
+  const [addToCart, addToCartData] = useAddBasketProductMutation();
+
+  const handleAddToCart = () => {
+    addToCart({ productId, quantity: 1 });
+  };
+
   return (
     <Button
       className={styles.priceBlockBtn}
       btnColor="tunicGreen"
-      onClick={preventDefault(stopPropagation(() => {}))}
+      onClick={preventDefault(stopPropagation(handleAddToCart))}
+      disabled={addToCartData.isLoading}
     >
       <div className={styles.priceBlock}>
         <Text style={{ lineBreak: "loose" }}>В корзину</Text>

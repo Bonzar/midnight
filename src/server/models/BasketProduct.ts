@@ -9,6 +9,7 @@ import {
   Model,
   PrimaryKey,
   Table,
+  Unique,
 } from "sequelize-typescript";
 import type {
   ModelAttr,
@@ -61,6 +62,7 @@ export class BasketProduct extends Model<
 
   @AllowNull(false)
   @ForeignKey(() => Basket)
+  @Unique("basketId_productId")
   @Column
   basketId!: number;
 
@@ -69,6 +71,7 @@ export class BasketProduct extends Model<
 
   @AllowNull(false)
   @ForeignKey(() => Product)
+  @Unique("basketId_productId")
   @Column
   productId!: number;
 

@@ -10,6 +10,7 @@ import { ApiError } from "../error/ApiError";
 import { sequelize } from "../database";
 import type { Includeable } from "sequelize";
 import { checkIdsPresent } from "../helpers/checkIdsPresent";
+import { productService } from "./productService";
 
 export type AddBasketProductData = Omit<
   BasketProductCreationAttributes,
@@ -130,9 +131,29 @@ class BasketService {
     }
 
     return await sequelize.transaction(async () => {
-      const basket = await this.getOneBasket(userId);
+      try {
+        // product already exist in basket
+        const basketProductNote = await this.getOneProduct(
+          userId,
+          data.productId
+        );
 
-      return await BasketProduct.create({ ...data, basketId: basket.id });
+        const newQuantity = basketProductNote.quantity + data.quantity;
+
+        await productService.checkStock(data.productId, newQuantity);
+
+        return await basketProductNote.update({
+          ...basketProductNote,
+          quantity: newQuantity,
+        });
+      } catch {
+        // product don't exist in basket
+        const basket = await this.getOneBasket(userId, [BasketProduct]);
+
+        await productService.checkStock(data.productId, data.quantity);
+
+        return await BasketProduct.create({ ...data, basketId: basket.id });
+      }
     });
   }
 
@@ -148,6 +169,8 @@ class BasketService {
 
     return await sequelize.transaction(async () => {
       const { productId, ...newData } = updateData;
+
+      await productService.checkStock(productId, newData.quantity);
 
       const basketProductNote = await this.getOneProduct(userId, productId);
 

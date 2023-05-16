@@ -42,7 +42,7 @@ export const Main = () => {
               {product.name}
             </Text>
             <Indent size={3} />
-            <AddToCardButton price={product.price} />
+            <AddToCardButton price={product.price} productId={product.id} />
           </Card>
         </Link>
       ))}

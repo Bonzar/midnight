@@ -1,0 +1,22 @@
+.productCard {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: var(--indent-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quantityForm {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.quantityForm > button {
+  width: calc(var(--indent-3) * 3);
+  text-align: center;
+}
+
+.quantityForm > input {
+  width: calc(var(--indent-3) * 6);
+}

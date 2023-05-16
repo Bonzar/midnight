@@ -9,6 +9,7 @@ import { Main } from "../pages/Main";
 import { mainLoader } from "../pages/Main/mainLoader";
 import { Product } from "../pages/Product";
 import { productLoader } from "../pages/Product/productLoader";
+import { Basket } from "../pages/Basket";
 
 export const routes = (store: AppStore) =>
   createRoutesFromElements(
@@ -19,5 +20,6 @@ export const routes = (store: AppStore) =>
       <Route path="products">
         <Route path=":id" element={<Product />} loader={productLoader(store)} />
       </Route>
+      <Route path="basket" element={<Basket />} />
     </Route>
   );

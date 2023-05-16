@@ -92,6 +92,12 @@ class ProductService {
   }
 
   async checkStock(id: number, quantity: number) {
+    if (!quantity) {
+      throw ApiError.badRequest(
+        `Для проверки остатков товара с id - ${id} не был предоставлено количество`
+      );
+    }
+
     const product = await this.getOne(id);
 
     if (product.stock === 0) {

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { basketController } from "../controllers/basketController";
+
 const basketRouter = Router();
 
 /**
@@ -19,6 +20,14 @@ basketRouter.delete("/product", basketController.deleteProduct);
 basketRouter.post("/coupon", basketController.addCoupon);
 
 basketRouter.delete("/coupon", basketController.deleteCoupon);
+
+/**
+ * Basket guest
+ */
+
+basketRouter.get("/product/guest", basketController.guestAddProduct);
+
+basketRouter.get("/coupon/guest", basketController.guestAddCoupon);
 
 /**
  * Basket itself

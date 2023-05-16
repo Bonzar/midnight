@@ -10,6 +10,7 @@ import type { ListItem } from "../../ui/List";
 import { List } from "../../ui/List";
 import { Indent } from "../../ui/Indent";
 import { intersperse, mergeLeft } from "ramda";
+import { useGetBasketQuery } from "../../../store/slices/basketApiSlice";
 
 interface INavLinkTextProps {
   children: ReactNode;
@@ -25,6 +26,17 @@ const NavLinkText = ({ children }: INavLinkTextProps) => {
 
 export function Header() {
   const { isAuth: isCurrentUserAuth } = useAppSelector(selectUser);
+  const { data, error } = useGetBasketQuery(undefined, {
+    skip: !isCurrentUserAuth,
+  });
+
+  // use error instead of isError for not display prev success value until error disappear
+  const basketProductsCount = error
+    ? 0
+    : data?.basket.basketProducts.reduce(
+        (total, currentProduct) => total + currentProduct.quantity,
+        0
+      ) ?? 0;
 
   const indent = {
     as: Indent,
@@ -44,6 +56,10 @@ export function Header() {
       ) : (
         <NavLinkText>Войти</NavLinkText>
       ),
+    },
+    {
+      to: "/basket",
+      children: <NavLinkText>Корзина ({basketProductsCount})</NavLinkText>,
     },
   ].map(mergeLeft({ as: NavLink }));
 
