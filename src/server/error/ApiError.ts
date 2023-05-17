@@ -5,7 +5,13 @@ export interface IApiErrorItem {
   message: string;
 }
 
-export class ApiError extends Error {
+export interface IApiError {
+  message: string;
+  status: number;
+  errors: IApiErrorItem[];
+}
+
+export class ApiError extends Error implements IApiError {
   status;
   errors;
 
@@ -78,7 +84,11 @@ export class ApiError extends Error {
     );
   }
 
-  static notFound(errors: unknown | unknown[] = []) {
-    return new ApiError(404, "Не найдено", this.#processErrors(errors));
+  static notFound(message?: string, errors: unknown | unknown[] = []) {
+    return new ApiError(
+      404,
+      message ?? "Не найдено",
+      this.#processErrors(errors)
+    );
   }
 }

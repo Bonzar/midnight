@@ -10,6 +10,7 @@ import { mainLoader } from "../pages/Main/mainLoader";
 import { Product } from "../pages/Product";
 import { productLoader } from "../pages/Product/productLoader";
 import { Basket } from "../pages/Basket";
+import { NotMatching } from "../pages/NotMatching";
 
 export const routes = (store: AppStore) =>
   createRoutesFromElements(
@@ -21,5 +22,7 @@ export const routes = (store: AppStore) =>
         <Route path=":id" element={<Product />} loader={productLoader(store)} />
       </Route>
       <Route path="basket" element={<Basket />} />
+      <Route path="not-found" element={<NotMatching />} />
+      <Route path="*" element={<NotMatching />} />
     </Route>
   );

@@ -1,33 +1,74 @@
-interface ClientApiError {
-  message: string;
-  errors: {
-    code: string;
-    message: string;
-  }[];
-}
+import type { IApiError, IApiErrorItem } from "../../server/error/ApiError";
+import { exhaustiveCheck } from "../../helpers/exhaustiveCheck";
+import { has } from "ramda";
+import { isObjHasPropType } from "./js/isHasPropType";
 
-export const isApiError = (error: unknown): error is ClientApiError => {
+const isApiErrorItem = (error: unknown): error is IApiErrorItem => {
   if (typeof error !== "object" || error === null) {
     return false;
   }
 
-  if (!("message" in error) || typeof error.message !== "string") {
-    return false;
-  }
+  const isErrorHas = isObjHasPropType(error);
 
-  if (!("errors" in error) || !(error.errors instanceof Array)) {
-    return false;
-  }
+  for (const errorKey of Object.keys(error)) {
+    // reassign for exhaustiveCheck
+    const currentKey = errorKey as keyof IApiErrorItem;
 
-  if (error.errors.length > 0) {
-    const oneError = error.errors[0];
-
-    if (!("code" in oneError) || typeof oneError.code !== "string") {
-      return false;
+    switch (currentKey) {
+      case "message":
+        if (!isErrorHas("message", "string")) {
+          return false;
+        }
+        break;
+      case "code":
+        if (!isErrorHas("code", "string")) {
+          return false;
+        }
+        break;
+      default:
+        exhaustiveCheck(currentKey);
+        return false;
     }
+  }
 
-    if (!("message" in oneError) || typeof oneError.message !== "string") {
-      return false;
+  return true;
+};
+
+export const isApiError = (error: unknown): error is IApiError => {
+  if (typeof error !== "object" || error === null) {
+    return false;
+  }
+
+  const isErrorHas = isObjHasPropType(error);
+
+  for (const errorKey of Object.keys(error)) {
+    // reassign for exhaustiveCheck
+    const currentKey = errorKey as keyof IApiError;
+
+    switch (currentKey) {
+      case "errors":
+        if (!(has("errors", error) && error.errors instanceof Array)) {
+          return false;
+        }
+
+        if (!error.errors.every(isApiErrorItem)) {
+          return false;
+        }
+
+        break;
+      case "message":
+        if (!isErrorHas("message", "string")) {
+          return false;
+        }
+        break;
+      case "status":
+        if (!isErrorHas("status", "number")) {
+          return false;
+        }
+        break;
+      default:
+        exhaustiveCheck(currentKey);
+        return false;
     }
   }
 

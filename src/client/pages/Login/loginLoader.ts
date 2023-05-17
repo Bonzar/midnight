@@ -1,4 +1,4 @@
-import { createLoader } from "../../routes/createLoader";
+import { createLoader } from "../../routes/helpers/createLoader";
 import { selectUser } from "../../store/slices/userSlice";
 import { redirect } from "react-router-dom";
 

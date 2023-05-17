@@ -64,7 +64,6 @@ export const BasketProduct = React.memo(function BasketProductMemo({
   }, [basketProduct?.quantity]);
 
   const changeQuantity = (newQuantity: number) => {
-    console.log({ newQuantity });
     if (newQuantity === 0) {
       return deleteBasketProduct({ productId });
     }

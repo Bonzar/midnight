@@ -4,7 +4,7 @@ import styles from "./header.module.css";
 import { Link, NavLink } from "react-router-dom";
 import { LayoutContainer } from "../LayoutContainer";
 import { Text } from "../../ui/Text";
-import { useAppSelector } from "../../../store/hooks";
+import { useAppSelector } from "../../../store/helpers/hooks";
 import { selectUser } from "../../../store/slices/userSlice";
 import type { ListItem } from "../../ui/List";
 import { List } from "../../ui/List";

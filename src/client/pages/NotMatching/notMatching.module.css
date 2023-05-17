@@ -1,0 +1,11 @@
+.status {
+  padding: var(--indent-6);
+  font-size: calc(var(--font-size-0) * 4);
+  text-align: center;
+  color: var(--grey76);
+}
+
+.messageText {
+  text-align: center;
+  color: var(--grey76);
+}

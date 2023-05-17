@@ -1,5 +1,6 @@
-import { createLoader } from "../../routes/createLoader";
+import { createLoader } from "../../routes/helpers/createLoader";
 import { productsApiSlice } from "../../store/slices/productsApiSlice";
+import { awaitLoadDataOnServer } from "../../routes/helpers/awaitLoadDataOnServer";
 
 export const mainLoader = createLoader(
   ({ dispatch }) =>
@@ -8,12 +9,7 @@ export const mainLoader = createLoader(
         productsApiSlice.endpoints.getProducts.initiate()
       );
 
-      productsPromise.unsubscribe();
-      request.signal.onabort = productsPromise.abort;
-
-      if (import.meta.env.SSR) {
-        await productsPromise.unwrap();
-      }
+      await awaitLoadDataOnServer(productsPromise, request);
 
       return null;
     }

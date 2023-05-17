@@ -1,6 +1,6 @@
-import type { AppStore } from "../store";
+import type { AppStore } from "../../store";
 import type { LoaderFunctionArgs, Params } from "react-router-dom";
-import type { ExtendableProps } from "../components/types/PolymorphicComponent";
+import type { ExtendableProps } from "../../components/types/PolymorphicComponent";
 
 export type LoaderArgs<ParamKey extends string = string> = ExtendableProps<
   LoaderFunctionArgs,

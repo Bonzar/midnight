@@ -113,7 +113,7 @@ class ProductService {
 
   checkExist(product: Product | null, id: number): asserts product is Product {
     if (!product) {
-      throw ApiError.badRequest(`Продукт с id - ${id} не найден`);
+      throw ApiError.notFound(`Продукт с id - ${id} не найден`);
     }
   }
 }

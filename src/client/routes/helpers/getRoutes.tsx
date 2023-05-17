@@ -1,6 +1,6 @@
-import type { AppStore } from "../store";
+import type { AppStore } from "../../store";
 import type { RouteObject } from "react-router-dom";
-import { routes } from "./routes";
+import { routes } from "../routes";
 
 export const getRoutes = (
   store: AppStore,

@@ -131,13 +131,14 @@ class BasketService {
     }
 
     return await sequelize.transaction(async () => {
+      let basketProductNote;
       try {
+        basketProductNote = await this.getOneProduct(userId, data.productId);
+      } catch {
+        basketProductNote = null;
+      }
+      if (basketProductNote) {
         // product already exist in basket
-        const basketProductNote = await this.getOneProduct(
-          userId,
-          data.productId
-        );
-
         const newQuantity = basketProductNote.quantity + data.quantity;
 
         await productService.checkStock(data.productId, newQuantity);
@@ -146,7 +147,7 @@ class BasketService {
           ...basketProductNote,
           quantity: newQuantity,
         });
-      } catch {
+      } else {
         // product don't exist in basket
         const basket = await this.getOneBasket(userId, [BasketProduct]);
 

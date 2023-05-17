@@ -1,10 +1,10 @@
 import React from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import type { RouteObject } from "react-router-dom";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createStore } from "./store";
 import { Provider as ReduxProvider } from "react-redux";
-import { getRoutes } from "./routes/getRoutes";
+import { getRoutes } from "./routes/helpers/getRoutes";
 
 const container = document.getElementById("app");
 

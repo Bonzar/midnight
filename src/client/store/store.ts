@@ -1,13 +1,16 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./apiSlice";
 import reducer from "./reducer";
+import { rtkQueryErrorToastMiddleware } from "./helpers/rtkQueryErrorToastMiddleware";
 
 export const createStore = (preloadedState?: object) => {
   const store = configureStore({
     reducer,
     preloadedState,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(apiSlice.middleware),
+      getDefaultMiddleware()
+        .concat(apiSlice.middleware)
+        .concat(rtkQueryErrorToastMiddleware),
   });
 
   if (import.meta.hot) {
@@ -15,16 +18,6 @@ export const createStore = (preloadedState?: object) => {
       if (!mod) return;
       store.replaceReducer(combineReducers(mod.default as typeof reducer));
     });
-    // import.meta.hot.accept("./apiSlice.ts", (mod) => {
-    //   if (!mod) return;
-    //   const newApiSlice = mod.default as typeof apiSlice;
-    //   store.replaceReducer(
-    //     combineReducers({
-    //       ...reducer,
-    //       [newApiSlice.reducerPath]: newApiSlice.reducer,
-    //     })
-    //   );
-    // });
   }
 
   return store;

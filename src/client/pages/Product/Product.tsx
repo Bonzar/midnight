@@ -8,6 +8,7 @@ import { Indent } from "../../components/ui/Indent";
 import { Card } from "../../components/ui/Card";
 import { isApiError } from "../../utils/isApiError";
 import { AddToCardButton } from "../../components/AddToCardButton";
+import { has } from "ramda";
 
 export const Product = () => {
   const { id: paramsId } = useParams<"id">();
@@ -19,7 +20,7 @@ export const Product = () => {
     });
 
   if (isError) {
-    if ("data" in error && isApiError(error.data)) {
+    if (has("data", error) && isApiError(error.data)) {
       return <Text>{error.data.message}</Text>;
     }
 
@@ -42,13 +43,13 @@ export const Product = () => {
       >
         {product.productImages.length > 0 &&
           product.productImages.map((image) => (
-            <>
+            <div key={image.url}>
               <img
                 src={"/static/productImages/" + image.url}
                 alt={image.description}
               />
               <Indent size={3} />
-            </>
+            </div>
           ))}
       </div>
 

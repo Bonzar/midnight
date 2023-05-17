@@ -4,7 +4,7 @@ import { useGetBasketQuery } from "../../store/slices/basketApiSlice";
 import { isApiError } from "../../utils/isApiError";
 import { Indent } from "../../components/ui/Indent";
 import { BasketProduct } from "./BasketProduct";
-import { useAppSelector } from "../../store/hooks";
+import { useAppSelector } from "../../store/helpers/hooks";
 import { selectUser } from "../../store/slices/userSlice";
 
 export const Basket = () => {

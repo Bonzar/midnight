@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useAppSelector } from "../../store/hooks";
+import { useAppSelector } from "../../store/helpers/hooks";
 import { selectUser } from "../../store/slices/userSlice";
 import { Text } from "../../components/ui/Text";
 import { Link, useNavigate } from "react-router-dom";
