@@ -1,34 +1,44 @@
 import { has } from "ramda";
 import type { TagTypes } from "../apiSlice";
 
-export type CacheItem<
-  T extends TagTypes,
-  ID extends string | void = void
-> = ID extends void ? T : { type: T; id: ID };
+type CacheID = string | number | void;
+
+export type CacheItem<T extends TagTypes, ID extends CacheID> = ID extends void
+  ? T
+  : { type: T; id: ID };
 
 /**
  * A list of cache items, including a LIST entity cache
  */
-export type CacheList<T extends TagTypes, ID extends string | void> = CacheItem<
+export type CacheList<T extends TagTypes, ID extends CacheID> = CacheItem<
   T,
   ID
 >[];
 
-type TagsList = Readonly<CacheList<TagTypes, string | void>>;
+type TagsList<T extends TagTypes, ID extends CacheID> = Readonly<
+  CacheList<T, ID>
+>;
 
 /**
  * HOF creator that accept HOF callback and return tags HOF
  * As result will concat tags from HOF callback and from wrapped tags callback
  */
 const createTagsHOF =
-  <HOFResult, HOFError, HOFArg, Tags extends TagsList>(
+  <
+    T extends TagTypes,
+    ID extends CacheID,
+    HOFResult,
+    HOFError,
+    HOFArg,
+    Tags extends TagsList<T, ID>
+  >(
     HOFCallback: (result: HOFResult, error: HOFError, arg: HOFArg) => Tags
   ) =>
   <
     Result extends HOFResult,
     Error extends HOFError,
     Arg extends HOFArg,
-    CallbackTags extends TagsList
+    CallbackTags extends TagsList<T, ID>
   >(
     tags:
       | CallbackTags
@@ -78,7 +88,14 @@ export const withErrorTags = createTagsHOF((result, error) => {
 /**
  * Wrap createTagsHOF with withErrorTags
  */
-const createTagsHOFWithErrors = <Result, Error, Arg, Tags extends TagsList>(
+const createTagsHOFWithErrors = <
+  T extends TagTypes,
+  ID extends CacheID,
+  Result,
+  Error,
+  Arg,
+  Tags extends TagsList<T, ID>
+>(
   HOFCallback: (result: Result, error: Error, arg: Arg) => Tags
 ) => createTagsHOF(withErrorTags(HOFCallback));
 
@@ -94,42 +111,48 @@ const createTagsHOFWithErrors = <Result, Error, Arg, Tags extends TagsList>(
  *   { id: 1, message: 'foo' },
  *   { id: 2, message: 'bar' }
  * ]
- * providesList('Todo')([])(results)
+ * providesList('Product')([])(results)
  * // [
- * //   { type: 'Todo', id: 'LIST'},
- * //   { type: 'Todo', id: 1 },
- * //   { type: 'Todo', id: 2 },
+ * //   { type: 'Product', id: 'LIST'},
+ * //   { type: 'Product', id: 1 },
+ * //   { type: 'Product', id: 2 },
  * // ]
  * ```
  */
 export const withList = <
-  Result extends { id: string }[] | undefined,
+  ID extends string | number,
+  Result extends { id: ID }[] | undefined,
   T extends TagTypes
 >(
   type: T
 ) =>
-  createTagsHOFWithErrors((result: Result) => {
-    if (!result) {
-      return [{ type, id: "LIST" as const }];
-    }
+  createTagsHOFWithErrors(
+    (result: Result): [CacheItem<T, "LIST">, ...CacheItem<T, ID>[]] => {
+      if (!result) {
+        return [{ type, id: "LIST" as const }];
+      }
 
-    return [
-      { type, id: "LIST" as const },
-      ...result.map(({ id }) => ({ type, id })),
-    ];
-  });
+      return [
+        { type, id: "LIST" as const },
+        ...result.map(({ id }) => ({ type, id } as CacheItem<T, ID>)),
+      ];
+    }
+  );
 
 /**
  * Similar to `providesList`, but for data located at a nested property,
  * e.g. `results.data` in a paginated response.
  */
 export const withNestedList = <
+  ID extends string | number,
   Result,
   Error,
   Arg,
-  Data extends Array<Record<"id", string>>,
-  Tags extends TagsList,
-  Type extends TagTypes
+  Data extends { id: ID }[],
+  Type extends TagTypes,
+  CallbackType extends TagTypes,
+  CallbackID extends CacheID,
+  Tags extends TagsList<CallbackType, CallbackID>
 >(
   type: Type,
   extractFromResult: (result: Result) => Data,
@@ -137,14 +160,14 @@ export const withNestedList = <
 ) =>
   withErrorTags((result: Result | undefined, error: Error, arg: Arg) => {
     if (!result) {
-      return [{ type, id: "LIST" }];
+      return [{ type, id: "LIST" as const }];
     }
 
     const data = extractFromResult(result);
 
     const listTags = [
       { type, id: "LIST" as const },
-      ...data.map(({ id }) => ({ type, id })),
+      ...data.map(({ id }) => ({ type, id } as CacheItem<Type, ID>)),
     ];
 
     if (typeof tags === "function") {
@@ -159,14 +182,16 @@ export const withNestedList = <
  *
  * @example
  * ```ts
- * cacheByIdArg('Todo')([])({ id: 5, message: 'walk the fish' }, undefined, 5)
+ * cacheByIdArg('Product')([])({ id: 5, message: 'walk the fish' }, undefined, 5)
  * // returns:
- * // [{ type: 'Todo', id: 5 }]
+ * // [{ type: 'Product', id: 5 }]
  * ```
  */
-export const withIdAsArg = <Arg extends string, T extends TagTypes>(type: T) =>
+export const withArgAsId = <Arg extends string | number, T extends TagTypes>(
+  type: T
+) =>
   createTagsHOFWithErrors((result, error, arg: Arg) => {
-    return [{ type, id: arg }];
+    return [{ type, id: arg } as CacheItem<T, Arg>];
   });
 
 /**
@@ -174,16 +199,16 @@ export const withIdAsArg = <Arg extends string, T extends TagTypes>(type: T) =>
  *
  * @example
  * ```ts
- * cacheByIdArgProperty('Todo')([])(undefined, { id: 5, message: 'sweep up' })
+ * cacheByIdArgProperty('Product')([])(undefined, { id: 5, message: 'sweep up' })
  * // returns:
- * // [{ type: 'Todo', id: 5 }]
+ * // [{ type: 'Product', id: 5 }]
  * ```
  */
 export const withIdFromArg = <Arg extends { id: string }, T extends TagTypes>(
   type: T
 ) =>
   createTagsHOFWithErrors((result, error, arg: Arg) => {
-    return [{ type, id: arg.id }];
+    return [{ type, id: arg.id } as CacheItem<T, Arg["id"]>];
   });
 
 /**
@@ -193,8 +218,8 @@ export const withIdFromArg = <Arg extends { id: string }, T extends TagTypes>(
  *
  * @example
  * ```ts
- * invalidatesList('Todo')([])
- * // [{ type: 'Todo', id: 'LIST' }]
+ * invalidatesList('Product')([])
+ * // [{ type: 'Product', id: 'LIST' }]
  * ```
  */
 export const invalidatesList = <T extends TagTypes>(type: T) =>
@@ -203,9 +228,21 @@ export const invalidatesList = <T extends TagTypes>(type: T) =>
 /**
  * HOF to invalidate the 'UNAUTHORIZED' type cache item.
  */
-export const invalidatesUnauthorized = createTagsHOF(() => ["UNAUTHORIZED"]);
+export const invalidatesUnauthorized = createTagsHOF((result, error) => {
+  if (!error) {
+    return ["UNAUTHORIZED"];
+  }
+
+  return [];
+});
 
 /**
  * HOF to invalidate the 'UNKNOWN_ERROR' type cache item.
  */
-export const invalidatesUnknownError = createTagsHOF(() => ["UNKNOWN_ERROR"]);
+export const invalidatesUnknownError = createTagsHOF((result, error) => {
+  if (!error) {
+    return ["UNKNOWN_ERROR"];
+  }
+
+  return [];
+});

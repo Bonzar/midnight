@@ -1,7 +1,7 @@
 import { describe, test } from "vitest";
 import {
+  withArgAsId,
   withErrorTags,
-  withIdAsArg,
   withIdFromArg,
   withList,
   withNestedList,
@@ -77,7 +77,7 @@ describe("cacheByIdArg", () => {
   }) => {
     const data = [{}, undefined, "000"] as const;
 
-    const result = withIdAsArg("Basket")([])(...data);
+    const result = withArgAsId("Basket")([])(...data);
 
     expect(result).toEqual([{ type: "Basket", id: "000" }]);
   });
@@ -85,7 +85,7 @@ describe("cacheByIdArg", () => {
   test("should add error tag if result rejected", ({ expect }) => {
     const data = [undefined, {}, "000"] as const;
 
-    const result = withIdAsArg("Basket")([])(...data);
+    const result = withArgAsId("Basket")([])(...data);
 
     expect(result).toEqual(["UNKNOWN_ERROR", { type: "Basket", id: "000" }]);
   });
@@ -93,7 +93,7 @@ describe("cacheByIdArg", () => {
   test("should add tag if specified", ({ expect }) => {
     const data = [{}, undefined, "000"] as const;
 
-    const result = withIdAsArg("Basket")(["AUTHORIZED"])(...data);
+    const result = withArgAsId("Basket")(["AUTHORIZED"])(...data);
 
     expect(result).toEqual([{ type: "Basket", id: "000" }, "AUTHORIZED"]);
   });
