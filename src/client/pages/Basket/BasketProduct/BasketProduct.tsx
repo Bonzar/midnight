@@ -120,6 +120,7 @@ export const BasketProduct = React.memo(function BasketProductMemo({
           onChange={handleInputChange}
           name="quantity"
           type="number"
+          inputMode="numeric"
           min={0}
           disabled={isUpdateBasketProductLoading}
         />

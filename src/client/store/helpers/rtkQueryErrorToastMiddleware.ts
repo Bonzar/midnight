@@ -24,7 +24,8 @@ export const rtkQueryErrorToastMiddleware: Middleware =
         .then((module) => {
           const izitoast = module.default;
 
-          if (!isApiError(error)) return;
+          // Skip toast unauthorized error
+          if (!isApiError(error) || error.status === 401) return;
 
           if (error.errors.length > 0) {
             return error.errors.forEach(({ code, message }) => {

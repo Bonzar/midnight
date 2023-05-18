@@ -1,6 +1,15 @@
 // use `dist` because on build vite replace "@reduxjs/toolkit/query/react" with "s" (ಠ_ಠ)
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
+const tagTypes = [
+  "Basket",
+  "Product",
+  "AUTHORIZED",
+  "UNKNOWN_ERROR",
+  "UNAUTHORIZED",
+] as const;
+export type TagTypes = (typeof tagTypes)[number];
+
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.SSR ? process.env.VITE_API_URL : ""}/api/`,
@@ -15,6 +24,6 @@ export const apiSlice = createApi({
       }
     },
   }),
-  tagTypes: ["Basket"],
+  tagTypes,
   endpoints: () => ({}),
 });

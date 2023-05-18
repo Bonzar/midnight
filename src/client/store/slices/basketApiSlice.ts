@@ -14,13 +14,14 @@ import type {
   UpdateBasketProductBody,
   UpdateBasketProductResponse,
 } from "../../../server/controllers/basketController";
+import { withErrorTags } from "../helpers/rtkQueryCacheUtils";
 
 export const basketApiSlice = apiSlice.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
     getBasket: build.query<GetBasketResponse, void>({
       query: () => "basket",
-      providesTags: ["Basket"],
+      providesTags: withErrorTags(["Basket", "AUTHORIZED"]),
     }),
     addBasketProduct: build.mutation<
       AddBasketProductResponse,
