@@ -1,47 +1,68 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700;900&display=swap");
 
+/* Font size */
 :root {
-  --font-size-0: 3.3rem;
-  --font-height-0: 5.4rem;
+  --font-size-var-0: 4.2rem;
+  --font-height-var-0: 6.8rem;
 
-  --font-size-1: 2.6rem;
-  --font-height-1: 4.3rem;
+  --font-size-var-1: 3.3rem;
+  --font-height-var-1: 5.5rem;
 
-  --font-size-2: 2rem;
-  --font-height-2: 3.5rem;
+  --font-size-var-2: 2.6rem;
+  --font-height-var-2: 4.5rem;
 
-  --font-size-3: 1.6rem;
-  --font-height-3: 2.9rem;
+  --font-size-var-3: 2rem;
+  --font-height-var-3: 3.6rem;
 
-  --font-size-4: 1.6rem;
-  --font-height-4: 2.9rem;
+  --font-size-var-4: 1.6rem;
+  --font-height-var-4: 3rem;
 
-  --font-size-5: 1.3rem;
-  --font-height-5: 2.5rem;
+  --font-size-var-5: 1.3rem;
+  --font-height-var-5: 2.6rem;
+
+  /* mobile */
+  --font-size-0: var(--font-size-var-1);
+  --font-height-0: var(--font-height-var-1);
+
+  --font-size-1: var(--font-size-var-2);
+  --font-height-1: var(--font-height-var-2);
+
+  --font-size-2: var(--font-size-var-3);
+  --font-height-2: var(--font-height-var-3);
+
+  --font-size-3: var(--font-size-var-4);
+  --font-height-3: var(--font-height-var-4);
+
+  --font-size-4: var(--font-size-var-4);
+  --font-height-4: var(--font-height-var-4);
+
+  --font-size-5: var(--font-size-var-5);
+  --font-height-5: var(--font-height-var-5);
 }
 
 @media (--tablet-viewport) {
   :root {
-    --font-size-0: 4.2rem;
-    --font-height-0: 6.7rem;
+    --font-size-0: var(--font-size-var-0);
+    --font-height-0: var(--font-height-var-0);
 
-    --font-size-1: 3.3rem;
-    --font-height-1: 5.4rem;
+    --font-size-1: var(--font-size-var-1);
+    --font-height-1: var(--font-height-var-1);
 
-    --font-size-2: 2.6rem;
-    --font-height-2: 4.3rem;
+    --font-size-2: var(--font-size-var-2);
+    --font-height-2: var(--font-height-var-2);
 
-    --font-size-3: 2rem;
-    --font-height-3: 3.5rem;
+    --font-size-3: var(--font-size-var-3);
+    --font-height-3: var(--font-height-var-3);
 
-    --font-size-4: 1.6rem;
-    --font-height-4: 2.9rem;
+    --font-size-4: var(--font-size-var-4);
+    --font-height-4: var(--font-height-var-4);
 
-    --font-size-5: 1.3rem;
-    --font-height-5: 2.5rem;
+    --font-size-5: var(--font-size-var-5);
+    --font-height-5: var(--font-height-var-5);
   }
 }
 
+/* Font wight */
 :root {
   --font-weight-thick: 300;
   --font-spacing-thick: 0;

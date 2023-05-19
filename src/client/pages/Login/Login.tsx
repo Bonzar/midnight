@@ -33,12 +33,7 @@ export const Login = () => {
       if (isLoginPage) {
         await login({ email, password }).unwrap();
       } else {
-        await registration({
-          email,
-          password,
-          firstName: "Vlad",
-          addresses: [],
-        }).unwrap();
+        await registration({ email, password }).unwrap();
       }
 
       navigate("/");

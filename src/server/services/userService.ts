@@ -1,19 +1,22 @@
-import type { UserCreationAttributes } from "../models/User";
+import type { UserAttributes } from "../models/User";
 import { User } from "../models/User";
-import type { AddressCreationAttributes } from "../models/Address";
+import type {
+  AddressAttributes,
+  AddressCreationAttributes,
+} from "../models/Address";
 import { Address } from "../models/Address";
 import { ApiError } from "../error/ApiError";
 import { checkIdsPresent } from "../helpers/checkIdsPresent";
 import type { Includeable } from "sequelize";
 
 export type UpdateUserData = Omit<
-  Partial<UserCreationAttributes>,
+  Partial<UserAttributes>,
   "email" | "password" | "isActivated" | "role"
 >;
 
 export type CreateAddressData = Omit<AddressCreationAttributes, "userId">;
 
-export type UpdateAddressData = Omit<AddressCreationAttributes, "userId">;
+export type UpdateAddressData = Omit<AddressAttributes, "userId">;
 
 class UserService {
   private async getOneUser(

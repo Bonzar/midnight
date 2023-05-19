@@ -1,4 +1,7 @@
-import type { UserCreationAttributesWithAssociations } from "../models/User";
+import type {
+  UserCreationAttributes,
+  UserCreationAttributesWithAssociations,
+} from "../models/User";
 import { User } from "../models/User";
 import { Basket } from "../models/Basket";
 import { Wishlist } from "../models/Wishlist";
@@ -11,14 +14,15 @@ import { sequelize } from "../database";
 import { ApiError } from "../error/ApiError";
 import { nanoid } from "@reduxjs/toolkit";
 
-export type CreateUserData =
-  UserCreationAttributesWithAssociations<"addresses"> &
-    Partial<
-      Pick<
-        UserCreationAttributesWithAssociations<"basket" | "wishlist">,
-        "basket" | "wishlist"
-      >
-    >;
+export type CreateUserData = UserCreationAttributes &
+  Partial<
+    Pick<
+      UserCreationAttributesWithAssociations<
+        "basket" | "wishlist" | "addresses"
+      >,
+      "basket" | "wishlist"
+    >
+  >;
 
 export type UserAuthData = {
   user: UserDto;
