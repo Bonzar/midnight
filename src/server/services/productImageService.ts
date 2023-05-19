@@ -1,5 +1,5 @@
 import { sequelize } from "../database";
-import type { ProductImageCreationAttributes } from "../models/ProductImage";
+import type { ProductImageAttributes } from "../models/ProductImage";
 import { ProductImage } from "../models/ProductImage";
 import { v4 as uuidV4 } from "uuid";
 import path from "path";
@@ -16,13 +16,12 @@ export interface ProductImageData {
 }
 
 export type UpdateProductImageData = Omit<
-  Partial<ProductImageCreationAttributes>,
+  Partial<ProductImageAttributes>,
   "url"
 >;
 
-export type UpdateManyProductImageData = (UpdateProductImageData & {
-  id: number;
-})[];
+export type UpdateManyProductImageData = (Omit<UpdateProductImageData, "id"> &
+  Required<Pick<UpdateProductImageData, "id">>)[];
 
 class ProductImageService {
   async create(
@@ -107,6 +106,12 @@ class ProductImageService {
   }
 
   async updateMany(data: UpdateManyProductImageData) {
+    if (!data || !(data.length >= 0)) {
+      throw ApiError.badRequest(
+        "Не верный формат данных для обновления изображений"
+      );
+    }
+
     if (!data.map((imgObject) => imgObject.id).every(Boolean)) {
       throw ApiError.badRequest(
         "Не для всех изображений предоставлен id для обновления"

@@ -31,11 +31,16 @@ export const Main = () => {
   return (
     <div className={styles.productsList}>
       {products.rows.map((product) => (
-        <Link to={`products/${product.id}`} key={product.id}>
-          <Card cardColor="venusSlipperOrchid" className={styles.productCard}>
+        <Card
+          cardColor="venusSlipperOrchid"
+          key={product.id}
+          className={styles.productCardWrapper}
+        >
+          <Link to={`products/${product.id}`} className={styles.productCard}>
             <img
               src={"/static/productImages/" + product.productImages.at(0)?.url}
               alt={product.productImages.at(0)?.description}
+              width={"100%"}
             />
             <Indent size={3} />
             <Text as="h2" textSize={4} textWeight="bold">
@@ -43,8 +48,8 @@ export const Main = () => {
             </Text>
             <Indent size={3} />
             <AddToCardButton price={product.price} productId={product.id} />
-          </Card>
-        </Link>
+          </Link>
+        </Card>
       ))}
     </div>
   );

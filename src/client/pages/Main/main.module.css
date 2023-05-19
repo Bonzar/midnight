@@ -1,20 +1,22 @@
 .main {
- text-align: center;
+  text-align: center;
 }
 
 .productsList {
- display: grid;
- grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
- gap: var(--indent-5);
- justify-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--indent-5);
+  justify-items: center;
+}
+
+.productCardWrapper {
+  width: 100%;
 }
 
 .productCard {
- display: grid;
- text-align: center;
- height: 100%;
- padding: var(--indent-5);
- width: 100%;
+  display: grid;
+  text-align: center;
+  height: 100%;
 }
 
 @media (--tablet-viewport) {
