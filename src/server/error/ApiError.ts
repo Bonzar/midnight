@@ -42,6 +42,10 @@ export class ApiError extends Error implements IApiError {
 
     const processedErrors: IApiErrorItem[] = [];
     for (const errorToProcess of errorsToProcess) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error(errorToProcess);
+      }
+
       const appError = this.#formatError(errorToProcess);
 
       const appErrorsArray = appError instanceof Array ? appError : [appError];

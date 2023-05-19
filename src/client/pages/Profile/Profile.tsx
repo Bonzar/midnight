@@ -2,14 +2,18 @@ import React, { useEffect } from "react";
 import { useAppSelector } from "../../store/helpers/hooks";
 import { selectUser } from "../../store/slices/userSlice";
 import { Text } from "../../components/ui/Text";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import { Indent } from "../../components/ui/Indent";
-import { useLogoutMutation } from "../../store/slices/authApiSlice";
-import { useReLogin } from "../../hooks/useReLogin";
+import {
+  useLogoutMutation,
+  useReLoginQuery,
+} from "../../store/slices/authApiSlice";
 
 export const Profile = () => {
-  const { isLoading, isUninitialized } = useReLogin();
+  const currentUser = useAppSelector(selectUser);
+  const [logout] = useLogoutMutation();
+  const { isLoading, isUninitialized } = useReLoginQuery();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,9 +21,6 @@ export const Profile = () => {
       navigate("../login", { replace: true });
     }
   }, [navigate, isUninitialized]);
-
-  const currentUser = useAppSelector(selectUser);
-  const [logout] = useLogoutMutation();
 
   if (isUninitialized || isLoading) {
     return null;
@@ -48,13 +49,32 @@ export const Profile = () => {
     }
   };
 
+  if (!currentUser.data) {
+    return <Text as="div">Нет данных пользователя</Text>;
+  }
+
+  const { email, role, isActivated } = currentUser.data;
+
+  if (role === "GUEST") {
+    return (
+      <>
+        <Text as="div">У вас гостевой аккаунт, хотите зарегистрироваться?</Text>
+        <Indent size={3} />
+        <Text to="/login" as={NavLink}>
+          <Button btnColor="illicitPink">
+            Перейти на страницу регистрации
+          </Button>{" "}
+        </Text>
+      </>
+    );
+  }
+
   return (
     <>
       <Text as="div">Поздравляем вы авторизованы</Text>
-      <Text as="div">Ваш email: {currentUser.data?.email}</Text>
-      <Text as="div">
-        Аккаунт активирован?: {currentUser.data?.isActivated ? "Да" : "Нет"}
-      </Text>
+      <Text as="div">Ваш email: {email}</Text>
+      {role === "ADMIN" && <Text as="div">Ваша роль: {role}</Text>}
+      <Text as="div">Аккаунт активирован?: {isActivated ? "Да" : "Нет"}</Text>
       <Indent size={3} />
       <Button btnColor="illicitPink" onClick={handleLogout}>
         Выйти

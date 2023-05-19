@@ -34,8 +34,8 @@ export const Main = () => {
         <Link to={`products/${product.id}`} key={product.id}>
           <Card cardColor="venusSlipperOrchid" className={styles.productCard}>
             <img
-              src={"/static/productImages/" + product.productImages[0].url}
-              alt={product.productImages[0].description}
+              src={"/static/productImages/" + product.productImages.at(0)?.url}
+              alt={product.productImages.at(0)?.description}
             />
             <Indent size={3} />
             <Text as="h2" textSize={4} textWeight="bold">

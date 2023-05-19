@@ -22,14 +22,6 @@ basketRouter.post("/coupon", basketController.addCoupon);
 basketRouter.delete("/coupon", basketController.deleteCoupon);
 
 /**
- * Basket guest
- */
-
-basketRouter.get("/product/guest", basketController.guestAddProduct);
-
-basketRouter.get("/coupon/guest", basketController.guestAddCoupon);
-
-/**
  * Basket itself
  */
 

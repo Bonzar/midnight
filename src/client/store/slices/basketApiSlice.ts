@@ -7,10 +7,6 @@ import type {
   DeleteBasketCouponBody,
   DeleteBasketProductBody,
   GetBasketResponse,
-  GuestAddCouponQuery,
-  GuestAddCouponResponse,
-  GuestAddProductQuery,
-  GuestAddProductResponse,
   UpdateBasketProductBody,
   UpdateBasketProductResponse,
 } from "../../../server/controllers/basketController";
@@ -52,18 +48,6 @@ export const basketApiSlice = apiSlice.injectEndpoints({
       query: (body) => ({ url: "basket/coupon", method: "DELETE", body }),
       invalidatesTags: ["Basket"],
     }),
-    guestAddBasketProduct: build.mutation<
-      GuestAddProductResponse,
-      GuestAddProductQuery
-    >({
-      query: (params) => ({ url: "basket/product/guest", params }),
-    }),
-    guestAddBasketCoupon: build.mutation<
-      GuestAddCouponResponse,
-      GuestAddCouponQuery
-    >({
-      query: (params) => ({ url: "basket/coupon/guest", params }),
-    }),
   }),
 });
 
@@ -73,7 +57,5 @@ export const {
   useAddBasketProductMutation,
   useDeleteBasketCouponMutation,
   useDeleteBasketProductMutation,
-  useGuestAddBasketCouponMutation,
-  useGuestAddBasketProductMutation,
   useUpdateBasketProductMutation,
 } = basketApiSlice;

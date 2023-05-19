@@ -2,7 +2,10 @@ import type { RequestHandler, Response } from "express";
 import { ApiError } from "../error/ApiError";
 import type { CreateUserData, UserAuthData } from "../services/authService";
 import { authService } from "../services/authService";
-import { REFRESH_TOKEN_EXPIRES_DAYS } from "../../helpers/constants";
+import {
+  GUEST_TOKEN_EXPIRES_DAYS,
+  REFRESH_TOKEN_EXPIRES_DAYS,
+} from "../../helpers/constants";
 
 export type RegistrationUserBody = CreateUserData;
 export type RegistrationUserResponse = Omit<UserAuthData, "refreshToken">;
@@ -21,6 +24,21 @@ class AuthController {
     });
   }
 
+  #clearRefreshCookie(res: Response) {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
+  #setGuestCookie(res: Response, guestToken: string) {
+    res.cookie("guestToken", guestToken, {
+      maxAge: GUEST_TOKEN_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
   registration: RequestHandler<
     void,
     RegistrationUserResponse,
@@ -28,13 +46,16 @@ class AuthController {
     void
   > = async (req, res, next) => {
     try {
-      const { refreshToken, ...userData } = await authService.registration(
-        req.body
-      );
+      const { accessToken, user, ...serverToken } =
+        await authService.registration(req.body);
 
-      this.#setRefreshCookie(res, refreshToken);
+      if (!("refreshToken" in serverToken)) {
+        return next(ApiError.unauthorized());
+      }
 
-      res.status(200).json(userData);
+      this.#setRefreshCookie(res, serverToken.refreshToken);
+
+      res.status(200).json({ user, accessToken });
     } catch (error) {
       next(
         ApiError.setDefaultMessage(
@@ -51,13 +72,18 @@ class AuthController {
     next
   ) => {
     try {
-      const { refreshToken, ...userData } = await authService.login(
+      const { accessToken, user, ...serverToken } = await authService.login(
         req.body.email,
         req.body.password
       );
-      this.#setRefreshCookie(res, refreshToken);
 
-      res.status(200).json(userData);
+      if (!("refreshToken" in serverToken)) {
+        return next(ApiError.unauthorized());
+      }
+
+      this.#setRefreshCookie(res, serverToken.refreshToken);
+
+      res.status(200).json({ user, accessToken });
     } catch (error) {
       next(
         ApiError.setDefaultMessage(
@@ -72,7 +98,7 @@ class AuthController {
     try {
       const { refreshToken } = req.cookies as { refreshToken: string };
       await authService.logout(refreshToken);
-      res.clearCookie("refreshToken");
+      this.#clearRefreshCookie(res);
 
       res.status(200).end();
     } catch (error) {
@@ -91,21 +117,28 @@ class AuthController {
     next
   ) => {
     try {
-      const { refreshToken: cookieRefreshToken } = req.cookies as {
-        refreshToken: string;
-      };
-      const { refreshToken, ...userData } = await authService.refresh(
-        cookieRefreshToken
-      );
-      this.#setRefreshCookie(res, refreshToken);
+      const { refreshToken: cookieRefreshToken, guestToken: cookieGuestToken } =
+        req.cookies as {
+          refreshToken: string | undefined;
+          guestToken: string | undefined;
+        };
 
-      res.status(200).json(userData);
+      const { accessToken, user, ...serverToken } = await authService.refresh(
+        cookieRefreshToken,
+        cookieGuestToken
+      );
+
+      if ("guestToken" in serverToken) {
+        this.#setGuestCookie(res, serverToken.guestToken);
+        this.#clearRefreshCookie(res);
+      } else {
+        this.#setRefreshCookie(res, serverToken.refreshToken);
+      }
+
+      res.status(200).json({ user, accessToken });
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
-        res.clearCookie("refreshToken", {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-        });
+        this.#clearRefreshCookie(res);
 
         return next(error);
       }

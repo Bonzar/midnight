@@ -25,10 +25,10 @@ const NavLinkText = ({ children }: INavLinkTextProps) => {
 };
 
 export function Header() {
-  const { isAuth: isCurrentUserAuth } = useAppSelector(selectUser);
-  const { data, error } = useGetBasketQuery(undefined, {
-    skip: !isCurrentUserAuth,
-  });
+  const { isAuth: isCurrentUserAuth, data: currentUserData } =
+    useAppSelector(selectUser);
+
+  const { data, error } = useGetBasketQuery();
 
   // use error instead of isError for not display prev success value until error disappear
   const basketProductsCount = error
@@ -50,12 +50,16 @@ export function Header() {
       children: <NavLinkText>Главная</NavLinkText>,
     },
     {
-      to: isCurrentUserAuth ? "/profile" : "/login",
-      children: isCurrentUserAuth ? (
-        <NavLinkText>Профиль</NavLinkText>
-      ) : (
-        <NavLinkText>Войти</NavLinkText>
-      ),
+      to:
+        isCurrentUserAuth && currentUserData?.role !== "GUEST"
+          ? "/profile"
+          : "/login",
+      children:
+        isCurrentUserAuth && currentUserData?.role !== "GUEST" ? (
+          <NavLinkText>Профиль</NavLinkText>
+        ) : (
+          <NavLinkText>Войти</NavLinkText>
+        ),
     },
     {
       to: "/basket",

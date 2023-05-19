@@ -97,8 +97,8 @@ export const BasketProduct = React.memo(function BasketProductMemo({
         <img
           width={100}
           height={100}
-          src={"/static/productImages/" + product.productImages[0].url}
-          alt={product.productImages[0].description}
+          src={"/static/productImages/" + product.productImages.at(0)?.url}
+          alt={product.productImages.at(0)?.description}
         />
       </Link>
       <Text as={Link} to={`/products/${productId}`}>

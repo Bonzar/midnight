@@ -1,5 +1,5 @@
 import type { ChangeEvent } from "react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./login.module.css";
 import {
   useLoginMutation,
@@ -19,12 +19,6 @@ export const Login = () => {
   const { isSuccess, isLoading } = useReLogin();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isSuccess) {
-      navigate("/profile", { replace: true });
-    }
-  }, [navigate, isSuccess]);
 
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
   const [registration, { isLoading: isRegistrationLoading }] =
@@ -46,6 +40,7 @@ export const Login = () => {
           addresses: [],
         }).unwrap();
       }
+
       navigate("/");
     } catch {
       /* show error from data */

@@ -18,7 +18,7 @@ import type { NotUndefined } from "../../../types/types";
 
 export interface TokenAttributes {
   id: Token["id"];
-  refreshToken: Token["refreshToken"];
+  serverToken: Token["serverToken"];
   userId: Token["userId"];
 }
 
@@ -48,7 +48,7 @@ export class Token extends Model<
   @AllowNull(false)
   @NotEmpty
   @Column
-  refreshToken!: string;
+  serverToken!: string;
 
   @AllowNull(false)
   @ForeignKey(() => User)

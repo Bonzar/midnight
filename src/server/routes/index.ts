@@ -16,7 +16,7 @@ const router = Router();
 router.use("/user", userRouter); // user + address
 router.use("/category", categoryRouter);
 router.use("/order", orderRouter); // order + shipmentType
-router.use("/coupon", roleMiddleware("ADMIN"), couponRouter);
+router.use("/coupon", roleMiddleware(["ADMIN"]), couponRouter);
 router.use("/product", productRouter);
 router.use("/basket", authMiddleware, basketRouter);
 router.use("/wishlist", authMiddleware, wishlistRouter);

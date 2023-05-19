@@ -9,6 +9,7 @@ import { tokenService } from "./tokenService";
 import { UserDto } from "../dtos/userDto";
 import { sequelize } from "../database";
 import { ApiError } from "../error/ApiError";
+import { nanoid } from "@reduxjs/toolkit";
 
 export type CreateUserData =
   UserCreationAttributesWithAssociations<"addresses"> &
@@ -19,18 +20,22 @@ export type CreateUserData =
       >
     >;
 
-export interface UserAuthData {
+export type UserAuthData = {
   user: UserDto;
   accessToken: string;
-  refreshToken: string;
-}
+} & ({ refreshToken: string } | { guestToken: string });
 
 class AuthService {
-  private async generateAuthData(user: User): Promise<UserAuthData> {
+  private async generateAuthData<U extends User>(
+    user: U
+  ): Promise<UserAuthData> {
     const userDto = new UserDto(user);
 
     const tokens = tokenService.generateTokens(userDto);
-    await tokenService.saveToken(user.id, tokens.refreshToken);
+    await tokenService.saveToken(
+      user.id,
+      tokens.refreshToken ?? tokens.guestToken
+    );
 
     return { user: userDto, ...tokens };
   }
@@ -71,22 +76,52 @@ class AuthService {
     });
   }
 
-  public async refresh(refreshToken: string) {
-    if (!refreshToken) {
-      throw ApiError.unauthorized(
-        new Error("Для обновления токена не был предоставлен токен обновления")
+  public async refresh(
+    refreshToken: string | undefined,
+    guestToken: string | undefined
+  ) {
+    // refresh token present
+    if (refreshToken) {
+      const userDto = tokenService.validateRefreshToken(refreshToken);
+      const refreshTokenNote = await tokenService.getRefreshTokenNote(
+        refreshToken
       );
+
+      if (!userDto || !refreshTokenNote) {
+        throw ApiError.unauthorized();
+      }
+
+      const user = await this.getOneUserById(userDto.id);
+      return await this.generateAuthData(user);
     }
 
-    const userDto = tokenService.validateRefreshToken(refreshToken);
-    const refreshTokenNote = await tokenService.getRefreshTokenNote(
-      refreshToken
+    // guest token present without refresh token
+    if (guestToken) {
+      const userDto = tokenService.validateGuestToken(guestToken);
+      const refreshTokenNote = await tokenService.getRefreshTokenNote(
+        guestToken
+      );
+
+      // guest token valid, return auth guest data
+      if (userDto && refreshTokenNote) {
+        const user = await this.getOneUserById(userDto.id);
+        return await this.generateAuthData(user);
+      }
+
+      // guest token invalid, create new guest user
+      // todo maybe delete invalid guest user
+    }
+
+    // creating new guest user
+    const user = await User.create(
+      {
+        basket: {},
+        wishlist: {},
+        role: "GUEST",
+        password: nanoid(20),
+      },
+      { include: [Basket, Wishlist] }
     );
-    if (!userDto || !refreshTokenNote) {
-      throw ApiError.unauthorized();
-    }
-
-    const user = await this.getOneUserByEmail(userDto.email);
 
     return await this.generateAuthData(user);
   }
@@ -113,6 +148,22 @@ class AuthService {
     }
 
     return await user.update({ isActivated: true });
+  }
+
+  private async getOneUserById(id: number) {
+    if (!id) {
+      throw ApiError.badRequest(
+        "Для получения пользователя не был предоставлен id"
+      );
+    }
+
+    const user = await User.findOne({ where: { id } });
+
+    if (!user) {
+      throw ApiError.badRequest(`Пользователь с id - ${id} не найден`);
+    }
+
+    return user;
   }
 
   private async getOneUserByEmail(email: string) {

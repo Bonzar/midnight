@@ -2,6 +2,8 @@ import { Router } from "express";
 import { userController } from "../controllers/userController";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { authController } from "../controllers/authController";
+import { roleMiddleware } from "../middleware/roleMiddleware";
+
 const userRouter = Router();
 
 /**
@@ -24,7 +26,11 @@ userRouter.post("/registration", authController.registration);
 
 userRouter.post("/login", authController.login);
 
-userRouter.post("/logout", authMiddleware, authController.logout);
+userRouter.post(
+  "/logout",
+  roleMiddleware(["GUEST"], { invertSelection: true }),
+  authController.logout
+);
 
 userRouter.get("/activate/:link", authController.activate);
 

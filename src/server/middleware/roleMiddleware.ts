@@ -3,13 +3,26 @@ import { ApiError } from "../error/ApiError";
 import type { User } from "../models/User";
 import { tokenService } from "../services/tokenService";
 
+interface IDefaultOptions {
+  invertSelection: boolean;
+}
+
+const defaultOptions: IDefaultOptions = {
+  invertSelection: false,
+};
+
 export const roleMiddleware =
-  (role: User["role"]): RequestHandler<any, any, any, any> =>
+  (
+    roles: Array<User["role"]>,
+    options = defaultOptions
+  ): RequestHandler<any, any, any, any> =>
   (req, res, next) => {
     if (req.method === "OPTIONS") {
       next();
     }
     try {
+      options = { ...defaultOptions, ...options };
+
       const accessToken = req.headers.authorization?.split(" ")[1];
       if (!accessToken) {
         return next(ApiError.unauthorized());
@@ -20,8 +33,15 @@ export const roleMiddleware =
         return next(ApiError.unauthorized());
       }
 
-      if (userDto.role !== role) {
-        next(ApiError.forbidden());
+      // user should NOT have specified roles
+      if (options.invertSelection) {
+        if (roles.includes(userDto.role)) {
+          return next(ApiError.forbidden());
+        }
+      }
+      // user should have specified roles
+      else if (!roles.includes(userDto.role)) {
+        return next(ApiError.forbidden());
       }
 
       req.user = userDto;

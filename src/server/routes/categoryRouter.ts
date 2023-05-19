@@ -4,19 +4,19 @@ import { roleMiddleware } from "../middleware/roleMiddleware";
 
 const categoryRouter = Router();
 
-categoryRouter.post("/", roleMiddleware("ADMIN"), categoryController.create);
+categoryRouter.post("/", roleMiddleware(["ADMIN"]), categoryController.create);
 
 categoryRouter.get("/", categoryController.getAll);
 
 categoryRouter.patch(
   "/:id",
-  roleMiddleware("ADMIN"),
+  roleMiddleware(["ADMIN"]),
   categoryController.update
 );
 
 categoryRouter.delete(
   "/:id",
-  roleMiddleware("ADMIN"),
+  roleMiddleware(["ADMIN"]),
   categoryController.delete
 );
 

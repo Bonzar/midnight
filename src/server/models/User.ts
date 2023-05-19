@@ -1,4 +1,5 @@
 import type { Optional } from "sequelize";
+import { DataTypes } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
@@ -6,30 +7,29 @@ import {
   Default,
   HasMany,
   HasOne,
+  Is,
   IsEmail,
   Model,
   NotEmpty,
   PrimaryKey,
   Table,
-  Unique,
 } from "sequelize-typescript";
 import type {
   ModelAttr,
   ModelAttributesWithSelectedAssociations,
 } from "../helpers/modelHelpers";
 import { exhaustiveModelCheck } from "../helpers/modelHelpers";
+import type { AddressAttributes, AddressCreationAttributes } from "./Address";
 import { Address } from "./Address";
-import type { AddressCreationAttributes, AddressAttributes } from "./Address";
+import type { BasketAttributes, BasketCreationAttributes } from "./Basket";
 import { Basket } from "./Basket";
-import type { BasketCreationAttributes, BasketAttributes } from "./Basket";
+import type { OrderAttributes, OrderCreationAttributes } from "./Order";
 import { Order } from "./Order";
-import type { OrderCreationAttributes, OrderAttributes } from "./Order";
-import { Wishlist } from "./Wishlist";
 import type {
-  WishlistCreationAttributes,
   WishlistAttributes,
+  WishlistCreationAttributes,
 } from "./Wishlist";
-import { DataTypes } from "sequelize";
+import { Wishlist } from "./Wishlist";
 import bcrypt from "bcrypt";
 import type { TokenAttributes, TokenCreationAttributes } from "./Token";
 import { Token } from "./Token";
@@ -56,7 +56,13 @@ interface UserAssociationsAttributes {
 
 export type UserCreationAttributes = Optional<
   Omit<UserAttributes, "id">,
-  "isActivated" | "role" | "lastName" | "middleName"
+  | "isActivated"
+  | "role"
+  | "firstName"
+  | "lastName"
+  | "middleName"
+  | "email"
+  | "password"
 >;
 
 interface UserCreationAssociationsAttributes {
@@ -77,10 +83,10 @@ export class User extends Model<
   @Column
   id!: number;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @NotEmpty
-  @Column
-  firstName!: string;
+  @Column(DataTypes.STRING)
+  firstName!: string | null;
 
   @AllowNull(true)
   @NotEmpty
@@ -92,9 +98,32 @@ export class User extends Model<
   @Column(DataTypes.STRING)
   middleName!: string | null;
 
-  @Unique
-  @AllowNull(false)
+  @AllowNull(true) // only for guests
   @IsEmail
+  @NotEmpty
+  @Is(async function guestEmptyEmail(email?: User["email"]) {
+    // @ts-ignore - Can't infer `this` type
+    const currentInstance: User = this;
+
+    const role = currentInstance.getDataValue("role");
+
+    if (role === "GUEST" && email) {
+      // Guests should have empty email
+      throw new Error("Гость не может иметь email");
+    }
+
+    if (email === null || email === undefined) {
+      // Guests have empty email
+      if (role === "GUEST") return;
+
+      throw new Error("Email не может быть пустым");
+    }
+
+    const user = await User.findOne({ where: { email } });
+    if (user) {
+      throw new Error("Аккаунт с такие email уже зарегистрирован");
+    }
+  })
   @Column
   email!: string;
 
@@ -123,8 +152,8 @@ export class User extends Model<
 
   @AllowNull(false)
   @Default("USER")
-  @Column({ type: DataTypes.ENUM, values: ["USER", "ADMIN"] })
-  role!: "USER" | "ADMIN";
+  @Column({ type: DataTypes.ENUM, values: ["USER", "ADMIN", "GUEST"] })
+  role!: "USER" | "ADMIN" | "GUEST";
 
   @HasMany(() => Address)
   addresses!: Address[];
