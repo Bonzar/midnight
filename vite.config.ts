@@ -18,6 +18,10 @@ export default defineConfig({
   server: { port: 3000 },
   build: {
     minify: false,
+    rollupOptions: {
+      // todo delete on change iziToast to soner package
+      external: "iziToast/dist/css/iziToast.min.css",
+    },
   },
   root: "",
   base: "/",
