@@ -6,7 +6,7 @@
   border-radius: var(--border-radius);
 }
 
-.imageWrapper.imageWrapperShowSkeleton:not(.imageWrapperInCache) {
+.imageWrapper.imageWrapperShowSkeleton:not(.imageWrapperImageInCache) {
   animation: var(--skeleton-animation);
   opacity: 0.5;
 }
