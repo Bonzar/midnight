@@ -6,11 +6,10 @@
   padding: 0 var(--indent-5);
   border-radius: 100vw;
   background-color: var(--beer);
-  box-shadow: var(--shadow)
+  box-shadow: var(--shadow);
 }
 
 .header {
-  position: sticky;
   top: 0;
   padding: var(--indent-4) var(--indent-4) 0 var(--indent-4);
   z-index: 1000;
