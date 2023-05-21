@@ -5,7 +5,7 @@ import type { InheritableElementProps } from "../../types/PolymorphicComponent";
 import type { TActiveColor } from "../../types/TColor";
 
 interface ICardProps {
-  children: ReactNode;
+  children?: ReactNode;
   cardColor?: TActiveColor;
 }
 

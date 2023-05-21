@@ -1,5 +1,7 @@
 .productCard {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 4fr 1fr 1fr 1fr;
+  justify-items: center;
   flex-flow: row nowrap;
   gap: var(--indent-3);
   align-items: center;

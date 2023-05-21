@@ -12,7 +12,7 @@ interface IButtonProps {
   btnColor: TActiveColor;
 }
 
-type ButtonProps = ExtendableProps<
+export type ButtonProps = ExtendableProps<
   TextProps<"button">,
   InheritableElementProps<"button", IButtonProps>
 >;

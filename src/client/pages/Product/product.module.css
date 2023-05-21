@@ -1,7 +1,14 @@
-.product {
-}
-
 .productPage {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  gap: var(--indent-5);
+}
+
+@media (--tablet-viewport) {
+  .productPage {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.productContent {
+  padding: var(--indent-4);
 }

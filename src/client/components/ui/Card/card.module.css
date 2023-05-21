@@ -3,4 +3,5 @@
   padding: var(--indent-5);
   border-radius: 5px;
   border: 1px solid var(--grey65);
+  box-shadow: var(--shadow);
 }

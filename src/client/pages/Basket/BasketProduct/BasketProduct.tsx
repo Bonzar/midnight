@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../basket.module.css";
 import { Text } from "../../../components/ui/Text";
 import { Button } from "../../../components/ui/Button";
@@ -7,15 +7,14 @@ import { Input } from "../../../components/ui/Input";
 import { Card } from "../../../components/ui/Card";
 import {
   useDeleteBasketProductMutation,
-  useGetBasketQuery,
   useUpdateBasketProductMutation,
 } from "../../../store/slices/basketApiSlice";
-import { createSelector } from "@reduxjs/toolkit";
-import type { GetBasketResponse } from "../../../../server/controllers/basketController";
 import { preventDefault } from "../../../utils/react/preventDefault";
 import { parseAppInt } from "../../../../helpers/parseAppInt";
 import { useDebouncedFunction } from "../../../hooks/useDebouncedFunction";
 import { Link } from "react-router-dom";
+import { useBasketProduct } from "../../../hooks/useBasketProduct";
+import { Img } from "../../../components/ui/Img";
 
 interface IBasketProductProps {
   productId: number;
@@ -30,22 +29,7 @@ export const BasketProduct = React.memo(function BasketProductMemo({
   ] = useUpdateBasketProductMutation();
   const [deleteBasketProduct] = useDeleteBasketProductMutation();
 
-  const selectBasketProduct = useMemo(() => {
-    return createSelector(
-      (res: { data?: GetBasketResponse }) => res.data,
-      (res: { data?: GetBasketResponse }, productId: number) => productId,
-      (data, productId) =>
-        data?.basket.basketProducts.find(
-          (basketProduct) => basketProduct.productId === productId
-        )
-    );
-  }, []);
-
-  const { basketProduct } = useGetBasketQuery(undefined, {
-    selectFromResult: (result) => ({
-      basketProduct: selectBasketProduct(result, productId),
-    }),
-  });
+  const { basketProduct } = useBasketProduct(productId);
 
   const [inputQuantity, setInputQuantity] = useState(
     basketProduct?.quantity ?? 0
@@ -71,14 +55,20 @@ export const BasketProduct = React.memo(function BasketProductMemo({
     return updateBasketProduct({ productId, quantity: newQuantity });
   };
 
-  const handleChangeQuantityBtnClick = (isAddOperand: boolean) => () => {
-    changeQuantity(isAddOperand ? inputQuantity + 1 : inputQuantity - 1);
-  };
-
   const debouncedQuantityUpdate = useDebouncedFunction(
     (newQuantity: number) => changeQuantity(newQuantity),
     500
   );
+
+  const handleChangeQuantityBtnClick = (isAddOperand: boolean) => () => {
+    let newQuantity = isAddOperand ? inputQuantity + 1 : inputQuantity - 1;
+    if (newQuantity < 0) {
+      newQuantity = 0;
+    }
+
+    setInputQuantity(newQuantity);
+    debouncedQuantityUpdate(newQuantity);
+  };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuantity = parseAppInt(event.currentTarget.value);
@@ -94,7 +84,7 @@ export const BasketProduct = React.memo(function BasketProductMemo({
   return (
     <Card className={styles.productCard}>
       <Link to={`/products/${productId}`}>
-        <img
+        <Img
           width={100}
           height={100}
           src={"/static/productImages/" + product.productImages.at(0)?.url}

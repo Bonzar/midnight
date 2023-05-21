@@ -4,6 +4,8 @@
 
 :root {
   --border-radius: 5px;
+  --shadow: 0 7px 15px -5px hsl(0deg 0% 0% / 20%);
+  --skeleton-animation: skeleton-loading 1s ease-out infinite alternate;
 }
 
 html {
@@ -25,4 +27,16 @@ button {
 
 *:focus {
   outline: revert;
+}
+
+@keyframes skeleton-loading {
+  from {
+    background-color: var(--grey76);
+    border-color: var(--grey76);
+  }
+
+  to {
+    background-color: var(--grey85);
+    border-color: var(--grey85);
+  }
 }

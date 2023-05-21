@@ -1452,6 +1452,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-lazy-load-image-component@npm:^1.5.3":
+  version: 1.5.3
+  resolution: "@types/react-lazy-load-image-component@npm:1.5.3"
+  dependencies:
+    "@types/react": "*"
+    csstype: ^3.0.2
+  checksum: 4e164a897fa750bbb216b97a9fe5b01e98e9620c68a98269d2e73f1416b9dd93277a5ab4052253ab74d0ad058462577f2eae35f94027ff9b4740242e20b185c7
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*, @types/react@npm:^18.0.37":
   version: 18.2.0
   resolution: "@types/react@npm:18.2.0"
@@ -4783,10 +4793,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.debounce@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "lodash.debounce@npm:4.0.8"
+  checksum: a3f527d22c548f43ae31c861ada88b2637eb48ac6aa3eb56e82d44917971b8aa96fbb37aa60efea674dc4ee8c42074f90f7b1f772e9db375435f6c83a19b3bc6
+  languageName: node
+  linkType: hard
+
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
+  languageName: node
+  linkType: hard
+
+"lodash.throttle@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "lodash.throttle@npm:4.1.1"
+  checksum: 129c0a28cee48b348aef146f638ef8a8b197944d4e9ec26c1890c19d9bf5a5690fe11b655c77a4551268819b32d27f4206343e30c78961f60b561b8608c8c805
   languageName: node
   linkType: hard
 
@@ -4984,6 +5008,7 @@ __metadata:
     "@types/ramda": ^0.29.1
     "@types/react": ^18.0.37
     "@types/react-dom": ^18.0.11
+    "@types/react-lazy-load-image-component": ^1.5.3
     "@types/uuid": ^9.0.1
     "@types/validator": ^13.7.15
     "@typescript-eslint/eslint-plugin": ^5.59.0
@@ -5019,6 +5044,7 @@ __metadata:
     ramda: ^0.29.0
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-lazy-load-image-component: ^1.5.6
     react-redux: ^8.0.5
     react-router-dom: ^6.10.0
     reflect-metadata: ^0.1.13
@@ -5955,6 +5981,19 @@ __metadata:
   version: 18.2.0
   resolution: "react-is@npm:18.2.0"
   checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
+  languageName: node
+  linkType: hard
+
+"react-lazy-load-image-component@npm:^1.5.6":
+  version: 1.5.6
+  resolution: "react-lazy-load-image-component@npm:1.5.6"
+  dependencies:
+    lodash.debounce: ^4.0.8
+    lodash.throttle: ^4.1.1
+  peerDependencies:
+    react: ^15.x.x || ^16.x.x || ^17.x.x || ^18.x.x
+    react-dom: ^15.x.x || ^16.x.x || ^17.x.x || ^18.x.x
+  checksum: 2db8dd56e5926c4831e58b05650e310fd8eabc24607716ad7ffda3e0f6b325434edb098ad27068ea8db7f42fec37bc17eaffbaf562a322e6f1ace16dcc3d5422
   languageName: node
   linkType: hard
 

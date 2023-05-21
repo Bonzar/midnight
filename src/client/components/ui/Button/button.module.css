@@ -7,13 +7,20 @@
   background-color: var(--btn-secondary-color);
   transition: background-color cubic-bezier(0.18, 0.89, 0.32, 1.28) 1ms,
     color cubic-bezier(0.18, 0.89, 0.32, 1.28) 1ms;
+  box-shadow: var(--shadow)
 }
 
-.button:hover {
+.button:not([disabled]):hover {
   background-color: var(--btn-primary-color);
   color: var(--white);
 }
 
+.button:active {
+  box-shadow: inset var(--shadow), var(--shadow)
+}
+
 .button[disabled] {
   filter: opacity(0.4);
+  box-shadow: unset;
+  cursor: default;
 }

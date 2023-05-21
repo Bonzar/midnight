@@ -1,0 +1,6 @@
+.bone {
+  animation: var(--skeleton-animation);
+  opacity: 0.5;
+  border-radius: var(--border-radius);
+  max-width: 100%;
+}

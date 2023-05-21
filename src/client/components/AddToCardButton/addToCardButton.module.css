@@ -15,6 +15,6 @@
   margin-left: auto;
 }
 
-.priceBlockBtn:hover .divider {
+.priceBlockBtn:not([disabled]):hover .divider {
   background-color: var(--white);
 }

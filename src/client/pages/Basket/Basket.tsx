@@ -42,10 +42,11 @@ export const Basket = () => {
         <div key={product.id}>
           <BasketProduct productId={product.id} />
           {index !== data.basket.basketProducts.length - 1 && (
-            <Indent size={3} />
+            <Indent size={4} />
           )}
         </div>
       ))}
+      <Indent size={3} />
       <Indent size={3} />
       <Text as="div" textSize={2}>
         Подытог: {data.subtotal}

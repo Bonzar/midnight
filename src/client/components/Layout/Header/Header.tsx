@@ -18,7 +18,12 @@ interface INavLinkTextProps {
 
 const NavLinkText = ({ children }: INavLinkTextProps) => {
   return (
-    <Text textColor="white" textSize={3} textWeight="semibold">
+    <Text
+      textColor="white"
+      textSize={3}
+      textWeight="semibold"
+      style={{ whiteSpace: "nowrap" }}
+    >
       {children}
     </Text>
   );
@@ -45,10 +50,6 @@ export function Header() {
   };
 
   const links = [
-    {
-      to: "/",
-      children: <NavLinkText>Главная</NavLinkText>,
-    },
     {
       to:
         isCurrentUserAuth && currentUserData?.role !== "GUEST"

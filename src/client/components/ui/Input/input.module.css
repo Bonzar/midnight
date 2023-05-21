@@ -3,10 +3,16 @@
   border-radius: var(--border-radius);
   border: 1px solid var(--grey65);
   background: var(--grey97) linear-gradient(hsl(0, 0%, 100%,70%), hsl(0, 0%, 100%,70%));
+  box-shadow: var(--shadow)
 }
 
 .input::placeholder {
   color: var(--grey52);
+}
+
+.input[disabled] {
+  filter: opacity(0.4);
+  box-shadow: unset;
 }
 
 .w-fullwidth {

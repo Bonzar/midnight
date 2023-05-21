@@ -1,0 +1,20 @@
+.productCardWrapper {
+  width: 100%;
+}
+
+.productName {
+  align-self: end;
+}
+
+.productCardWrapper {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.productCard {
+  display: grid;
+  text-align: center;
+  height: 100%;
+}

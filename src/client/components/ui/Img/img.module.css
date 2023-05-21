@@ -1,0 +1,26 @@
+.lazyImageWrapper {
+  animation: var(--skeleton-animation);
+  opacity: 0.5;
+  border-radius: var(--border-radius);
+}
+
+.lazyImageWrapper.imageLoaded {
+  animation: unset;
+  background-color: transparent;
+  opacity: 1;
+  transition: background-color 0.3s;
+}
+
+.lazyImage {
+  object-fit: cover;
+  border-radius: var(--border-radius);
+}
+
+.lazyImage.lazyImageLoaded {
+  opacity: 0;
+}
+
+.lazyImageWrapper.imageLoaded .lazyImage {
+  opacity: 1;
+  transition: opacity 0.3s;
+}

@@ -5,10 +5,13 @@ import { useParams } from "react-router-dom";
 import { useGetDetailedProductQuery } from "../../store/slices/productsApiSlice";
 import { parseAppInt } from "../../../helpers/parseAppInt";
 import { Indent } from "../../components/ui/Indent";
-import { Card } from "../../components/ui/Card";
 import { isApiError } from "../../utils/isApiError";
 import { AddToCardButton } from "../../components/AddToCardButton";
 import { has } from "ramda";
+import { BoneText } from "../../components/ui/Skeleton/BoneText";
+import { Img } from "../../components/ui/Img";
+import { Bone } from "../../components/ui/Skeleton/Bone";
+import { Skeleton } from "../../components/ui/Skeleton";
 
 export const Product = () => {
   const { id: paramsId } = useParams<"id">();
@@ -27,9 +30,7 @@ export const Product = () => {
     return <Text>Ошибка</Text>;
   }
 
-  if (isLoading) {
-    return <Text>Загрузка</Text>;
-  }
+  if (isLoading) return <Product.Skeleton />;
 
   if (!isSuccess) {
     return <Text>Не получилось</Text>;
@@ -44,7 +45,7 @@ export const Product = () => {
         {product.productImages.length > 0 &&
           product.productImages.map((image) => (
             <div key={image.url}>
-              <img
+              <Img
                 src={"/static/productImages/" + image.url}
                 alt={image.description}
               />
@@ -53,14 +54,40 @@ export const Product = () => {
           ))}
       </div>
 
-      <Card cardColor="venusSlipperOrchid">
+      <div className={styles.productContent}>
         <Text as="h2" textWeight="bold">
           {product.name}
         </Text>
         <Indent size={3} />
 
-        <AddToCardButton price={product.price} productId={product.id} />
-      </Card>
+        <AddToCardButton
+          stock={product.stock}
+          price={product.price}
+          productId={product.id}
+        />
+      </div>
     </div>
+  );
+};
+
+Product.Skeleton = function ProductSkeleton() {
+  return (
+    <Skeleton>
+      <div className={styles.productPage}>
+        <div>
+          <Bone aspectRatio="1" />
+        </div>
+
+        <div>
+          <BoneText size={2} />
+          <Indent size={3} />
+          <BoneText />
+          <BoneText />
+          <BoneText />
+          <BoneText />
+          <BoneText />
+        </div>
+      </div>
+    </Skeleton>
   );
 };
