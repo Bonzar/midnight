@@ -10,13 +10,16 @@
   box-shadow: var(--shadow)
 }
 
-.button:not([disabled]):hover {
-  background-color: var(--btn-primary-color);
-  color: var(--white);
+@media (pointer: fine) {
+  .button:not([disabled]):hover {
+    background-color: var(--btn-primary-color);
+    color: var(--white);
+  }
 }
 
 .button:active {
-  box-shadow: inset var(--shadow), var(--shadow)
+  box-shadow: inset var(--shadow), var(--shadow);
+  outline: none;
 }
 
 .button[disabled] {
