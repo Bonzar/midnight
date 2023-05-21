@@ -4,6 +4,7 @@ import type { TColor } from "../../types/TColor";
 import type { InheritableElementProps } from "../../types/PolymorphicComponent";
 import styles from "./divider.module.css";
 import type { TTextSize } from "../../types/TTextSize";
+import { getClassName } from "../../../utils/react/getClassName";
 
 interface IDividerProps {
   dividerColor?: TColor | string;
@@ -43,13 +44,11 @@ export const Divider = ({
 
   return (
     <hr
-      className={[
+      className={getClassName([
         className,
         styles.divider,
         column ? styles.column : styles.row,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      ])}
       style={dividerStyles}
       {...other}
     />

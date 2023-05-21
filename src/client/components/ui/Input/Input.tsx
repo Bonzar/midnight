@@ -8,6 +8,7 @@ import type {
 import type { TActiveColor } from "../../types/TColor";
 import type { TextProps } from "../Text";
 import { Text } from "../Text";
+import { getClassName } from "../../../utils/react/getClassName";
 
 interface IInputProps {
   inputColor?: TActiveColor;
@@ -41,13 +42,11 @@ export const Input = ({
   type,
   ...other
 }: InputProps) => {
-  const classes = [
+  const classes = getClassName([
     className,
     styles.input,
     inputFullWidth && styles["w-fullwidth"],
-  ]
-    .filter(Boolean)
-    .join(" ");
+  ]);
 
   const inputStyles = style ?? {};
   if (inputColor) {

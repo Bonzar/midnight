@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import React from "react";
 import styles from "./layoutcontainer.module.css";
+import { getClassName } from "../../../utils/react/getClassName";
 
 interface ILayoutContainerProps {
   children: ReactNode;
@@ -12,7 +13,7 @@ export function LayoutContainer({
   className,
 }: ILayoutContainerProps) {
   return (
-    <div className={[styles.container, className].filter(Boolean).join(" ")}>
+    <div className={getClassName([styles.container, className])}>
       {children}
     </div>
   );

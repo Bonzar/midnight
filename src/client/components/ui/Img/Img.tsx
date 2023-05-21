@@ -8,6 +8,8 @@ import {
 } from "../../../store/slices/imageCacheSlice";
 import { useAppDispatch, useAppSelector } from "../../../store/helpers/hooks";
 import type { ExtendableProps } from "../../types/PolymorphicComponent";
+import { useFlashTime } from "../../../hooks/useFlashTime";
+import { getClassName } from "../../../utils/react/getClassName";
 
 interface IImgProps {
   src: string;
@@ -16,21 +18,22 @@ interface IImgProps {
 type ImgProps = ExtendableProps<LazyLoadImageProps, IImgProps>;
 
 export const Img = ({ src, ...lazyLoadImageProps }: ImgProps) => {
+  const dispatch = useAppDispatch();
+  const isImageInCache = !!useAppSelector((state) =>
+    selectImageCacheById(state, src)
+  );
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoadingStart, setIsLoadingStart] = useState(false);
   const [isLoadedOnFlash, setIsLoadedOnFlash] = useState(false);
 
-  const [isFlashTime, setIsFlashTime] = useState(true);
+  const [isFlashTime, startFlashTime] = useFlashTime(30, true);
 
   useEffect(() => {
-    if (!isLoadingStart) return;
-
-    const timeoutId = setTimeout(() => {
-      setIsFlashTime(false);
-    }, 50);
-
-    return () => clearTimeout(timeoutId);
-  }, [isLoadingStart]);
+    if (isLoadingStart) {
+      startFlashTime();
+    }
+  }, [startFlashTime, isLoadingStart]);
 
   useEffect(() => {
     if (isFlashTime && isLoaded) {
@@ -38,14 +41,7 @@ export const Img = ({ src, ...lazyLoadImageProps }: ImgProps) => {
     }
   }, [isFlashTime, isLoaded]);
 
-  const dispatch = useAppDispatch();
-  const isImageInCache = useAppSelector((state) => {
-    if (!src) return null;
-
-    return selectImageCacheById(state, src);
-  });
-
-  const hideImage = !isFlashTime && !isLoadedOnFlash;
+  const showImage = !isFlashTime && isLoadedOnFlash;
 
   const showWrapper = !isLoadedOnFlash && !isFlashTime && isLoadingStart;
 
@@ -53,22 +49,25 @@ export const Img = ({ src, ...lazyLoadImageProps }: ImgProps) => {
 
   return (
     <LazyLoadImage
-      visibleByDefault={!!isImageInCache}
-      className={[styles.lazyImage, hideImage && styles.lazyImageLoaded]
-        .filter(Boolean)
-        .join(" ")}
-      wrapperClassName={[
-        showWrapper && styles.lazyImageWrapper,
-        hideWrapper && styles.imageLoaded,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      src={src}
+      threshold={1000}
+      visibleByDefault={isImageInCache}
+      className={getClassName([
+        styles.lazyImage,
+        isImageInCache && styles.imageInCache,
+        showImage && styles.lazyImageShow,
+      ])}
+      wrapperClassName={getClassName([
+        styles.imageWrapper,
+        isImageInCache && styles.imageWrapperImageInCache,
+        showWrapper && styles.imageWrapperShowSkeleton,
+        hideWrapper && styles.imageWrapperHideSkeleton,
+      ])}
       beforeLoad={() => setIsLoadingStart(true)}
       afterLoad={() => {
         setIsLoaded(true);
         dispatch(addCache({ filename: src }));
       }}
-      src={src}
       {...lazyLoadImageProps}
     />
   );

@@ -3,6 +3,7 @@ import React from "react";
 import styles from "./card.module.css";
 import type { InheritableElementProps } from "../../types/PolymorphicComponent";
 import type { TActiveColor } from "../../types/TColor";
+import { getClassName } from "../../../utils/react/getClassName";
 
 interface ICardProps {
   children?: ReactNode;
@@ -20,10 +21,7 @@ export const Card = ({ children, className, cardColor, style }: CardProps) => {
   }
 
   return (
-    <div
-      style={cardStyles}
-      className={[styles.card, className].filter(Boolean).join(" ")}
-    >
+    <div style={cardStyles} className={getClassName([styles.card, className])}>
       {children}
     </div>
   );

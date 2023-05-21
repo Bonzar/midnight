@@ -44,7 +44,7 @@ export const Product = () => {
       >
         {product.productImages.length > 0 &&
           product.productImages.map((image) => (
-            <div key={image.url}>
+            <div style={{ aspectRatio: 1 }} key={image.url}>
               <Img
                 src={"/static/productImages/" + image.url}
                 alt={image.description}
@@ -78,7 +78,7 @@ Product.Skeleton = function ProductSkeleton() {
           <Bone aspectRatio="1" />
         </div>
 
-        <div>
+        <div className={styles.productContent}>
           <BoneText size={2} />
           <Indent size={3} />
           <BoneText />

@@ -7,9 +7,9 @@ interface ISkeletonProps {
 }
 
 export const Skeleton = ({ children }: ISkeletonProps) => {
-  const isAwaitFlash = useFlashTime();
+  const [isFlashTime] = useFlashTime();
 
-  if (isAwaitFlash) return null;
+  if (isFlashTime) return null;
 
   return children;
 };

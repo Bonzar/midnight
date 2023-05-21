@@ -45,12 +45,13 @@ export const ProductCard = ({ id, scrollPosition }: IProductCardProps) => {
     >
       <div className={styles.productCardWrapper}>
         <Link to={`products/${product.id}`} className={styles.productCard}>
-          <Img
-            src={"/static/productImages/" + product.productImages.at(0)?.url}
-            alt={product.productImages.at(0)?.description}
-            style={{ aspectRatio: 1 }}
-            scrollPosition={scrollPosition}
-          />
+          <div style={{ aspectRatio: 1 }}>
+            <Img
+              src={"/static/productImages/" + product.productImages.at(0)?.url}
+              alt={product.productImages.at(0)?.description}
+              scrollPosition={scrollPosition}
+            />
+          </div>
           <Indent size={3} />
           <Text
             as="h2"

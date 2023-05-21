@@ -7,6 +7,7 @@ import type {
 import buttonStyles from "./button.module.css";
 import type { TextProps } from "../Text";
 import { Text } from "../Text";
+import { getClassName } from "../../../utils/react/getClassName";
 
 interface IButtonProps {
   btnColor: TActiveColor;
@@ -33,7 +34,7 @@ export const Button = ({
   return (
     <Text
       as="button"
-      className={[className, buttonStyles.button].filter(Boolean).join(" ")}
+      className={getClassName([className, buttonStyles.button])}
       style={btnStyles}
       {...other}
     >

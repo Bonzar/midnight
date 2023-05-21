@@ -5,6 +5,7 @@ import type { TColor } from "../../types/TColor";
 import type { TTextSize } from "../../types/TTextSize";
 import type { PolymorphicComponentProps } from "../../types/PolymorphicComponent";
 import { parseAppInt } from "../../../../helpers/parseAppInt";
+import { getClassName } from "../../../utils/react/getClassName";
 
 interface ITextProps {
   textColor?: TColor;
@@ -39,15 +40,13 @@ export const Text = <E extends ElementType = "span">({
     }
   }
 
-  const classes = [
+  const classes = getClassName([
     className,
     styles.text,
     styles[`c-${textColor}`],
     styles[`s-${textSize}`],
     styles[`w-${textWeight}`],
-  ]
-    .filter(Boolean)
-    .join(" ");
+  ]);
 
   return (
     <Component {...other} className={classes}>

@@ -1,26 +1,39 @@
-.lazyImageWrapper {
-  animation: var(--skeleton-animation);
-  opacity: 0.5;
+.imageWrapper {
+  /* placeholder is a span with element style display: inline-block */
+  /* specifying placeholder on div just do nothing */
+  display: block !important;
+  height: 100%;
   border-radius: var(--border-radius);
 }
 
-.lazyImageWrapper.imageLoaded {
+.imageWrapper.imageWrapperShowSkeleton:not(.imageWrapperInCache) {
+  animation: var(--skeleton-animation);
+  opacity: 0.5;
+}
+
+.imageWrapper.imageWrapperHideSkeleton {
   animation: unset;
   background-color: transparent;
   opacity: 1;
-  transition: background-color 0.3s;
+  transition: opacity 0.3s, background-color 0.3s;
 }
 
 .lazyImage {
   object-fit: cover;
   border-radius: var(--border-radius);
-}
-
-.lazyImage.lazyImageLoaded {
   opacity: 0;
 }
 
-.lazyImageWrapper.imageLoaded .lazyImage {
+.lazyImage.imageInCache {
+  opacity: 1;
+}
+
+.lazyImage.lazyImageShow {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.imageWrapper.imageWrapperHideSkeleton .lazyImage {
   opacity: 1;
   transition: opacity 0.3s;
 }
