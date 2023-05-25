@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "../basket.module.css";
+import styles from "./basketProduct.module.css";
 import { Text } from "../../../components/ui/Text";
 import { Button } from "../../../components/ui/Button";
 import { Indent } from "../../../components/ui/Indent";
@@ -85,8 +85,8 @@ export const BasketProduct = React.memo(function BasketProductMemo({
     <Card className={styles.productCard}>
       <Link to={`/products/${productId}`}>
         <Img
-          width={100}
-          height={100}
+          width={70}
+          height={70}
           src={"/static/productImages/" + product.productImages.at(0)?.url}
           alt={product.productImages.at(0)?.description}
         />
@@ -94,9 +94,10 @@ export const BasketProduct = React.memo(function BasketProductMemo({
       <Text as={Link} to={`/products/${productId}`}>
         {product.name}
       </Text>
-      <Text>{product.price}₽</Text>
+      <Text className={styles.quantityFormPrice}>{product.price}₽</Text>
       <form className={styles.quantityForm} onSubmit={preventDefault(() => {})}>
         <Button
+          className={styles.quantityFormButton}
           type="button"
           btnColor="overgrown"
           disabled={isUpdateBasketProductLoading}
@@ -104,8 +105,9 @@ export const BasketProduct = React.memo(function BasketProductMemo({
         >
           -
         </Button>
-        <Indent size={2} inline />
+        <Indent size={2} inline className={styles.quantityFormIndent} />
         <Input
+          className={styles.quantityFormInput}
           value={inputQuantity}
           onChange={handleInputChange}
           name="quantity"
@@ -114,8 +116,9 @@ export const BasketProduct = React.memo(function BasketProductMemo({
           min={0}
           disabled={isUpdateBasketProductLoading}
         />
-        <Indent size={2} inline />
+        <Indent size={2} inline className={styles.quantityFormIndent} />
         <Button
+          className={styles.quantityFormButton}
           type="button"
           btnColor="overgrown"
           disabled={isUpdateBasketProductLoading}

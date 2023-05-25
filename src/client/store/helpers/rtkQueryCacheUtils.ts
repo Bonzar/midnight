@@ -1,117 +1,78 @@
-import { has } from "ramda";
 import type { TagTypes } from "../apiSlice";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
-type CacheID = string | number | void;
+type CacheID = string | number;
 
-export type CacheItem<T extends TagTypes, ID extends CacheID> = ID extends void
-  ? T
-  : { type: T; id: ID };
+type TagsResult = unknown | undefined;
+type TagsError = FetchBaseQueryError | undefined;
+type TagsArg = unknown;
 
-/**
- * A list of cache items, including a LIST entity cache
- */
-export type CacheList<T extends TagTypes, ID extends CacheID> = CacheItem<
-  T,
-  ID
->[];
+type CacheItem = TagTypes | { type: TagTypes; id: CacheID };
 
-type TagsList<T extends TagTypes, ID extends CacheID> = Readonly<
-  CacheList<T, ID>
->;
+type ProvidingTags<R extends TagsResult, A extends TagsArg> =
+  | ((result: R, error: TagsError, arg: A) => CacheItem[])
+  | CacheItem[];
 
-/**
- * HOF creator that accept HOF callback and return tags HOF
- * As result will concat tags from HOF callback and from wrapped tags callback
- */
-const createTagsHOF =
-  <
-    T extends TagTypes,
-    ID extends CacheID,
-    HOFResult,
-    HOFError,
-    HOFArg,
-    Tags extends TagsList<T, ID>
-  >(
-    HOFCallback: (result: HOFResult, error: HOFError, arg: HOFArg) => Tags
-  ) =>
-  <
-    Result extends HOFResult,
-    Error extends HOFError,
-    Arg extends HOFArg,
-    CallbackTags extends TagsList<T, ID>
-  >(
-    tags:
-      | CallbackTags
-      | ((result: Result, error: Error, arg: Arg) => CallbackTags)
-  ) =>
-  (result: Result, error: Error, arg: Arg) => {
-    let callbackTags;
+type TagsGetter<R extends TagsResult, A extends TagsArg> = (
+  result: R,
+  error: TagsError,
+  arg: A
+) => CacheItem[];
+
+function getTags<R extends TagsResult, A extends TagsArg>(
+  result: R,
+  error: TagsError,
+  arg: A
+): (tags?: ProvidingTags<R, A>) => CacheItem[] {
+  return (tags: ProvidingTags<R, A> | undefined) => {
+    if (!tags) return [];
+
     if (typeof tags === "function") {
-      callbackTags = tags(result, error, arg);
-    } else {
-      callbackTags = tags;
+      return tags(result, error, arg);
     }
 
-    return [...HOFCallback(result, error, arg), ...callbackTags];
+    return tags;
   };
+}
+
+function connectTags<R extends TagsResult, A extends TagsArg>(
+  result: R,
+  error: TagsError,
+  arg: A
+) {
+  return (tagsLeft: ProvidingTags<R, A> | undefined) =>
+    (tagsRight: ProvidingTags<R, A> | undefined) => {
+      const tagsGetter = getTags(result, error, arg);
+
+      return [...tagsGetter(tagsLeft), ...tagsGetter(tagsRight)];
+    };
+}
 
 /**
- * HOF that provide error tags when result isn't success
- * Have UNAUTHORIZED for 401 status in error and UNKNOWN_ERROR for others
- *
- * @example
- * ```ts
- * withErrorTags([])(undefined, {status: 401}, undefined)
- * // returns:
- * // ["UNAUTHORIZED"]
- * ```
+ * HOF creator that accept addition tags and return tags getter, that will concat additional tags
  */
-export const withErrorTags = createTagsHOF((result, error) => {
-  // is result available?
-  if (result) {
-    // successful query
-    return [];
-  }
-
-  let errorTag;
-  // Received an error, include an error cache item to the cache list
-  if (has("status", error) && error.status === 401) {
-    // unauthorized error
-    errorTag = "UNAUTHORIZED" as const;
-  } else {
-    errorTag = "UNKNOWN_ERROR" as const;
-  }
-
-  return [errorTag];
-});
-
-/**
- * Wrap createTagsHOF with withErrorTags
- */
-const createTagsHOFWithErrors = <
-  T extends TagTypes,
-  ID extends CacheID,
-  Result,
-  Error,
-  Arg,
-  Tags extends TagsList<T, ID>
->(
-  HOFCallback: (result: Result, error: Error, arg: Arg) => Tags
-) => createTagsHOF(withErrorTags(HOFCallback));
+function createTagsGetter<HOF_R extends TagsResult, HOF_A extends TagsArg>(
+  providingTags: ProvidingTags<HOF_R, HOF_A>
+) {
+  return <R extends HOF_R, A extends HOF_A>(
+      tags?: ProvidingTags<R, A>
+    ): TagsGetter<R, A> =>
+    (result, error, arg) =>
+      connectTags(result, error, arg)(tags)(providingTags);
+}
 
 /**
  * HOF to create an entity cache to provide a LIST,
- * depending on the results being in a common format.
+ * depending on the results.
  *
  * Will not provide individual items without a result.
  *
- * @example
- * ```ts
+ * @example ```ts
  * const results = [
  *   { id: 1, message: 'foo' },
  *   { id: 2, message: 'bar' }
  * ]
- * providesList('Product')([])(results)
+ * withList('Product')()(results)
  * // [
  * //   { type: 'Product', id: 'LIST'},
  * //   { type: 'Product', id: 1 },
@@ -119,130 +80,187 @@ const createTagsHOFWithErrors = <
  * // ]
  * ```
  */
-export const withList = <
-  ID extends string | number,
-  Result extends { id: ID }[] | undefined,
-  T extends TagTypes
->(
-  type: T
-) =>
-  createTagsHOFWithErrors(
-    (result: Result): [CacheItem<T, "LIST">, ...CacheItem<T, ID>[]] => {
-      if (!result) {
-        return [{ type, id: "LIST" as const }];
-      }
-
-      return [
-        { type, id: "LIST" as const },
-        ...result.map(({ id }) => ({ type, id } as CacheItem<T, ID>)),
-      ];
-    }
-  );
-
-/**
- * Similar to `providesList`, but for data located at a nested property,
- * e.g. `results.data` in a paginated response.
- */
-export const withNestedList = <
-  ID extends string | number,
-  Result,
-  Error,
-  Arg,
-  Data extends { id: ID }[],
-  Type extends TagTypes,
-  CallbackType extends TagTypes,
-  CallbackID extends CacheID,
-  Tags extends TagsList<CallbackType, CallbackID>
->(
-  type: Type,
-  extractFromResult: (result: Result) => Data,
-  tags: ((result: Result, error: Error, arg: Arg) => Tags) | Tags
-) =>
-  withErrorTags((result: Result | undefined, error: Error, arg: Arg) => {
+export function withList<
+  R extends Record<"id", CacheID>[] | undefined,
+  A extends TagsArg
+>(type: TagTypes) {
+  return createTagsGetter<R, A>((result) => {
     if (!result) {
-      return [{ type, id: "LIST" as const }];
+      return [{ type, id: "LIST" }];
     }
 
-    const data = extractFromResult(result);
+    return [{ type, id: "LIST" }, ...result.map(({ id }) => ({ type, id }))];
+  });
+}
 
-    const listTags = [
-      { type, id: "LIST" as const },
-      ...data.map(({ id }) => ({ type, id } as CacheItem<Type, ID>)),
+/**
+ * HOF to create an entity cache to provide a LIST,
+ * depending on the results.
+ *
+ * Extracted nested data from result
+ *
+ * Will not provide individual items without a result.
+ *
+ * @example ```ts
+ * const results = { nestedResult: [
+ *   { id: 1, message: 'foo' },
+ *   { id: 2, message: 'bar' }
+ * ]}
+ * withNestedList('Product', result => result.nestedResult)()(results)
+ * // [
+ * //   { type: 'Product', id: 'LIST'},
+ * //   { type: 'Product', id: 1 },
+ * //   { type: 'Product', id: 2 },
+ * // ]
+ * ```
+ */
+export function withNestedList<
+  Data extends Record<"id", CacheID>[],
+  R extends TagsResult,
+  A extends TagsArg
+>(type: TagTypes, extractList: (result: NonNullable<R>) => Data) {
+  return createTagsGetter<R | undefined, A>((result) => {
+    if (!result) {
+      return [{ type, id: "LIST" }];
+    }
+
+    const list = extractList(result);
+
+    return [{ type, id: "LIST" }, ...list.map(({ id }) => ({ type, id }))];
+  });
+}
+
+/**
+ * HOF to create an entity cache to provide a LIST,
+ * depending on the results.
+ *
+ * 1. Extracted list data from result
+ * 2. Extracted tag id from list item
+ *
+ * Will not provide individual items without a result.
+ *
+ * @example ```ts
+ * const results = { nestedResult: [
+ *   { productId: 1, message: 'foo' },
+ *   { productId: 2, message: 'bar' }
+ * ]}
+ * withDeepNestedList('Product', result => result.nestedResult, item => item.productId)()(results)
+ * // [
+ * //   { type: 'Product', id: 'LIST'},
+ * //   { type: 'Product', id: 1 },
+ * //   { type: 'Product', id: 2 },
+ * // ]
+ * ```
+ */
+export function withDeepNestedList<
+  Data extends Record<string, unknown>[],
+  R extends TagsResult,
+  A extends TagsArg
+>(
+  type: TagTypes,
+  extractList: (result: NonNullable<R>) => Data,
+  extractId: (item: Data[number]) => CacheID
+) {
+  return createTagsGetter<R | undefined, A>((result) => {
+    if (!result) {
+      return [{ type, id: "LIST" }];
+    }
+
+    const list = extractList(result);
+
+    return [
+      { type, id: "LIST" },
+      ...list.map((item) => ({ type, id: extractId(item) })),
     ];
+  });
+}
 
-    if (typeof tags === "function") {
-      return [...listTags, ...tags(result, error, arg)];
+/**
+ * HOF to add tag with specified type and arg as id.
+ *
+ * @example ```ts
+ * withArgAsId('Product')()({ id: 5, message: 'walk the fish' }, undefined, 5)
+ * // [{ type: 'Product', id: 5 }]
+ * ```
+ */
+export function withArgAsId<R extends TagsResult, A extends CacheID>(
+  type: TagTypes
+) {
+  return createTagsGetter<R, A>((result, error, arg) => {
+    return [{ type, id: arg }];
+  });
+}
+
+/**
+ * HOF to add tag with specified type and id extracted from arg.
+ *
+ * @example ```ts
+ * withNestedArgId('Product', (arg) => arg.id)()(undefined, undefined, { id: 5 })
+ * // [{ type: 'Product', id: 5 }]
+ * ```
+ */
+export function withNestedArgId<R extends TagsResult, A extends TagsArg>(
+  type: TagTypes,
+  extractId: (arg: A) => CacheID
+) {
+  return createTagsGetter<R, A>((result, error, arg) => {
+    const id = extractId(arg);
+
+    return [{ type, id }];
+  });
+}
+
+/**
+ * HOF to add tag with specified type and id extracted from result.
+ *
+ * @example ```ts
+ * withNestedArgId('Product', (res) => res.id)()({ id: 5 }, undefined, undefined)
+ * // [{ type: 'Product', id: 5 }]
+ * ```
+ */
+export function withNestedResultId<R extends TagsResult, A extends TagsArg>(
+  type: TagTypes,
+  extractId: (result: R) => CacheID
+) {
+  return createTagsGetter<R | undefined, A>((result) => {
+    if (!result) {
+      return [];
     }
 
-    return [...listTags, ...tags];
+    const id = extractId(result);
+
+    return [{ type, id }];
   });
+}
 
 /**
- * HOF to create an entity cache for a single item using the query argument as the ID.
+ * HOF to add tag with id LIST
  *
- * @example
- * ```ts
- * cacheByIdArg('Product')([])({ id: 5, message: 'walk the fish' }, undefined, 5)
- * // returns:
- * // [{ type: 'Product', id: 5 }]
- * ```
- */
-export const withArgAsId = <Arg extends string | number, T extends TagTypes>(
-  type: T
-) =>
-  createTagsHOFWithErrors((result, error, arg: Arg) => {
-    return [{ type, id: arg } as CacheItem<T, Arg>];
-  });
-
-/**
- * HOF to create an entity cache for a single item using the id property from the query argument as the ID.
- *
- * @example
- * ```ts
- * cacheByIdArgProperty('Product')([])(undefined, { id: 5, message: 'sweep up' })
- * // returns:
- * // [{ type: 'Product', id: 5 }]
- * ```
- */
-export const withIdFromArg = <Arg extends { id: string }, T extends TagTypes>(
-  type: T
-) =>
-  createTagsHOFWithErrors((result, error, arg: Arg) => {
-    return [{ type, id: arg.id } as CacheItem<T, Arg["id"]>];
-  });
-
-/**
- * HOF to create an entity cache to invalidate a LIST.
- *
- * Invalidates regardless of result.
- *
- * @example
- * ```ts
- * invalidatesList('Product')([])
+ * @example ```ts
+ * invalidatesList('Product')()
  * // [{ type: 'Product', id: 'LIST' }]
  * ```
  */
-export const invalidatesList = <T extends TagTypes>(type: T) =>
-  createTagsHOF(() => [{ type, id: "LIST" as const }]);
+export function invalidatesList(type: TagTypes) {
+  return createTagsGetter([{ type, id: "LIST" }]);
+}
 
 /**
- * HOF to invalidate the 'UNAUTHORIZED' type cache item.
+ * HOF to invalidate specified tags on success request
+ * @example ```ts
+ * invalidateOnSuccess(['Product'])({ some: "data" }, undefined, undefined )
+ * // ['Product']
+ *
+ * invalidateOnSuccess(['Product'])(undefined, {status: 401, error: ""}, undefined )
+ * // []
+ * ```
  */
-export const invalidatesUnauthorized = createTagsHOF((result, error) => {
-  if (!error) {
-    return ["UNAUTHORIZED"];
-  }
+export function invalidateOnSuccess<R extends TagsResult, A extends TagsArg>(
+  successTags?: ProvidingTags<R, A>
+): TagsGetter<R, A> {
+  return (result, error, arg) => {
+    if (error) return [];
 
-  return [];
-});
-
-/**
- * HOF to invalidate the 'UNKNOWN_ERROR' type cache item.
- */
-export const invalidatesUnknownError = createTagsHOF((result, error) => {
-  if (!error) {
-    return ["UNKNOWN_ERROR"];
-  }
-
-  return [];
-});
+    return getTags(result, error, arg)(successTags);
+  };
+}

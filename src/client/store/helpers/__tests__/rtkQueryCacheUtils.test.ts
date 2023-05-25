@@ -1,111 +1,65 @@
 import { describe, test } from "vitest";
 import {
+  invalidateOnSuccess,
+  invalidatesList,
   withArgAsId,
-  withErrorTags,
-  withIdFromArg,
   withList,
+  withNestedArgId,
   withNestedList,
 } from "../rtkQueryCacheUtils";
 
-describe("withErrorTags", () => {
-  test("should add tag on success result", ({ expect }) => {
-    const result = withErrorTags(["Basket"])({}, {}, undefined);
-
-    expect(result).toEqual(["Basket"]);
-  });
-
-  test("should do nothing if empty and success", ({ expect }) => {
-    const result = withErrorTags([])({}, {}, undefined);
-
-    expect(result).toEqual([]);
-  });
-
-  test("should return unknown error tag on rejected result", ({ expect }) => {
-    const result = withErrorTags([])(undefined, { status: 404 }, undefined);
-
-    expect(result).toEqual(["UNKNOWN_ERROR"]);
-  });
-
-  test("should return unauthorized error tag on rejected result (401 status)", ({
-    expect,
-  }) => {
-    const result = withErrorTags([])(undefined, { status: 401 }, undefined);
-
-    expect(result).toEqual(["UNAUTHORIZED"]);
-  });
-
-  test("should add tag if specified", ({ expect }) => {
-    const data = [{}, undefined, { id: "123" }] as const;
-
-    const result = withErrorTags(["AUTHORIZED"])(...data);
-
-    expect(result).toEqual(["AUTHORIZED"]);
-  });
-});
-
-describe("cacheByIdArgProperty", () => {
-  test("should add tag from arg['id'] with specified type on success result", ({
+describe("withNestedArgId", () => {
+  test("should add tag with id arg extracted by 'extractId' callback", ({
     expect,
   }) => {
     const data = [{}, undefined, { id: "123" }] as const;
+    type Arg = (typeof data)[2];
 
-    const result = withIdFromArg("Basket")([])(...data);
+    const result = withNestedArgId("Basket", (arg: Arg) => arg.id)()(...data);
 
     expect(result).toEqual([{ type: "Basket", id: "123" }]);
   });
 
-  test("should add error tag if result rejected", ({ expect }) => {
-    const data = [undefined, { status: 401 }, { id: "123" }] as const;
-
-    const result = withIdFromArg("Basket")([])(...data);
-
-    expect(result).toEqual(["UNAUTHORIZED", { type: "Basket", id: "123" }]);
-  });
-
   test("should add tag if specified", ({ expect }) => {
     const data = [{}, undefined, { id: "123" }] as const;
+    type Arg = (typeof data)[2];
 
-    const result = withIdFromArg("Basket")(["AUTHORIZED"])(...data);
+    const result = withNestedArgId(
+      "Basket",
+      (arg: Arg) => arg.id
+    )(["AUTHORIZED"])(...data);
 
-    expect(result).toEqual([{ type: "Basket", id: "123" }, "AUTHORIZED"]);
+    expect(result).toEqual(["AUTHORIZED", { type: "Basket", id: "123" }]);
   });
 });
 
-describe("cacheByIdArg", () => {
-  test("should add tag from arg['id'] with specified type on success result", ({
-    expect,
-  }) => {
-    const data = [{}, undefined, "000"] as const;
+describe("withArgAsId", () => {
+  test("should add tag from arg['id'] with specified type", ({ expect }) => {
+    const data = [{}, undefined, "1"] as const;
 
-    const result = withArgAsId("Basket")([])(...data);
+    const result = withArgAsId("Basket")()(...data);
 
-    expect(result).toEqual([{ type: "Basket", id: "000" }]);
-  });
-
-  test("should add error tag if result rejected", ({ expect }) => {
-    const data = [undefined, {}, "000"] as const;
-
-    const result = withArgAsId("Basket")([])(...data);
-
-    expect(result).toEqual(["UNKNOWN_ERROR", { type: "Basket", id: "000" }]);
+    expect(result).toEqual([{ type: "Basket", id: "1" }]);
   });
 
   test("should add tag if specified", ({ expect }) => {
-    const data = [{}, undefined, "000"] as const;
+    const data = [{}, undefined, "1"] as const;
 
     const result = withArgAsId("Basket")(["AUTHORIZED"])(...data);
 
-    expect(result).toEqual([{ type: "Basket", id: "000" }, "AUTHORIZED"]);
+    expect(result).toEqual(["AUTHORIZED", { type: "Basket", id: "1" }]);
   });
 });
 
-describe("providesList", () => {
-  test("should return LIST and ids tags for type", ({ expect }) => {
+describe("withList", () => {
+  test("should return tags with specified type, and ids from result", ({
+    expect,
+  }) => {
     const resultObject = [{ id: "1" }];
 
     const data = [resultObject, undefined, undefined] as const;
 
-    const result = withList("Basket")([])(...data);
+    const result = withList("Basket")()(...data);
 
     expect(result).toEqual([
       { type: "Basket", id: "LIST" },
@@ -113,78 +67,116 @@ describe("providesList", () => {
     ]);
   });
 
-  test("should add error tag if result rejected and have LIST tag", ({
+  test("should have tag with specified type and id - LIST, when result rejected", ({
     expect,
   }) => {
-    const data = [undefined, { error: "SOME_ERROR" }, undefined] as const;
+    const data = [
+      undefined,
+      { status: "CUSTOM_ERROR", error: "" },
+      undefined,
+    ] as const;
 
     const result = withList("Basket")([])(...data);
 
-    expect(result).toEqual(["UNKNOWN_ERROR", { type: "Basket", id: "LIST" }]);
+    expect(result).toEqual([{ type: "Basket", id: "LIST" }]);
   });
 
   test("should add tag if specified", ({ expect }) => {
     const resultObject = [{ id: "1" }];
-
     const data = [resultObject, undefined, undefined] as const;
 
     const result = withList("Basket")(["AUTHORIZED"])(...data);
 
     expect(result).toEqual([
+      "AUTHORIZED",
       { type: "Basket", id: "LIST" },
       { type: "Basket", id: "1" },
-      "AUTHORIZED",
     ]);
   });
 });
 
-describe("providesNestedList", () => {
-  test("should return only error tag if result rejected", ({ expect }) => {
-    const resultObject = { nested: { field: [{ id: "TEST" }] } };
-
-    const data = [resultObject, { status: 200 }, undefined] as const;
+describe("withNestedList", () => {
+  test("should return tags with specified type, and ids from result extracted by 'extractResult' callback", ({
+    expect,
+  }) => {
+    const resultObject = { nested: { field: [{ id: "1" }] } };
+    const data = [resultObject, undefined, undefined] as const;
 
     const result = withNestedList(
       "Basket",
-      (result: typeof resultObject) => result.nested.field,
-      []
-    )(...data);
+      (result: typeof resultObject) => result.nested.field
+    )()(...data);
 
     expect(result).toEqual([
       { type: "Basket", id: "LIST" },
-      { type: "Basket", id: "TEST" },
+      { type: "Basket", id: "1" },
     ]);
+  });
+
+  test("should have tag with specified type and id - LIST, when result rejected", ({
+    expect,
+  }) => {
+    const resultObject = { nested: { field: [{ id: "1" }] } };
+    const data = [
+      undefined,
+      { status: "CUSTOM_ERROR", error: "" },
+      undefined,
+    ] as const;
+
+    const result = withNestedList(
+      "Basket",
+      (result: typeof resultObject) => result.nested.field
+    )([])(...data);
+
+    expect(result).toEqual([{ type: "Basket", id: "LIST" }]);
   });
 
   test("should add tag if specified", ({ expect }) => {
-    const resultObject = { nested: { field: [{ id: "TEST" }] } };
+    const resultObject = { nested: { field: [{ id: "1" }] } };
 
-    const data = [resultObject, { status: 200 }, undefined] as const;
+    const data = [resultObject, undefined, undefined] as const;
 
     const result = withNestedList(
       "Basket",
-      (result: typeof resultObject) => result.nested.field,
-      () => ["AUTHORIZED"]
-    )(...data);
+      (result: typeof resultObject) => result.nested.field
+    )(["AUTHORIZED"])(...data);
 
     expect(result).toEqual([
-      { type: "Basket", id: "LIST" },
-      { type: "Basket", id: "TEST" },
       "AUTHORIZED",
+      { type: "Basket", id: "LIST" },
+      { type: "Basket", id: "1" },
     ]);
   });
+});
 
-  test("should add error tag if result rejected", ({ expect }) => {
-    const resultObject = { nested: { field: [{ id: "TEST" }] } };
+describe("invalidatesList", () => {
+  test("should add tag with specified type and id - LIST", ({ expect }) => {
+    const data = [{}, undefined, undefined] as const;
 
-    const data = [undefined, { status: 200 }, undefined] as const;
+    const result = invalidatesList("Basket")()(...data);
 
-    const result = withNestedList(
-      "Basket",
-      (result: typeof resultObject) => result.nested.field,
-      []
-    )(...data);
+    expect(result).toEqual([{ type: "Basket", id: "LIST" }]);
+  });
+});
 
-    expect(result).toEqual(["UNKNOWN_ERROR", { type: "Basket", id: "LIST" }]);
+describe("invalidateOnSuccess", () => {
+  test("should add specified tags if result success", ({ expect }) => {
+    const data = [{}, undefined, undefined] as const;
+
+    const result = invalidateOnSuccess(["Basket"])(...data);
+
+    expect(result).toEqual(["Basket"]);
+  });
+
+  test("should not add specified tags if result rejected", ({ expect }) => {
+    const data = [
+      undefined,
+      { status: "CUSTOM_ERROR", error: "" },
+      undefined,
+    ] as const;
+
+    const result = invalidateOnSuccess(["Basket"])(...data);
+
+    expect(result).toEqual([]);
   });
 });

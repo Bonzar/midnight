@@ -5,8 +5,9 @@ const tagTypes = [
   "Basket",
   "Product",
   "AUTHORIZED",
-  "UNKNOWN_ERROR",
-  "UNAUTHORIZED",
+  "RE_AUTH",
+  "BasketProduct",
+  "BasketCoupon",
 ] as const;
 export type TagTypes = (typeof tagTypes)[number];
 

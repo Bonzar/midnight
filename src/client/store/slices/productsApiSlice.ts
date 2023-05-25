@@ -10,11 +10,14 @@ export const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getProducts: build.query<GetAllProductsResponse, void>({
       query: () => "product",
-      providesTags: withNestedList("Product", (result) => result.rows, []),
+      providesTags: withNestedList(
+        "Product",
+        (result: GetAllProductsResponse) => result.rows
+      )(),
     }),
     getDetailedProduct: build.query<GetProductResponse, number>({
       query: (id) => `product/${id}`,
-      providesTags: withArgAsId("Product")([]),
+      providesTags: withArgAsId("Product")(),
     }),
   }),
 });

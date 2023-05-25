@@ -1,0 +1,55 @@
+.productCard {
+  display: grid;
+  grid-template-columns: auto 4fr 1fr 1fr;
+  justify-items: center;
+  flex-flow: row nowrap;
+  gap: var(--indent-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (--tablet-viewport) {
+  .productCard {
+    grid-template-columns: auto 4fr 1fr 1fr 1fr;
+  }
+}
+
+.quantityForm {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+
+@media (--netbook-viewport) {
+  .quantityForm {
+    flex-flow: row nowrap;
+  }
+}
+
+.quantityFormButton,
+.quantityFormIndent,
+.quantityFormPrice {
+  display: none;
+}
+
+.quantityFormButton {
+  width: calc(var(--indent-3) * 3);
+  text-align: center;
+}
+
+.quantityFormInput {
+  width: calc(var(--indent-3) * 5);
+}
+
+@media (--tablet-viewport) {
+  .quantityFormPrice {
+    display: initial;
+  }
+}
+
+@media (--netbook-viewport) {
+  .quantityFormIndent,
+  .quantityFormButton {
+    display: initial;
+  }
+}
