@@ -28,7 +28,7 @@ export const basketApiSlice = apiSlice.injectEndpoints({
           (result) => result.basket.basketProducts
         ),
         withNestedList("BasketCoupon", (result) => result.basket.basketCoupons),
-      ])(),
+      ])(["AUTHORIZED"]),
     }),
     addBasketProduct: build.mutation<
       AddBasketProductResponse,
