@@ -3,7 +3,7 @@ import type {
   GetAllProductsResponse,
   GetProductResponse,
 } from "../../../server/controllers/productController";
-import { withArgAsId, withNestedList } from "../helpers/rtkQueryCacheUtils";
+import { withArgAsId, withNestedList } from "../helpers/apiCacheUtils";
 
 export const productsApiSlice = apiSlice.injectEndpoints({
   overrideExisting: true,

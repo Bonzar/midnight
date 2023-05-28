@@ -11,36 +11,31 @@ import type {
   UpdateBasketProductResponse,
 } from "../../../server/controllers/basketController";
 import {
-  invalidatesList,
+  invalidateList,
   withNestedList,
   withNestedResultId,
-} from "../helpers/rtkQueryCacheUtils";
-import { pipe } from "ramda";
+  withTags,
+} from "../helpers/apiCacheUtils";
 
 export const basketApiSlice = apiSlice.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
     getBasket: build.query<GetBasketResponse, void>({
       query: () => "basket",
-      providesTags: (result, error, arg) => {
-        return pipe(
-          withNestedList(
-            "BasketProduct",
-            (result: GetBasketResponse) => result.basket.basketProducts
-          ),
-          withNestedList(
-            "BasketCoupon",
-            (result: GetBasketResponse) => result.basket.basketCoupons
-          )
-        )(["AUTHORIZED"])(result, error, arg);
-      },
+      providesTags: withTags<GetBasketResponse, void>([
+        withNestedList(
+          "BasketProduct",
+          (result) => result.basket.basketProducts
+        ),
+        withNestedList("BasketCoupon", (result) => result.basket.basketCoupons),
+      ])(),
     }),
     addBasketProduct: build.mutation<
       AddBasketProductResponse,
       AddBasketProductBody
     >({
       query: (body) => ({ url: "basket/product", method: "POST", body }),
-      invalidatesTags: invalidatesList("BasketProduct")(),
+      invalidatesTags: invalidateList("BasketProduct")(),
     }),
     updateBasketProduct: build.mutation<
       UpdateBasketProductResponse,
@@ -54,18 +49,18 @@ export const basketApiSlice = apiSlice.injectEndpoints({
     }),
     deleteBasketProduct: build.mutation<void, DeleteBasketProductBody>({
       query: (body) => ({ url: "basket/product", method: "DELETE", body }),
-      invalidatesTags: invalidatesList("BasketProduct")(),
+      invalidatesTags: invalidateList("BasketProduct")(),
     }),
     addBasketCoupon: build.mutation<
       AddBasketCouponResponse,
       AddBasketCouponBody
     >({
       query: (body) => ({ url: "basket/coupon", method: "POST", body }),
-      invalidatesTags: invalidatesList("BasketCoupon")(),
+      invalidatesTags: invalidateList("BasketCoupon")(),
     }),
     deleteBasketCoupon: build.mutation<void, DeleteBasketCouponBody>({
       query: (body) => ({ url: "basket/coupon", method: "DELETE", body }),
-      invalidatesTags: invalidatesList("BasketCoupon")(),
+      invalidatesTags: invalidateList("BasketCoupon")(),
     }),
   }),
 });

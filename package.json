@@ -24,6 +24,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@bonzar/rtk-query-tags-util": "^1.0.2",
     "@reduxjs/toolkit": "^1.9.5",
     "bcrypt": "^5.1.0",
     "cls-hooked": "^4.2.2",

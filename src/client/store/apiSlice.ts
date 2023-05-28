@@ -9,6 +9,7 @@ const tagTypes = [
   "BasketProduct",
   "BasketCoupon",
 ] as const;
+
 export type TagTypes = (typeof tagTypes)[number];
 
 export const apiSlice = createApi({

@@ -6,7 +6,7 @@ import type {
   RegistrationUserBody,
   RegistrationUserResponse,
 } from "../../../server/controllers/authController";
-import { invalidateOnSuccess } from "../helpers/rtkQueryCacheUtils";
+import { invalidateOnSuccess } from "../helpers/apiCacheUtils";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   overrideExisting: true,
