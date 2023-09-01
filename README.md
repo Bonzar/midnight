@@ -6,6 +6,7 @@
 - Sequelize
 - React
 - Redux
+- React Router
 - ESLint
 - Vite
 - SSR
