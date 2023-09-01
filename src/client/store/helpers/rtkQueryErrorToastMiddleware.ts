@@ -20,6 +20,7 @@ export const rtkQueryErrorToastMiddleware: Middleware =
 
       const error = action.payload.data;
 
+      // @ts-ignore
       import("iziToast")
         .then((module) => {
           const izitoast = module.default;

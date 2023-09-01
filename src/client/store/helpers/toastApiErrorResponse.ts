@@ -19,6 +19,7 @@ export const toastApiErrorResponse =
 
     const { status, data } = baseQueryReturnValue;
 
+    // @ts-ignore
     import("iziToast")
       .then((module) => {
         const izitoast = module.default;
