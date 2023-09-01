@@ -18,6 +18,9 @@ export default defineConfig({
   server: { port: 3000 },
   build: {
     minify: false,
+    rollupOptions: {
+      external: "./node_modules/iziToast/dist/css/iziToast.min.css"
+    }
   },
   root: "",
   base: "/",
